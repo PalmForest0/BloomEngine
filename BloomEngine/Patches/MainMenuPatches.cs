@@ -1,4 +1,4 @@
-﻿using BloomEngine.Behaviours;
+﻿using BloomEngine.Menu;
 using BloomEngine.Utilities;
 using HarmonyLib;
 using Il2CppReloaded.UI;
@@ -10,7 +10,7 @@ namespace PvZEnhanced.Patches;
 [HarmonyPatch]
 static internal class MainMenuPatches
 {
-    private static ModListManager modListManager;
+    private static ModMenuManager modListManager;
 
     [HarmonyPatch(typeof(MainMenuPanelView), nameof(MainMenuPanelView.Start))]
     [HarmonyPostfix]
@@ -41,6 +41,6 @@ static internal class MainMenuPatches
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
 
-        modListManager = modList.AddComponent<ModListManager>();
+        modListManager = modList.AddComponent<ModMenuManager>();
     }
 }

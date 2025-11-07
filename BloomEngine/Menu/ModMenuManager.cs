@@ -5,22 +5,22 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BloomEngine.Behaviours;
+namespace BloomEngine.Menu;
 
-public class ModListManager : MonoBehaviour
+internal class ModMenuManager : MonoBehaviour
 {
     public bool ModMenuOpen { get; private set; } = false;
 
-    private Transform achievementsMenu;
-    private UnityEngine.UI.Button achievementsButton;
-    private AchievementsUI achievementsUI;
+    private Transform achieveContainer;
+    private UnityEngine.UI.Button achieveButton;
+    private AchievementsUI achieveUi;
 
     public void Start()
     {
-        achievementsUI = transform.GetComponentInParent<AchievementsUI>();
+        achieveUi = transform.GetComponentInParent<AchievementsUI>();
 
-        achievementsMenu = transform.parent.Find("ScrollView").Find("Viewport").Find("Content").Find("Achievements");
-        achievementsButton = transform.parent.parent.Find("Main").Find("BG_Tree").Find("AchievementsButton").GetComponent<UnityEngine.UI.Button>();
+        achieveContainer = transform.parent.Find("ScrollView").Find("Viewport").Find("Content").Find("Achievements");
+        achieveButton = transform.parent.parent.Find("Main").Find("BG_Tree").Find("AchievementsButton").GetComponent<UnityEngine.UI.Button>();
 
         CreateModsEntries();
         CreateModsButton();
@@ -38,8 +38,8 @@ public class ModListManager : MonoBehaviour
         rect.anchorMax = new Vector2(0, 1);
         rect.anchoredPosition = new Vector2(25, rect.rect.height + 25);
 
-        achievementsButton.onClick.AddListener((UnityAction)ShowAchievementList);
-        achievementsUI.m_backButton.onClick.AddListener((UnityAction)(() => ModMenuOpen = false));
+        achieveButton.onClick.AddListener((UnityAction)ShowAchievementList);
+        achieveUi.m_backButton.onClick.AddListener((UnityAction)(() => ModMenuOpen = false));
     }
 
     private void CreateModsEntries()
@@ -48,7 +48,7 @@ public class ModListManager : MonoBehaviour
 
         foreach (var mod in MelonMod.RegisteredMelons)
         {
-            GameObject modEntry = GameObject.Instantiate(prefab, achievementsMenu);
+            GameObject modEntry = GameObject.Instantiate(prefab, achieveContainer);
             modEntry.SetActive(true);
             modEntry.name = $"ModEntry_{mod.Info.Name}";
 
@@ -78,9 +78,9 @@ public class ModListManager : MonoBehaviour
     /// </summary>
     private void SetHeaderText(string text)
     {
-        achievementsMenu.parent.Find("Header").Find("Center").Find("HeaderRock").GetComponent<TextMeshProUGUI>().text = text;
-        achievementsMenu.parent.Find("Header").Find("Center").Find("HeaderRockTop").GetComponent<TextMeshProUGUI>().text = text;
-        achievementsMenu.parent.Find("Header").Find("Center").Find("HeaderRockBottom").GetComponent<TextMeshProUGUI>().text = text;
+        achieveContainer.parent.Find("Header").Find("Center").Find("HeaderRock").GetComponent<TextMeshProUGUI>().text = text;
+        achieveContainer.parent.Find("Header").Find("Center").Find("HeaderRockTop").GetComponent<TextMeshProUGUI>().text = text;
+        achieveContainer.parent.Find("Header").Find("Center").Find("HeaderRockBottom").GetComponent<TextMeshProUGUI>().text = text;
     }
 
     /// <summary>
@@ -89,9 +89,9 @@ public class ModListManager : MonoBehaviour
     /// <param name="show">Whether to show the mod list of to return the achievement list</param>
     private void ReplaceWithModList(bool showMods)
     {
-        for (int i = 0; i < achievementsMenu.childCount; i++)
+        for (int i = 0; i < achieveContainer.childCount; i++)
         {
-            GameObject entry = achievementsMenu.GetChild(i).gameObject;
+            GameObject entry = achieveContainer.GetChild(i).gameObject;
 
             if (entry.name.StartsWith("ModEntry_"))
                 entry.SetActive(showMods);

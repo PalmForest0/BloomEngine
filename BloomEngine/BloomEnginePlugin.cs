@@ -1,4 +1,5 @@
 ﻿using BloomEngine;
+using BloomEngine.Menu;
 using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
 using System.Runtime.InteropServices;
@@ -16,15 +17,23 @@ public class BloomEnginePlugin : MelonMod
     public const string Version = "1.0.0";
     public const string Author = "PalmForest";
 
-    public static MelonLogger.Instance Logger;
+    public string CoolProperty { get; set; } = "Initial Value";
 
     public override void OnInitializeMelon()
     {
-        Logger = LoggerInstance;
-        Logger.Msg($"Successfully initialised {nameof(BloomEngine)}.");
+        LoggerInstance.Msg($"Successfully initialised {nameof(BloomEngine)}.");
 
         HarmonyInstance.PatchAll();
         RegisterAllMonoBehaviours();
+
+        ModMenu.Register(this, new ModConfig(new ConfigProperty(
+            nameof(CoolProperty),
+            () => CoolProperty,
+            (value) => CoolProperty = value,
+            "This is an example configuration property."
+        )));
+
+        LoggerInstance.Msg($"Value of {nameof(CoolProperty)} is {CoolProperty}");
     }
 
     private void RegisterAllMonoBehaviours()
