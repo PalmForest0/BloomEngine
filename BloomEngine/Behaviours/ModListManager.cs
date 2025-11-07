@@ -53,7 +53,8 @@ public class ModListManager : MonoBehaviour
             modEntry.name = $"ModEntry_{mod.Info.Name}";
 
             modEntry.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = mod.Info.Name;
-            modEntry.transform.Find("Subheader").GetComponent<TextMeshProUGUI>().text = mod.Info.Version;
+            modEntry.transform.Find("Subheader").GetComponent<TextMeshProUGUI>().text = $"{mod.Info.Author}\n{mod.Info.Version}";
+            modEntry.transform.Find("Subheader").GetComponent<TextMeshProUGUI>().lineSpacing = 5;
         }
     }
 
