@@ -29,19 +29,4 @@ public static class UIHelper
 
         return button;
     }
-
-    public static void ReanchorAndKeepPosition(RectTransform rect, Vector2 newAnchorMin, Vector2 newAnchorMax)
-    {
-        // Store world position before changing anchors
-        Vector3 oldPos = rect.position;
-        Vector2 oldPivot = rect.pivot;
-        Vector2 oldSize = rect.rect.size;
-
-        // Change anchors
-        rect.anchorMin = newAnchorMin;
-        rect.anchorMax = newAnchorMax;
-        rect.ForceUpdateRectTransforms();
-
-        rect.position = oldPos;
-    }
 }

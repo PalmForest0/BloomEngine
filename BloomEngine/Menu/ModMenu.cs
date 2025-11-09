@@ -24,5 +24,9 @@ public static class ModMenu
         OnModRegistered?.Invoke(entry);
 
         Melon<BloomEnginePlugin>.Logger.Msg($"[ModMenu] Successfully registered {entry.DisplayName} with {entry.Properties.Count} config {(entry.Properties.Count > 1 ? "properties" : "property")}.");
+        foreach (var prop in entry.Properties)
+        {
+            Melon<BloomEnginePlugin>.Logger.Msg($"    - {prop.Name} ({prop.InputType.ToString()})");
+        }
     }
 }

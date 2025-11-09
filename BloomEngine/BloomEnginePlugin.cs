@@ -1,5 +1,4 @@
 ﻿using BloomEngine;
-using BloomEngine.Menu;
 using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
 using System.Runtime.InteropServices;
@@ -16,24 +15,12 @@ public class BloomEnginePlugin : MelonMod
     public const string Name = "BloomEngine";
     public const string Version = "1.0.0";
     public const string Author = "PalmForest";
-
-    public string CoolProperty { get; set; } = "Initial Value";
+    public const string Id = "com.palmforest.bloomengine";
 
     public override void OnInitializeMelon()
     {
         LoggerInstance.Msg($"Successfully initialised {nameof(BloomEngine)}.");
-
-        HarmonyInstance.PatchAll();
         RegisterAllMonoBehaviours();
-
-        ModMenu.NewEntry(this, "com.palmforest.bloomengine", "BloomEnginge")
-            .AddDescription("A mod list and config manager library for PvZ Replanted modding.")
-            .AddConfigProperty(() => CoolProperty, nameof(CoolProperty), onValueChanged: newValue =>
-            {
-                CoolProperty = newValue.ToUpperInvariant();
-                LoggerInstance.Msg($"CoolProperty changed to: {newValue}");
-            }, description: "An example config property.")
-            .Register();
     }
 
     private void RegisterAllMonoBehaviours()
