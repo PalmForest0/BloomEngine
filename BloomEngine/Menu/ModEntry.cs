@@ -10,9 +10,10 @@ public class ModEntry
     public string DisplayName { get; private set; }
     public string Description { get; private set; }
 
+    public Texture2D Image { get; private set; }
     public MelonMod Mod { get; private set; }
+
     public List<ConfigProperty> Properties { get; private set; } = new List<ConfigProperty>();
-    public Texture2D Image { get; set; }
 
     public ModEntry(MelonMod mod, string id, string displayName = null)
     {
@@ -33,7 +34,7 @@ public class ModEntry
         return this;
     }
 
-    public ModEntry AddConfig(IModConfig configInstance)
+    public ModEntry AddConfig(ModConfigBase configInstance)
     {
         foreach (var prop in configInstance.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
         {
@@ -57,7 +58,6 @@ public class ModEntry
                 type,
                 getter,
                 setter,
-                attribute.OnValueChanged,
                 attribute.Placeholder,
                 attribute.Description,
                 attribute.InputType == PropertyInputType.Auto ? InferInputType(type) : attribute.InputType

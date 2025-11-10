@@ -16,7 +16,6 @@ public class ConfigPropertyAttribute : Attribute
     public string Description { get; }
     public string Placeholder { get; set; }
     public PropertyInputType InputType { get; set; }
-    public Action<object> OnValueChanged { get; set; }
 
     public ConfigPropertyAttribute(string name, string description = null)
     {

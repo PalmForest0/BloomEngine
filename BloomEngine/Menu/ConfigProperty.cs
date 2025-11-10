@@ -10,14 +10,12 @@ public class ConfigProperty
 
     public Func<object> Getter { get; }
     public Action<object> Setter { get; }
-    public Action<object> OnValueChanged { get; }
 
     public ConfigProperty(
         string name,
         Type type,
         Func<object> getter,
         Action<object> setter,
-        Action<object> onValueChanged,
         string placeholder,
         string description = default,
         PropertyInputType inputType = PropertyInputType.Auto)
@@ -26,7 +24,6 @@ public class ConfigProperty
         PropertyType = type;
         Getter = getter;
         Setter = setter;
-        OnValueChanged = onValueChanged;
         PlaceHolder = placeholder;
         Description = description;
         InputType = inputType;

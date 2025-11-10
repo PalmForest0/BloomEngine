@@ -51,7 +51,7 @@ internal class ModConfigPanelPatch
         if (applyBtn is not null)
         {
             // Update name and text
-            applyBtn.name = "P_ApplyConfigButton";
+            applyBtn.name = "P_ConfigButton_Apply";
             applyBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Apply");
 
             // Remove garbage components
@@ -64,6 +64,16 @@ internal class ModConfigPanelPatch
         }
 
         // TODO: Setup Cancel button similarly to Apply button
+        var cancelBtn = buttons.FirstOrDefault(btn => btn.name == "P_BacicButton_Cancel");
+        if (cancelBtn is not null)
+        {
+            cancelBtn.name = "P_ConfigButton_Cancel";
+            cancelBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Cancel");
+            GameObject.Destroy(cancelBtn.GetComponent<TextLocalizer>());
+
+            cancelBtn.GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
+            cancelBtn.GetComponent<UnityEngine.UI.Button>().onClick.AddListener((UnityAction)(() => { CloseConfigPanel(false); }));
+        }
     }
 
     /// <summary>
