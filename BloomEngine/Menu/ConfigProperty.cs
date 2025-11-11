@@ -11,6 +11,8 @@ public class ConfigProperty
     public Func<object> Getter { get; }
     public Action<object> Setter { get; }
 
+    public Func<object, object> OnInputChanged { get; set; }
+
     public ConfigProperty(
         string name,
         Type type,
@@ -18,6 +20,7 @@ public class ConfigProperty
         Action<object> setter,
         string placeholder,
         string description = default,
+        Func<object, object> onInputChanged = default,
         PropertyInputType inputType = PropertyInputType.Auto)
     {
         Name = name;
@@ -26,6 +29,7 @@ public class ConfigProperty
         Setter = setter;
         PlaceHolder = placeholder;
         Description = description;
+        OnInputChanged = onInputChanged;
         InputType = inputType;
     }
 }

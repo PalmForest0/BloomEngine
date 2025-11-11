@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Menu;
 using BloomEngine.Utilities;
 using HarmonyLib;
+using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
@@ -14,6 +15,9 @@ internal class ModConfigPanelPatch
 {
     private static ModEntry currentEntry;
     private static PanelView configPanel;
+    private static Transform windowContainer;
+
+    private static Dictionary<ModEntry, GameObject[]> inputs = new Dictionary<ModEntry, GameObject[]>();
 
     [HarmonyPatch(typeof(PanelViewContainer), nameof(PanelViewContainer.Awake))]
     [HarmonyPostfix]
@@ -45,7 +49,8 @@ internal class ModConfigPanelPatch
         foreach (var local in panel.GetComponentsInChildren<TextLocalizer>())
             GameObject.Destroy(local);
 
-        var buttons = panel.transform.FindComponents<UnityEngine.UI.Button>("Canvas/Layout/Center/Window/Buttons");
+        windowContainer = panel.transform.Find("Canvas/Layout/Center/Window");
+        var buttons = panel.transform.Find("Canvas/Layout/Center/Window").FindComponents<UnityEngine.UI.Button>("Buttons");
 
         var applyBtn = buttons.FirstOrDefault(btn => btn.name == "P_BacicButton_Quit");
         if (applyBtn is not null)
@@ -79,10 +84,34 @@ internal class ModConfigPanelPatch
     /// <summary>
     /// Closes the mod configuration panel and updates any changed config properties by calling their setters if needed.
     /// </summary>
-    private static void CloseConfigPanel(bool applyChanges)
+    public static void CloseConfigPanel(bool applyChanges)
     {
         // TODO: Update config properties by calling their setters
-        ModMenu.Log($"[ModMenu] Applying config for mod: {currentEntry.DisplayName}");
+        ModMenu.Log($"Applying config for mod: {currentEntry.DisplayName}");
+
+        for (int i = 0; i < inputs[currentEntry].Length; i++)
+        {
+            var input = inputs[currentEntry][i];
+            var property = currentEntry.Properties[i];
+
+            if (applyChanges)
+            {
+                string text = input.GetComponent<ReloadedInputField>().text;
+                dynamic value = null;
+
+                if (string.IsNullOrWhiteSpace(text))
+                    value = null;
+                else if (property.InputType == PropertyInputType.TextBox || property.InputType == PropertyInputType.NumberBox)
+                    value = Convert.ChangeType(text, property.PropertyType);
+                //else if(property.InputType == PropertyInputType.Checkbox)
+                // Handle that sometime pls
+
+                property.Setter?.Invoke(value);
+            }
+
+            GameObject.Destroy(input.transform.parent.Find($"PropertyLabel_{property.Name}").gameObject);
+            GameObject.Destroy(input);
+        }
 
         currentEntry = null;
         configPanel.gameObject.SetActive(false);
@@ -91,12 +120,65 @@ internal class ModConfigPanelPatch
     /// <summary>
     /// Opens the mod configuration panel for the specified entry and creates inputs for the config properties.
     /// </summary>
-    private static void OpenConfigPanel(ModEntry entry)
+    public static void OpenConfigPanel(ModEntry entry)
     {
         // TODO: Create inputs for each config property in entry.Properties
-        ModMenu.Log($"[ModMenu] Editing config for mod: {entry.DisplayName}");
+        ModMenu.Log($"Editing config for mod: {entry.DisplayName}");
+
+        windowContainer.Find("HeaderText").GetComponent<TextMeshProUGUI>().text = $"{entry.DisplayName}";
+        windowContainer.Find("SubheadingText").GetComponent<TextMeshProUGUI>().gameObject.SetActive(false);
+
+        inputs[entry] = new GameObject[entry.Properties.Count];
+
+        var parentRect = windowContainer.GetComponent<RectTransform>();
+        for (int i = 0; i < entry.Properties.Count; i++)
+            inputs[entry][i] = CreateInput(entry.Properties[i], parentRect);
 
         currentEntry = entry;
         configPanel.gameObject.SetActive(true);
+    }
+
+    private static GameObject CreateInput(ConfigProperty property, RectTransform parent)
+    {
+        GameObject textObj = GameObject.Instantiate(windowContainer.Find("SubheadingText").gameObject);
+        textObj.name = $"PropertyLabel_{property.Name}";
+        textObj.GetComponent<RectTransform>().SetParent(parent);
+        textObj.GetComponent<TextMeshProUGUI>().text = property.Name;
+        textObj.GetComponent<TextMeshProUGUI>().fontSize = windowContainer.Find("SubheadingText").GetComponent<TextMeshProUGUI>().fontSize;
+        textObj.SetActive(true);
+
+        GameObject inputObj = null;
+        string name = $"PropertyInput_{property.Name}";
+
+        switch (property.InputType)
+        {
+            case PropertyInputType.TextBox:
+                inputObj = UIHelper.CreateTextField(name, parent, property.PlaceHolder, () => OnInputChanged(property, inputObj.GetComponent<ReloadedInputField>()));
+                inputObj.GetComponent<ReloadedInputField>().text = property.Getter?.Invoke().ToString();
+                break;
+            case PropertyInputType.NumberBox:
+                inputObj = UIHelper.CreateTextField(name, parent, property.PlaceHolder, () =>
+                {
+                    // Ensure only numeric input
+                    inputObj.GetComponent<ReloadedInputField>().text = new string(inputObj.GetComponent<ReloadedInputField>().text.Where(c => char.IsDigit(c) || c == '.').ToArray());
+                    OnInputChanged(property, inputObj.GetComponent<ReloadedInputField>());
+                });
+                inputObj.GetComponent<ReloadedInputField>().text = property.Getter?.Invoke().ToString();
+                break;
+            case PropertyInputType.Checkbox:
+                // Create checkbox input
+                break;
+            case PropertyInputType.Button:
+                // Create button input
+                break;
+        }
+
+        return inputObj;
+    }
+
+    private static void OnInputChanged(ConfigProperty property, ReloadedInputField field)
+    {
+        if (property.InputType == PropertyInputType.TextBox && property.OnInputChanged is not null)
+            field.text = (string)property.OnInputChanged.Invoke(field.text);
     }
 }

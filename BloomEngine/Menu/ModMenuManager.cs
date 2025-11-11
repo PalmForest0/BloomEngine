@@ -1,9 +1,11 @@
-﻿using BloomEngine.Utilities;
+﻿using BloomEngine.Patches;
+using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace BloomEngine.Menu;
 
@@ -52,9 +54,24 @@ internal class ModMenuManager : MonoBehaviour
             modEntry.SetActive(true);
             modEntry.name = $"ModEntry_{mod.Info.Name}";
 
-            modEntry.FindComponent<TextMeshProUGUI>("Title").text = mod.Info.Name;
-            modEntry.FindComponent<TextMeshProUGUI>("Subheader").text = $"{mod.Info.Author}\n{mod.Info.Version}";
-            modEntry.FindComponent<TextMeshProUGUI>("Subheader").lineSpacing = 5;
+            ModEntry entry = ModMenu.Entries.FirstOrDefault(e => e.Mod == mod);
+            string name = mod.Info.Name;
+            string description = $"{mod.Info.Author}\n{mod.Info.Version}";
+
+            if (entry is not null)
+            {
+                name = entry.DisplayName;
+
+                if (!string.IsNullOrWhiteSpace(entry.Description))
+                    description = entry.Description;
+
+                Button button = modEntry.transform.Find("Icon").gameObject.AddComponent<Button>();
+                button.onClick.AddListener((UnityAction)(() => ModConfigPanelPatch.OpenConfigPanel(entry)));
+            }
+
+            modEntry.FindComponent<TextMeshProUGUI>("Title").text = name;
+            modEntry.FindComponent<TextMeshProUGUI>("Subheader").text = description;
+            //modEntry.FindComponent<TextMeshProUGUI>("Subheader").lineSpacing = 5;
         }
     }
 

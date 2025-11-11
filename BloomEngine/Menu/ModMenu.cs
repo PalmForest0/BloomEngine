@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace BloomEngine.Menu;
@@ -7,6 +8,7 @@ namespace BloomEngine.Menu;
 public static class ModMenu
 {
     private static ConcurrentDictionary<string, ModEntry> mods = new ConcurrentDictionary<string, ModEntry>();
+    public static ReadOnlyCollection<ModEntry> Entries => Array.AsReadOnly<ModEntry>(mods.Values.ToArray());
 
     /// <summary>
     /// Event invoked when a mod is registered to the Mod Menu
@@ -24,7 +26,7 @@ public static class ModMenu
         mods[entry.Id] = entry;
         OnModRegistered?.Invoke(entry);
 
-        ModMenu.Log($"[ModMenu] Successfully registered {entry.DisplayName} with {entry.Properties.Count} config {(entry.Properties.Count > 1 ? "properties" : "property")}.");
+        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Properties.Count} config {(entry.Properties.Count > 1 ? "properties" : "property")}.");
         foreach (var prop in entry.Properties)
         {
             ModMenu.Log($"    - {prop.Name} ({prop.InputType.ToString()})");
