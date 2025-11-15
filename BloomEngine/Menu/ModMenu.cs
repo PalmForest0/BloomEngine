@@ -34,6 +34,9 @@ public static class ModMenu
 
     public static void ShowConfigPanel(ModEntry mod)
     {
+        if (currentConfigPanel is not null)
+            return;
+
         if (configPanels.TryGetValue(mod, out var panel))
         {
             panel.ShowPanel();

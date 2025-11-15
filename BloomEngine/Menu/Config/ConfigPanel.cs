@@ -117,7 +117,7 @@ public class ConfigPanel
             foreach (var input in inputFields)
                 ApplyInputField(input.Value.GetComponent<ReloadedInputField>(), input.Key);
 
-            HidePanel();
+            ModMenu.HideConfigPanel();
         }));
     }
 
@@ -132,7 +132,7 @@ public class ConfigPanel
 
         // Hide config panel on click
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener((UnityAction)HidePanel);
+        button.onClick.AddListener((UnityAction)ModMenu.HideConfigPanel);
     }
 
     private GameObject CreateInputField(IConfigProperty property, RectTransform parent)

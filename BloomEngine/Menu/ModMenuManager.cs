@@ -30,10 +30,7 @@ internal class ModMenuManager : MonoBehaviour
 
     private void CreateModsButton()
     {
-        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", () =>
-        {
-            ModMenu.ShowConfigPanel(ModMenu.Mods.First(entry => entry.Id == "com.palmforest.pvzenhanced"));
-        });
+        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", ShowModList);
 
         // Position the modsButton in the bottom left corner
         RectTransform rect = obj.GetComponent<RectTransform>();
@@ -49,6 +46,10 @@ internal class ModMenuManager : MonoBehaviour
     private void CreateModsEntries()
     {
         GameObject prefab = transform.parent.parent.Find("Achievements/AchievementItem").gameObject;
+
+        // Prevent header from blocking clicks on mod entry buttons
+        achieveContainer.parent.FindComponent<Image>("Header/Shadow").raycastTarget = false;
+        achieveContainer.parent.FindComponent<Image>("Header/Left/Background_grass02").raycastTarget = false;
 
         foreach (var mod in MelonMod.RegisteredMelons)
         {
@@ -67,8 +68,14 @@ internal class ModMenuManager : MonoBehaviour
                 if (!string.IsNullOrWhiteSpace(entry.Description))
                     description = entry.Description;
 
-                Button button = obj.transform.Find("Icon").gameObject.AddComponent<Button>();
-                button.onClick.AddListener((UnityAction)(() => ModMenu.ShowConfigPanel(entry)));
+                // Create a button for the mod's config panel if it has one
+                if (entry.Config is not null)
+                {
+                    obj.transform.Find("Icon").gameObject.AddComponent<Button>().onClick.AddListener((UnityAction)(() =>
+                    {
+                        ModMenu.ShowConfigPanel(entry);
+                    }));
+                }
             }
 
             obj.FindComponent<TextMeshProUGUI>("Title").text = name;
