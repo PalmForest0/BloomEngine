@@ -31,7 +31,10 @@ internal class ModMenuManager : MonoBehaviour
 
     private void CreateModsButton()
     {
-        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", ShowModList);
+        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", () =>
+        {
+            ModConfigPanelPatch.OpenConfigPanel(ModMenu.Entries.First(mod => mod.Id == "com.palmforest.pvzenhanced"));
+        });
 
         // Position the modsButton in the bottom left corner
         RectTransform rect = obj.GetComponent<RectTransform>();

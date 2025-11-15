@@ -33,17 +33,25 @@ public static class UIHelper
         return button;
     }
 
-    public static GameObject CreateTextField(string name, RectTransform parent, string placeholder, Action onTextChanged = null)
+    public static GameObject CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
         GameObject obj = GameObject.Instantiate(MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, parent);
         obj.name = name;
 
         GameObject.Destroy(obj.GetComponent<InputBinder>());
-        obj.FindComponent<TextMeshProUGUI>("Text Area/Placeholder").text = placeholder;
+
+        if (placeholder is null)
+            obj.transform.Find("Text Area").Find("Placeholder").gameObject.SetActive(false);
+        else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholder;
 
         ReloadedInputField field = obj.GetComponent<ReloadedInputField>();
         field.onValueChanged.RemoveAllListeners();
-        field.onValueChanged.AddListener((Action<string>)(text => onTextChanged?.Invoke()));
+        field.onValueChanged.AddListener((Action<string>)(text => onTextChanged?.Invoke(field)));
+
+        field.onDeselect.RemoveAllListeners();
+        field.onDeselect.AddListener((Action<string>)(text => onDeselect?.Invoke(field)));
+        field.onSubmit.RemoveAllListeners();
+        field.onSubmit.AddListener((Action<string>)(text => onDeselect?.Invoke(field)));
 
         return obj;
     }

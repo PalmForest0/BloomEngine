@@ -24,12 +24,23 @@ public static class ModMenu
     internal static void Register(ModEntry entry)
     {
         mods[entry.Id] = entry;
-        OnModRegistered?.Invoke(entry);
 
-        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Properties.Count} config {(entry.Properties.Count > 1 ? "properties" : "property")}.");
-        foreach (var prop in entry.Properties)
+        if (OnModRegistered is not null)
+            OnModRegistered.Invoke(entry);
+
+        if (entry.Config is null)
         {
-            ModMenu.Log($"    - {prop.Name} ({prop.InputType.ToString()})");
+            Log($"Successfully registered {entry.DisplayName} with no config properties.");
+            return;
+        }
+
+        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Config.Properties.Count} config {(entry.Config.Properties.Count > 1 ? "properties" : "property")}.");
+        foreach (var prop in entry.Config.Properties)
+        {
+            if (prop is null)
+                continue;
+
+            ModMenu.Log($"    - {prop.Name} ({prop.ValueType.ToString()})");
         }
     }
 
