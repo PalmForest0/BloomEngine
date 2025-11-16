@@ -90,6 +90,7 @@ internal class ModMenuManager : MonoBehaviour
 
         PanScreenDown();
         ModMenuOpen = true;
+        achieveUi.m_achievementsIsActive = true;
     }
 
     private void ShowAchievementList()

@@ -19,6 +19,9 @@ public class ConfigPanel
     private PanelView panelView;
     private Transform window;
 
+    private RectTransform labelColumn;
+    private RectTransform fieldColumn;
+
     internal ConfigPanel(PanelView panel, ModEntry mod)
     {
         if (mod.Config is null || mod.Config.Properties.IsNullOrEmpty())
@@ -34,6 +37,7 @@ public class ConfigPanel
         panelView.gameObject.name = $"P_ModConfig_{mod.DisplayName.Replace(" ", "")}";
 
         window = panelView.transform.Find("Canvas/Layout/Center/Window");
+        window.GetComponent<RectTransform>().sizeDelta = new Vector2(2200, 0);
 
         // Setup panel buttons
         var buttons = window.Find("Buttons").GetComponentsInChildren<Button>();
@@ -45,9 +49,12 @@ public class ConfigPanel
         window.Find("SubheadingText").GetComponent<TextMeshProUGUI>().text = " ";
 
         // Create inputs for each property
-        var parentRect = window.GetComponent<RectTransform>();
+        CreateLayout(window.GetComponent<RectTransform>());
         foreach (var property in mod.Config.Properties)
-            inputFields[property] = CreateInputField(property, parentRect);
+        {
+            CreateInputLabel(property, labelColumn);
+            inputFields[property] = CreateInputField(property, fieldColumn);
+        }
 
         // Destroy all localisers
         foreach (var localiser in panelView.GetComponentsInChildren<TextLocalizer>(true))
@@ -135,14 +142,56 @@ public class ConfigPanel
         button.onClick.AddListener((UnityAction)ModMenu.HideConfigPanel);
     }
 
+    private void CreateLayout(RectTransform parent)
+    {
+        GameObject layoutObj = new GameObject("LayoutGroup");
+        var layoutTransform = layoutObj.AddComponent<RectTransform>();
+        layoutTransform.SetParent(parent, false);
+        layoutTransform.anchorMin = new Vector2(0, 1);
+        layoutTransform.anchorMax = new Vector2(1, 1);
+        layoutTransform.pivot = new Vector2(0.5f, 1);
+        layoutTransform.offsetMin = Vector2.zero;
+        layoutTransform.offsetMax = Vector2.zero;
+        var layoutGroup = layoutObj.AddComponent<HorizontalLayoutGroup>();
+        layoutGroup.spacing = 10;
+        layoutGroup.childControlWidth = true;
+        layoutGroup.childControlHeight = true;
+
+        labelColumn = CreateColumn(layoutTransform);
+        fieldColumn = CreateColumn(layoutTransform);
+    }
+
+    private RectTransform CreateColumn(RectTransform parent)
+    {
+        GameObject column = new GameObject("Column");
+        var rect = column.AddComponent<RectTransform>();
+        rect.SetParent(parent, false);
+
+        VerticalLayoutGroup layout = column.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 10;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+
+        return rect;
+    }
+
+    private GameObject CreateInputLabel(IConfigProperty property, RectTransform parent)
+    {
+        GameObject obj = GameObject.Instantiate(window.Find("SubheadingText").gameObject, parent);
+        obj.name = $"PropertyLabel_{property.Name}";
+        obj.SetActive(true);
+
+        var text = obj.GetComponent<TextMeshProUGUI>();
+        text.text = property.Name;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.alignment = TextAlignmentOptions.Left;
+
+        return obj;
+    }
+
     private GameObject CreateInputField(IConfigProperty property, RectTransform parent)
     {
-        GameObject textObj = GameObject.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        textObj.name = $"PropertyLabel_{property.Name}";
-        textObj.GetComponent<TextMeshProUGUI>().text = property.Name;
-        textObj.GetComponent<TextMeshProUGUI>().fontSize = 75;
-        textObj.SetActive(true);
-
         GameObject inputObj = null;
         string name = $"PropertyInput_{property.Name}";
         string typeName = property.ValueType.Name;
