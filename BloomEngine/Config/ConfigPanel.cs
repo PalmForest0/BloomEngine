@@ -1,4 +1,5 @@
-﻿using BloomEngine.Utilities;
+﻿using BloomEngine.Menu;
+using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace BloomEngine.Menu.Config;
+namespace BloomEngine.Config;
 
 public class ConfigPanel
 {
@@ -58,7 +59,7 @@ public class ConfigPanel
 
         // Destroy all localisers
         foreach (var localiser in panelView.GetComponentsInChildren<TextLocalizer>(true))
-            GameObject.Destroy(localiser);
+            UnityEngine.Object.Destroy(localiser);
     }
 
     /// <summary>
@@ -112,8 +113,8 @@ public class ConfigPanel
         button.GetComponentInChildren<TextMeshProUGUI>().SetText("Apply");
 
         // Remove garbage components
-        GameObject.Destroy(button.GetComponent<Il2CppReloaded.ExitGame>());
-        GameObject.Destroy(button.GetComponent<TextLocalizer>());
+        UnityEngine.Object.Destroy(button.GetComponent<Il2CppReloaded.ExitGame>());
+        UnityEngine.Object.Destroy(button.GetComponent<TextLocalizer>());
 
         // Apply all input fields on click
         button.onClick.RemoveAllListeners();
@@ -135,7 +136,7 @@ public class ConfigPanel
         button.GetComponentInChildren<TextMeshProUGUI>().SetText("Cancel");
 
         // Remove garbage components
-        GameObject.Destroy(button.GetComponent<TextLocalizer>());
+        UnityEngine.Object.Destroy(button.GetComponent<TextLocalizer>());
 
         // Hide config panel on click
         button.onClick.RemoveAllListeners();
@@ -178,7 +179,7 @@ public class ConfigPanel
 
     private GameObject CreateInputLabel(IConfigProperty property, RectTransform parent)
     {
-        GameObject obj = GameObject.Instantiate(window.Find("SubheadingText").gameObject, parent);
+        GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         obj.name = $"PropertyLabel_{property.Name}";
         obj.SetActive(true);
 

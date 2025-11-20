@@ -1,4 +1,4 @@
-﻿using BloomEngine.Menu.Config;
+﻿using BloomEngine.Config;
 using MelonLoader;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;

@@ -1,5 +1,5 @@
 ﻿using BloomEngine.Menu;
-using BloomEngine.Menu.Config;
+using BloomEngine.Config;
 using BloomEngine.Utilities;
 using HarmonyLib;
 using Il2CppReloaded.UI;

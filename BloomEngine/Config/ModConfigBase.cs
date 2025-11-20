@@ -2,7 +2,7 @@
 using MelonLoader;
 using System.Collections.ObjectModel;
 
-namespace BloomEngine.Menu.Config;
+namespace BloomEngine.Config;
 
 public class ModConfigBase
 {

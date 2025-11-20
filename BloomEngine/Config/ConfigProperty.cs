@@ -1,4 +1,6 @@
-﻿namespace BloomEngine.Menu.Config;
+﻿using BloomEngine.Menu;
+
+namespace BloomEngine.Config;
 
 public class ConfigProperty<T> : IConfigProperty
 {
