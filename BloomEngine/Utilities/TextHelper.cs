@@ -17,7 +17,7 @@ public static class TextHelper
     {
         if (!TypeHelper.IsNumericType(type))
         {
-            Melon<BloomEnginePlugin>.Logger.Error($"{type} is not a numeric type. This should never occur.");
+            Melon<BloomEngineMod>.Logger.Error($"{type} is not a numeric type. This should never occur.");
             return input;
         }
 

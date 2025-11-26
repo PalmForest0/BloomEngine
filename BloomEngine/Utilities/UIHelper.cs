@@ -3,6 +3,7 @@ using Il2CppReloaded.UI;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
 using Il2CppTMPro;
+using MelonLoader;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,8 +24,11 @@ public static class UIHelper
     {
         GameObject button = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, parent);
         GameObject.Destroy(button.GetComponent<Il2CppReloaded.ExitGame>());
-        GameObject.Destroy(button.GetComponent<Il2CppTekly.Localizations.TextLocalizer>());
+        GameObject.Destroy(button.GetComponent<TextLocalizer>());
         GameObject.Destroy(button.GetComponent<UnityButtonBinder>());
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(500f, rect.sizeDelta.y);
 
         button.GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
         button.GetComponent<UnityEngine.UI.Button>().onClick.AddListener((UnityAction)onClick);

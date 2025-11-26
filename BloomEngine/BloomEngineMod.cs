@@ -4,13 +4,13 @@ using MelonLoader;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(BloomEnginePlugin), BloomEnginePlugin.Name, BloomEnginePlugin.Version, BloomEnginePlugin.Author)]
+[assembly: MelonInfo(typeof(BloomEngineMod), BloomEngineMod.Name, BloomEngineMod.Version, BloomEngineMod.Author)]
 [assembly: MelonGame("PopCap Games", "PvZ Replanted")]
 [assembly: ComVisible(false)]
 
 namespace BloomEngine;
 
-public class BloomEnginePlugin : MelonMod
+public class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
     public const string Version = "1.0.0";

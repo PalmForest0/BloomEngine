@@ -90,13 +90,13 @@ public static class ModMenu
         switch (type)
         {
             case LogType.Warning:
-                Melon<BloomEnginePlugin>.Logger.Warning($"[ModMenu] {text}");
+                Melon<BloomEngineMod>.Logger.Warning($"[ModMenu] {text}");
                 break;
             case LogType.Error:
-                Melon<BloomEnginePlugin>.Logger.Error($"[ModMenu] {text}");
+                Melon<BloomEngineMod>.Logger.Error($"[ModMenu] {text}");
                 break;
             default:
-                Melon<BloomEnginePlugin>.Logger.Msg($"[ModMenu] {text}");
+                Melon<BloomEngineMod>.Logger.Msg($"[ModMenu] {text}");
                 break;
         }
     }

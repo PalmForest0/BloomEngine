@@ -27,7 +27,7 @@ public class ConfigPanel
     {
         if (mod.Config is null || mod.Config.Properties.IsNullOrEmpty())
         {
-            Melon<BloomEnginePlugin>.Logger.Warning($"Failed to setup config panel for {mod.DisplayName}: No config or config properties registered.");
+            Melon<BloomEngineMod>.Logger.Warning($"Failed to setup config panel for {mod.DisplayName}: No config or config properties registered.");
             return;
         }
 

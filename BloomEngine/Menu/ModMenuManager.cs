@@ -37,7 +37,7 @@ internal class ModMenuManager : MonoBehaviour
         rect.pivot = new Vector2(0, 1);
         rect.anchorMin = new Vector2(0, 1);
         rect.anchorMax = new Vector2(0, 1);
-        rect.anchoredPosition = new Vector2(25, rect.rect.height + 25);
+        rect.anchoredPosition = new Vector2(25, rect.rect.height + 100);
 
         achieveButton.onClick.AddListener((UnityAction)ShowAchievementList);
         achieveUi.m_backButton.onClick.AddListener((UnityAction)(() => ModMenuOpen = false));

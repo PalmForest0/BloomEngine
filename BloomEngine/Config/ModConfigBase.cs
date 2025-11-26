@@ -13,7 +13,7 @@ public class ModConfigBase
     {
         if (!IsValidPropertyType<T>())
         {
-            Melon<BloomEnginePlugin>.Logger.Error($"Attempted to add a config property with an unsupported type. Supported types currently include numeric types and strings.");
+            Melon<BloomEngineMod>.Logger.Error($"Attempted to add a config property with an unsupported type. Supported types currently include numeric types and strings.");
             return null;
         }
 
