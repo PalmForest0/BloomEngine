@@ -31,7 +31,7 @@ public static class AssetHelper
         if (stream != null)
         {
             var data = new byte[stream.Length];
-            var read = stream.Read(data, 0, (int)stream.Length);
+            var _ = stream.Read(data, 0, (int)stream.Length);
             LoadImage(texture, data, false);
         }
 
@@ -57,7 +57,7 @@ public static class AssetHelper
         using Stream stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Assets.{bundleName}");
 
         if (stream is null)
-            throw new Exception($"Embedded resource at 'Assets/{bundleName}' not found.");
+            throw new ArgumentException($"Embedded resource at 'Assets/{bundleName}' not found.");
 
         return AssetBundle.LoadFromMemory(stream.ReadFully());
     }

@@ -9,25 +9,20 @@ public class ModConfigBase
     private readonly List<IConfigProperty> properties = new List<IConfigProperty>();
     public ReadOnlyCollection<IConfigProperty> Properties => properties.AsReadOnly();
 
-    public ConfigProperty<T> AddProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
+    public ConfigProperty<T> AddProperty<T>(ConfigPropertyData<T> data)
     {
-        if (!IsValidPropertyType<T>())
+        if (!IConfigProperty.IsValidPropertyType<T>())
         {
             Melon<BloomEngineMod>.Logger.Error($"Attempted to add a config property with an unsupported type. Supported types currently include numeric types and strings.");
             return null;
         }
 
-        var property = new ConfigProperty<T>(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
+        var property = new ConfigProperty<T>(data);
         properties.Add(property);
         return property;
     }
 
     public IConfigProperty GetProperty(string name) => properties.Find(prop => prop.Name == name);
 
-    /// <summary>
-    /// Checks if the type T is a valid property type.
-    /// Support for more types like boolean and enums can be added later.
-    /// </summary>
-    private static bool IsValidPropertyType<T>()
-        => TypeHelper.IsNumericType(typeof(T)) || typeof(T) == typeof(string);
+    
 }

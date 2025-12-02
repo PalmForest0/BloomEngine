@@ -38,10 +38,10 @@ public class ModEntry
         return this;
     }
 
-    public ModEntry AddConfigProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
+    public ModEntry AddConfigProperty<T>(ConfigPropertyData<T> data)
     {
         Config ??= new ModConfigBase();
-        Config.AddProperty(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
+        Config.AddProperty(data);
 
         return this;
     }

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PvZEnhanced.Patches;
 
 [HarmonyPatch(typeof(MainMenuPanelView))]
-static internal class MainMenuPatch
+static internal class ConfigPanelsPatch
 {
     [HarmonyPatch(nameof(MainMenuPanelView.Start))]
     [HarmonyPostfix]

@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Menu;
+using BloomEngine.Utilities;
 
 namespace BloomEngine.Config;
 
@@ -27,12 +28,23 @@ public class ConfigProperty<T> : IConfigProperty
         }
     }
 
+    internal ConfigProperty(ConfigPropertyData<T> data)
+    {
+        Name = data.Name;
+        DefaultValue = data.DefaultValue;
+        _value = data.DefaultValue;
+
+        OnValueUpdated = data.OnValueUpdated;
+        ValidateFunc = data.ValidateFunc;
+        TransformFunc = data.TransformFunc;
+    }
+
     public object GetValue() => Value;
 
     public void SetValue(object value)
     {
         if (value is T correctVal)
-            Value = (T)value;
+            Value = correctVal;
     }
 
     public bool ValidateValue(object value)
@@ -48,16 +60,5 @@ public class ConfigProperty<T> : IConfigProperty
         if (TransformFunc is not null)
             return TransformFunc.Invoke((T)value);
         return value;
-    }
-
-    internal ConfigProperty(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
-    {
-        Name = name;
-        DefaultValue = defaultValue;
-        _value = defaultValue;
-
-        OnValueUpdated = onValueUpdated;
-        ValidateFunc = validateFunc;
-        TransformFunc = transformFunc;
     }
 }

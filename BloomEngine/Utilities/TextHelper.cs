@@ -21,7 +21,7 @@ public static class TextHelper
             return input;
         }
 
-        input = FormatNumericString(input, type);
+        input = FormatNumericString(input);
 
         if (string.IsNullOrWhiteSpace(input) || input == "-" || input == "+" || input == ".")
             return Convert.ChangeType(0, type);
@@ -39,11 +39,8 @@ public static class TextHelper
     /// <summary>
     /// Ensures that a given string is a valid numeric representation for the specified numeric type and can be parsed.
     /// </summary>
-    private static string FormatNumericString(string input, Type type)
+    private static string FormatNumericString(string input)
     {
-        //bool allowDecimal = TypeHelper.IsFloatType(type);
-        //bool allowSign = TypeHelper.IsSignedType(type);
-
         var sb = new StringBuilder();
         bool hasDecimal = false;
         bool hasSign = false;

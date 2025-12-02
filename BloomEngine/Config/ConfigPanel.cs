@@ -5,8 +5,6 @@ using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
-using System.Linq;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -150,8 +148,8 @@ public class ConfigPanel
         {
             ModMenu.Log($"Updating all config properties of {Mod.DisplayName}");
 
-            foreach (var input in inputFields)
-                ApplyInputField(input.Value.GetComponent<ReloadedInputField>(), input.Key);
+            foreach (var (property, field) in inputFields)
+                property.ApplyFromInputField(field.GetComponent<ReloadedInputField>());
 
             ModMenu.HideConfigPanel();
         }));
@@ -301,14 +299,14 @@ public class ConfigPanel
             {
                 string sanitised = TextHelper.SanitiseNumericInput(field.m_Text);
                 field.m_Text = sanitised;
-            }, onDeselect: field => ApplyInputField(field, property));
+            }, onDeselect: property.ApplyFromInputField);
 
             inputObj.GetComponent<ReloadedInputField>().m_Text = property.GetValue()?.ToString();
         }
         // Basic string input is the default fallback
         else
         {
-            inputObj = UIHelper.CreateTextField(name, parent, typeName, onDeselect: field => ApplyInputField(field, property));
+            inputObj = UIHelper.CreateTextField(name, parent, typeName, onDeselect: property.ApplyFromInputField);
             inputObj.GetComponent<ReloadedInputField>().m_Text = property.GetValue()?.ToString();
         }
 
@@ -316,25 +314,5 @@ public class ConfigPanel
         layout.preferredHeight = 134;
 
         return inputObj;
-    }
-
-    private static void ApplyInputField(ReloadedInputField field, IConfigProperty property)
-    {
-        // Filter input value
-        object value = null;
-        if (TypeHelper.IsNumericType(property.ValueType))
-            value = TextHelper.ValidateNumericInput(field.m_Text, property.ValueType);
-        else if (property.ValueType == typeof(string))
-            value = field.m_Text;
-
-        // Transform value
-        value = property.TransformValue(value);
-
-        // Validate and apply value
-        if (!property.ValidateValue(value))
-            value = property.GetValue();
-        else property.SetValue(Convert.ChangeType(value, property.ValueType));
-
-        field.text = value.ToString();
     }
 }
