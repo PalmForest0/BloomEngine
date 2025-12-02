@@ -5,23 +5,21 @@ namespace BloomEngine.Config;
 
 public interface IConfigProperty
 {
-    abstract string Name { get; set; }
-    abstract Type ValueType { get; }
+    string Name { get; set; }
+    Type ValueType { get; }
 
 
-    abstract object GetValue();
-    abstract void SetValue(object value);
-    abstract bool ValidateValue(object value);
-    abstract object TransformValue(object value);
+    object GetValue();
+    void SetValue(object value);
+    bool ValidateValue(object value);
+    object TransformValue(object value);
+
 
     /// <summary>
-    /// Checks if the type T is a valid property type.
-    /// Support for more types like boolean and enums can be added later.
+    /// Reads the content of the input field as a string and attempts to convert it to the desired type.
     /// </summary>
-    public static bool IsValidPropertyType<T>()
-        => TypeHelper.IsNumericType(typeof(T)) || typeof(T) == typeof(string);
-
-    public void ApplyFromInputField(ReloadedInputField field)
+    /// <param name="field">Input field to read the content of.</param>
+    internal void ApplyFromInputField(ReloadedInputField field)
     {
         // Filter input value
         object value = null;
@@ -40,4 +38,11 @@ public interface IConfigProperty
 
         field.text = value.ToString();
     }
+
+    /// <summary>
+    /// Checks if the type T is a valid property type.
+    /// Support for more types like boolean and enums can be added later.
+    /// </summary>
+    public static bool IsValidPropertyType<T>()
+        => TypeHelper.IsNumericType(typeof(T)) || typeof(T) == typeof(string);
 }

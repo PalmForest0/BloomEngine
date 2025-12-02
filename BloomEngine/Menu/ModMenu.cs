@@ -9,8 +9,8 @@ namespace BloomEngine.Menu;
 public static class ModMenu
 {
     private static ConcurrentDictionary<string, ModEntry> mods = new ConcurrentDictionary<string, ModEntry>();
-    private static Dictionary<ModEntry, ConfigPanel> configPanels = new Dictionary<ModEntry, ConfigPanel>();
-    private static ConfigPanel currentConfigPanel = null;
+    private static Dictionary<ModEntry, ModConfig> configs = new Dictionary<ModEntry, ModConfig>();
+    private static ModConfig currentConfigPanel = null;
 
     /// <summary>
     /// A read-only dictionary of all registered mod entries in the Mod Menu, indexed by their mod name.
@@ -20,7 +20,7 @@ public static class ModMenu
     /// <summary>
     /// A read-only dictionary that maps mod entries to their corresponding configuration panels, if registered.
     /// </summary>
-    public static ReadOnlyDictionary<ModEntry, ConfigPanel> ConfigPanels => new ReadOnlyDictionary<ModEntry, ConfigPanel>(configPanels);
+    public static ReadOnlyDictionary<ModEntry, ModConfig> Configs => new ReadOnlyDictionary<ModEntry, ModConfig>(configs);
 
     /// <summary>
     /// Event invoked when a mod is registered to the Mod Menu
@@ -30,14 +30,14 @@ public static class ModMenu
     public static ModEntry NewEntry(MelonMod mod, string displayName = null)
         => new ModEntry(mod, displayName ?? mod.Info.Name);
 
-    internal static void RegisterConfigPanel(ConfigPanel panel) => configPanels[panel.Mod] = panel;
+    internal static void RegisterConfigPanel(ModConfig panel) => configs[panel.Mod] = panel;
 
     public static void ShowConfigPanel(ModEntry mod)
     {
         if (currentConfigPanel is not null)
             return;
 
-        if (configPanels.TryGetValue(mod, out var panel))
+        if (configs.TryGetValue(mod, out var panel))
         {
             panel.ShowPanel();
             currentConfigPanel = panel;

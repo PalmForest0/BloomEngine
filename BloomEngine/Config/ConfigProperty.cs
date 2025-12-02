@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Menu;
-using BloomEngine.Utilities;
 
 namespace BloomEngine.Config;
 
@@ -39,15 +38,15 @@ public class ConfigProperty<T> : IConfigProperty
         TransformFunc = data.TransformFunc;
     }
 
-    public object GetValue() => Value;
+    object IConfigProperty.GetValue() => Value;
 
-    public void SetValue(object value)
+    void IConfigProperty.SetValue(object value)
     {
         if (value is T correctVal)
             Value = correctVal;
     }
 
-    public bool ValidateValue(object value)
+    bool IConfigProperty.ValidateValue(object value)
     {
         if (ValidateFunc is null || ValidateFunc.Invoke((T)value))
             return true;
@@ -55,7 +54,7 @@ public class ConfigProperty<T> : IConfigProperty
         return false;
     }
 
-    public object TransformValue(object value)
+    object IConfigProperty.TransformValue(object value)
     {
         if (TransformFunc is not null)
             return TransformFunc.Invoke((T)value);

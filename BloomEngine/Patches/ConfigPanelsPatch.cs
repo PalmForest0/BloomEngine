@@ -27,7 +27,7 @@ static internal class ConfigPanelsPatch
         foreach (var mod in ModMenu.Mods.Values.Where(mod => mod is not null && mod.Config is not null && !mod.Config.Properties.IsNullOrEmpty()))
         {
             var panel = GameObject.Instantiate(template.gameObject, container.transform);
-            var config = new ConfigPanel(panel.GetComponent<PanelView>(), mod);
+            var config = new ModConfig(panel.GetComponent<PanelView>(), mod);
             ModMenu.RegisterConfigPanel(config);
         }
     }

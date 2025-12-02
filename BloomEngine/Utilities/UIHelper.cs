@@ -1,10 +1,16 @@
-﻿using Il2CppReloaded.Input;
+﻿using Il2Cpp;
+using Il2CppReloaded;
+using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
+using Il2CppSource.UI;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
 using Il2CppTMPro;
+using MelonLoader;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace BloomEngine.Utilities;
 
@@ -21,23 +27,41 @@ public static class UIHelper
         Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
     }
 
-    public static GameObject CreateButton(string name, Transform parent, string text, Action onClick)
+    public static GameObject CreatePvZButton(string name, Transform parent, string text, Action onClick)
     {
         GameObject button = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, parent);
-        GameObject.Destroy(button.GetComponent<Il2CppReloaded.ExitGame>());
-        GameObject.Destroy(button.GetComponent<TextLocalizer>());
-        GameObject.Destroy(button.GetComponent<UnityButtonBinder>());
+        UIHelper.ModifyPvZButton(button, name, text, onClick);
 
         RectTransform rect = button.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(500f, rect.sizeDelta.y);
 
-        button.GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
-        button.GetComponent<UnityEngine.UI.Button>().onClick.AddListener((UnityAction)onClick);
-        button.GetComponentInChildren<TextMeshProUGUI>().text = text;
-        button.name = name;
-
         return button;
     }
+
+    public static GameObject ModifyPvZButton(GameObject buttonObj, string newName, string newText, Action onClick)
+    {
+        // Update name and text
+        buttonObj.name = newName;
+        buttonObj.GetComponentInChildren<TextMeshProUGUI>().SetText(newText);
+
+        // Remove garbage components
+        if(buttonObj.TryGetComponent<ExitGame>(out var exit))
+            GameObject.Destroy(exit);
+        if (buttonObj.TryGetComponent<TextLocalizer>(out var localiser))
+            GameObject.Destroy(localiser);
+        foreach (var local in buttonObj.GetComponentsInChildren<TextLocalizer>())
+            GameObject.Destroy(local);
+        if (buttonObj.TryGetComponent<UnityButtonBinder>(out var binder))
+            GameObject.Destroy(binder);
+
+        // Add onClick event
+        var button = buttonObj.GetComponent<Button>();
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener((UnityAction)onClick);
+
+        return buttonObj;
+    }
+
 
     public static GameObject CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {

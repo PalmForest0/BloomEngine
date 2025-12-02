@@ -5,6 +5,7 @@
 	<LangVersion>latest</LangVersion>
 	<PlatformTarget>x64</PlatformTarget>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 	
   <ItemGroup>

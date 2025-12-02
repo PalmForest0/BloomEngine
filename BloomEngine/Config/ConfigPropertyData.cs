@@ -1,6 +1,6 @@
 ﻿namespace BloomEngine.Config;
 
-public class ConfigPropertyData<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
+internal class ConfigPropertyData<T>(string name, T defaultValue, Action<T> onValueUpdated, Func<T, bool> validateFunc, Func<T, T> transformFunc)
 {
     public string Name { get; set; } = name;
     public T DefaultValue { get; private set; } = defaultValue;

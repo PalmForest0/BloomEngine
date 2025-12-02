@@ -32,20 +32,43 @@ public class ModEntry
         return this;
     }
 
+
+    /// <summary>
+    /// Adds a <see cref="ModConfigBase"/> instance to this mod entry, making all of its properties appear in the in-game config.
+    /// Alternatively, you can use <see cref="AddConfigProperty{T}(string, T, Action{T}, Func{T, bool}, Func{T, T})"/> to manually add individual properties.
+    /// </summary>
+    /// <param name="configInstance"></param>
+    /// <returns></returns>
     public ModEntry AddConfig(ModConfigBase configInstance)
     {
-        Config = configInstance;
+        // Assign the config or merge with existing properties
+        if(Config is null) Config = configInstance;
+        else Config.Properties.AddRange(configInstance.Properties);
+
         return this;
     }
 
-    public ModEntry AddConfigProperty<T>(ConfigPropertyData<T> data)
+    /// <summary>
+    /// Adds a property to the in-game config of this mod.
+    /// </summary>
+    /// <typeparam name="T">The value type of this property.</typeparam>
+    /// <param name="name">The text that will appear next to the property input field in the config panel.</param>
+    /// <param name="defaultValue">Default value of this property.</param>
+    /// <param name="onValueUpdated">A callback that provides the new value when it is updated.</param>
+    /// <param name="validateFunc">A function that validates the value before the setter is called.</param>
+    /// <param name="transformFunc">A function that allows any transformation to be made to the value before the setter is called.</param>
+    /// <returns>The modified mod entry with this config property.</returns>
+    public ModEntry AddConfigProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
     {
         Config ??= new ModConfigBase();
-        Config.AddProperty(data);
+        Config.AddProperty(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
 
         return this;
     }
 
+    /// <summary>
+    /// Registers this <see cref="ModEntry"/>, making it appear in the mod menu with the provided information.
+    /// </summary>
     public ModEntry Register()
     {
         ModMenu.Register(this);
