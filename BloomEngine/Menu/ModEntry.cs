@@ -43,7 +43,7 @@ public class ModEntry
     {
         // Assign the config or merge with existing properties
         if(Config is null) Config = configInstance;
-        else Config.Properties.AddRange(configInstance.Properties);
+        else Config.InputFields.AddRange(configInstance.InputFields);
 
         return this;
     }
@@ -58,13 +58,13 @@ public class ModEntry
     /// <param name="validateFunc">A function that validates the value before the setter is called.</param>
     /// <param name="transformFunc">A function that allows any transformation to be made to the value before the setter is called.</param>
     /// <returns>The modified mod entry with this config property.</returns>
-    public ModEntry AddConfigProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
-    {
-        Config ??= new ModConfigBase();
-        Config.AddProperty(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
+    //public ModEntry AddConfigProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
+    //{
+    //    Config ??= new ModConfigBase();
+    //    Config.AddProperty(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
 
-        return this;
-    }
+    //    return this;
+    //}
 
     /// <summary>
     /// Registers this <see cref="ModEntry"/>, making it appear in the mod menu with the provided information.

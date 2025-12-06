@@ -9,8 +9,8 @@ namespace BloomEngine.Menu;
 public static class ModMenu
 {
     private static ConcurrentDictionary<string, ModEntry> mods = new ConcurrentDictionary<string, ModEntry>();
-    private static Dictionary<ModEntry, ModConfig> configs = new Dictionary<ModEntry, ModConfig>();
-    private static ModConfig currentConfigPanel = null;
+    private static Dictionary<ModEntry, ConfigPanel> configs = new Dictionary<ModEntry, ConfigPanel>();
+    private static ConfigPanel currentConfigPanel = null;
 
     /// <summary>
     /// A read-only dictionary of all registered mod entries in the Mod Menu, indexed by their mod name.
@@ -20,7 +20,7 @@ public static class ModMenu
     /// <summary>
     /// A read-only dictionary that maps mod entries to their corresponding configuration panels, if registered.
     /// </summary>
-    public static ReadOnlyDictionary<ModEntry, ModConfig> Configs => new ReadOnlyDictionary<ModEntry, ModConfig>(configs);
+    public static ReadOnlyDictionary<ModEntry, ConfigPanel> Configs => new ReadOnlyDictionary<ModEntry, ConfigPanel>(configs);
 
     /// <summary>
     /// Event invoked when a mod is registered to the Mod Menu
@@ -30,7 +30,7 @@ public static class ModMenu
     public static ModEntry NewEntry(MelonMod mod, string displayName = null)
         => new ModEntry(mod, displayName ?? mod.Info.Name);
 
-    internal static void RegisterConfigPanel(ModConfig panel) => configs[panel.Mod] = panel;
+    internal static void RegisterConfigPanel(ConfigPanel panel) => configs[panel.Mod] = panel;
 
     public static void ShowConfigPanel(ModEntry mod)
     {
@@ -70,8 +70,8 @@ public static class ModMenu
             return;
         }
 
-        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Config.Properties.Count} config {(entry.Config.Properties.Count > 1 ? "properties" : "property")}.");
-        foreach (var prop in entry.Config.Properties)
+        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Config.InputFields.Count} config input field{(entry.Config.InputFields.Count > 1 ? "s" : "")}.");
+        foreach (var prop in entry.Config.InputFields)
         {
             if (prop is null)
                 continue;

@@ -2,6 +2,8 @@
 
 public interface IInputField
 {
+    string Name { get; set; }
+
     Type ValueType { get; }
 
     object InputObject { get; set; }
@@ -10,7 +12,7 @@ public interface IInputField
     object GetValueObject();
     void SetValueObject(object value);
 
-    void UpdateValue();
+    void UpdateFromUI();
     void RefreshUI();
     void OnUIChanged();
 }
@@ -18,6 +20,7 @@ public interface IInputField
 public interface IInputField<T> : IInputField
 {
     Action<T> OnValueChanged { get; set; }
+    Action OnInputChanged { get; set; }
     Func<T, T> TransformValue { get; set; }
     Func<T, bool> ValidateValue { get; set; }
 
@@ -26,7 +29,7 @@ public interface IInputField<T> : IInputField
     object GetValueObject();
     void SetValueObject(object value);
 
-    void UpdateValue();
+    void UpdateFromUI();
     void RefreshUI();
     void OnUIChanged();
 }

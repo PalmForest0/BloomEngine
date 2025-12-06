@@ -1,11 +1,17 @@
-﻿using UnityEngine.UI;
+﻿using Il2CppReloaded.Input;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BloomEngine.Inputs;
 
-public class FloatInputField : InputFieldBase<float>
+public class FloatInputField(string name, float value, float minValue, float maxValue, Action<float> onValueChanged, Action onInputChanged, Func<float, float> transformValue, Func<float, bool> validateValue) : InputFieldBase<float>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
-    public Slider Slider => (Slider)Convert.ChangeType(InputObject, InputObjectType);
+    public override Type InputObjectType => typeof(Slider);
+    public Slider Slider => ((GameObject)InputObject).GetComponent<Slider>();
 
-    public override void UpdateValue() => Value = Slider.value;
+    public float MinValue { get; set; } = minValue;
+    public float MaxValue { get; set; } = maxValue;
+
+    public override void UpdateFromUI() => Value = Slider.value;
     public override void RefreshUI() => Slider.SetValueWithoutNotify(Value);
 }

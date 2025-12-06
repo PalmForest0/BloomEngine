@@ -1,7 +1,9 @@
-﻿using BloomEngine.Menu;
+﻿using BloomEngine.Inputs;
+using BloomEngine.Menu;
 using BloomEngine.Types;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
+using Il2CppSource.UI;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
@@ -11,13 +13,11 @@ using UnityEngine.UI;
 
 namespace BloomEngine.Config;
 
-public class ModConfig
+public class ConfigPanel
 {
     public ModEntry Mod { get; set; }
 
-
     private readonly List<RectTransform> pageObjects = new List<RectTransform>();
-    private readonly Dictionary<IConfigProperty, GameObject> propertyInputs = new Dictionary<IConfigProperty, GameObject>();
 
     private readonly RectTransform window;
     private readonly GameObject panel;
@@ -34,10 +34,10 @@ public class ModConfig
     private GameObject pageNextButton;
 
 
-    internal ModConfig(PanelView panel, ModEntry mod)
+    internal ConfigPanel(PanelView panel, ModEntry mod)
     {
         Mod = mod;
-        PageCount = (int)Math.Ceiling((double)mod.Config.Properties.Count / PropertiesPerPage);
+        PageCount = (int)Math.Ceiling((double)mod.Config.InputFields.Count / PropertiesPerPage);
 
         this.panel = panel.gameObject;
         panel.m_id = $"modConfig_{mod.Mod.Info.Name}";
@@ -56,8 +56,8 @@ public class ModConfig
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (var (property, field) in propertyInputs)
-                property.ApplyFromInputField(field.GetComponent<ReloadedInputField>());
+            foreach (IInputField field in Mod.Config.InputFields)
+                field.UpdateFromUI();
 
             ModMenu.HideConfigPanel();
         });
@@ -72,7 +72,7 @@ public class ModConfig
         headerLayout.preferredWidth = header.GetComponent<RectTransform>().sizeDelta.x;
         headerLayout.preferredHeight = header.GetComponent<RectTransform>().sizeDelta.y;
 
-        // Create inputs for each property on each page
+        // Create inputs for each field on each page
         CreatePages();
         GameObject.Destroy(window.Find("SubheadingText").gameObject);
 
@@ -87,12 +87,12 @@ public class ModConfig
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             GameObject.Destroy(localiser);
 
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.Config.Properties.Count} properties across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.Config.InputFields.Count} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
     }
 
     private void CreatePages()
     {
-        var pages = Mod.Config.Properties.Chunk(PropertiesPerPage).ToList();
+        var pages = Mod.Config.InputFields.Chunk(PropertiesPerPage).ToList();
 
         for (int i = 0; i < pages.Count; i++)
         {
@@ -111,14 +111,14 @@ public class ModConfig
             pageLayout.childControlWidth = true;
             pageLayout.childControlHeight = true;
 
-            // Populate the columns with property labels and input fields
+            // Populate the columns with field labels and input fields
             RectTransform labelColumn = CreateColumn(pageRect, "LabelsColumn");
             RectTransform fieldColumn = CreateColumn(pageRect, "FieldsColumn");
 
-            foreach (var property in pages[i])
+            foreach (IInputField field in pages[i])
             {
-                CreateLabel(property, labelColumn);
-                propertyInputs[property] = CreateInput(property, fieldColumn);
+                CreateLabel(field, labelColumn);
+                field.InputObject = CreateInput(field, fieldColumn);
             }
 
             pageObjects.Add(pageRect);
@@ -148,59 +148,37 @@ public class ModConfig
         return columnRect;
     }
 
-    private void CreateLabel(IConfigProperty property, RectTransform parent)
+    private void CreateLabel(IInputField field, RectTransform parent)
     {
         GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        obj.name = $"PropertyLabel_{property.Name}";
+        obj.name = $"PropertyLabel_{field.Name}";
         obj.SetActive(true);
 
         var layout = obj.AddComponent<LayoutElement>();
         layout.preferredHeight = 134;
 
         var text = obj.GetComponent<TextMeshProUGUI>();
-        text.text = property.Name;
+        text.text = field.Name;
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.alignment = TextAlignmentOptions.Left;
         text.enabled = true;
     }
 
-    private static GameObject CreateInput(IConfigProperty property, RectTransform parent)
+    private static GameObject CreateInput(IInputField field, RectTransform parent)
     {
         GameObject inputObj = null;
-        string name = $"PropertyInput_{property.Name}";
-        string typeName = property.ValueType.Name;
+        string name = $"PropertyInput_{field.Name}";
+        string typeName = field.ValueType.Name;
         
-        // Sanitised numeric input
-        if (TypeHelper.IsNumericType(property.ValueType))
-        {
-            inputObj = UIHelper.CreateTextField(name, parent, typeName, onTextChanged: field =>
-            {
-                string sanitised = TextHelper.SanitiseNumericInput(field.m_Text);
-                field.m_Text = sanitised;
-            });
-        }
-        else if(property.ValueType == typeof(bool))
-        {
-            inputObj = UIHelper.CreateCheckbox(name, parent);
-        }
-        // Create dropdown for enum type
-        else if (property.ValueType == typeof(Enum))
-        {
-            inputObj = UIHelper.CreateDropdown(name, parent, property.ValueType);
-        }
-        else if (property.ValueType == typeof(NumericRange<object>))
-        {
-            float minValue = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).MinValue, typeof(float));
-            float maxValue = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).MaxValue, typeof(float));
-            float value = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).Value, typeof(float));
-
-            inputObj = UIHelper.CreateSlider(name, parent, minValue, maxValue, value);
-        }
-        // Basic string input as the default fallback
-        else
-        {
-            inputObj = UIHelper.CreateTextField(name, parent, typeName);
-        }
+        // Create the correct input field
+        if (field.InputObjectType == typeof(ReloadedInputField))
+            inputObj = UIHelper.CreateTextField(name, parent, typeName, onTextChanged: (_) => field.OnUIChanged());
+        else if(field.InputObjectType == typeof(Toggle))
+            inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => field.OnUIChanged());
+        else if (field.InputObjectType == typeof(ReloadedDropdown))
+            inputObj = UIHelper.CreateDropdown(name, parent, field.ValueType, onValueChanged: (_) => field.OnUIChanged());
+        else if (field.InputObjectType == typeof(Slider) && field is FloatInputField sliderInput)
+            inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, onValueChanged: (_) => field.OnUIChanged());
 
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.preferredHeight = 134;
@@ -255,15 +233,15 @@ public class ModConfig
     /// </summary>
     public void ShowPanel()
     {
-        // Populate input fields with current property values
-        foreach (var (property, field) in propertyInputs)
-            field.GetComponent<ReloadedInputField>().text = property.GetValue().ToString();
+        // Populate input fields with current field values
+        foreach (IInputField field in Mod.Config.InputFields)
+            field.RefreshUI();
 
         SetPageIndex(0);
         panel.SetActive(true);
 
         Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(pageControlsRect);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(window);
     }
 
     /// <summary>

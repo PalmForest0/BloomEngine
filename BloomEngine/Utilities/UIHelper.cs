@@ -101,7 +101,7 @@ public static class UIHelper
         return obj;
     }
 
-    public static GameObject CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChange = null)
+    public static GameObject CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(checkboxTemplate, parent);
         obj.name = name;
@@ -114,12 +114,12 @@ public static class UIHelper
         toggle.isOn = value;
 
         toggle.onValueChanged = new();
-        toggle.onValueChanged.AddListener(val => onValueChange?.Invoke(val));
+        toggle.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         return obj;
     }
 
-    public static GameObject CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChange = null)
+    public static GameObject CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChanged = null)
     {
         if (!enumType.IsEnum)
             return null;
@@ -145,12 +145,12 @@ public static class UIHelper
 
         // On value changed events
         dropdown.onValueChanged = new();
-        dropdown.onValueChanged?.AddListener(selection => onValueChange?.Invoke((Enum)values[selection]));
+        dropdown.onValueChanged?.AddListener(selection => onValueChanged?.Invoke((Enum)values[selection]));
 
         return obj;
     }
 
-    public static GameObject CreateSlider(string name, RectTransform parent, float minValue, float maxValue, float value, Action<float> onValueChange = null)
+    public static GameObject CreateSlider(string name, RectTransform parent, float minValue, float maxValue, float value = default, Action<float> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(sliderTemplate, parent);
         obj.name = name;
@@ -162,10 +162,10 @@ public static class UIHelper
         Slider slider = obj.GetComponent<Slider>();
         slider.minValue = minValue;
         slider.maxValue = maxValue;
-        slider.SetValueWithoutNotify(value);
+        slider.SetValueWithoutNotify(value == default ? minValue : value);
 
         slider.onValueChanged = new();
-        slider.onValueChanged.AddListener(val => onValueChange?.Invoke(val));
+        slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         return obj;
     }
