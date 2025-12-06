@@ -1,13 +1,11 @@
 ﻿using BloomEngine.Menu;
 using BloomEngine.Utilities;
-using Il2CppBest.HTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace BloomEngine.Config;
@@ -18,7 +16,7 @@ public class ModConfig
 
 
     private readonly List<RectTransform> pageObjects = new List<RectTransform>();
-    private readonly Dictionary<IConfigProperty, GameObject> propertyFields = new Dictionary<IConfigProperty, GameObject>();
+    private readonly Dictionary<IConfigProperty, GameObject> propertyInputs = new Dictionary<IConfigProperty, GameObject>();
 
     private readonly RectTransform window;
     private readonly GameObject panel;
@@ -55,15 +53,15 @@ public class ModConfig
         else window.sizeDelta = new Vector2(2500, 0);
 
         // Setup apply and cancel buttons
-        UIHelper.ModifyPvZButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
+        UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (var (property, field) in propertyFields)
+            foreach (var (property, field) in propertyInputs)
                 property.ApplyFromInputField(field.GetComponent<ReloadedInputField>());
 
             ModMenu.HideConfigPanel();
         });
 
-        UIHelper.ModifyPvZButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ModMenu.HideConfigPanel);
+        UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ModMenu.HideConfigPanel);
 
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
@@ -118,14 +116,13 @@ public class ModConfig
 
             foreach (var property in pages[i])
             {
-                CreateInputLabel(property, labelColumn);
-                propertyFields[property] = CreateInputField(property, fieldColumn);
+                CreateLabel(property, labelColumn);
+                propertyInputs[property] = CreateInput(property, fieldColumn);
             }
 
             pageObjects.Add(pageRect);
         }
     }
-
 
     private RectTransform CreateColumn(RectTransform parent, string name)
     {
@@ -150,7 +147,7 @@ public class ModConfig
         return columnRect;
     }
 
-    private void CreateInputLabel(IConfigProperty property, RectTransform parent)
+    private void CreateLabel(IConfigProperty property, RectTransform parent)
     {
         GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         obj.name = $"PropertyLabel_{property.Name}";
@@ -166,7 +163,7 @@ public class ModConfig
         text.enabled = true;
     }
 
-    private static GameObject CreateInputField(IConfigProperty property, RectTransform parent)
+    private static GameObject CreateInput(IConfigProperty property, RectTransform parent)
     {
         GameObject inputObj = null;
         string name = $"PropertyInput_{property.Name}";
@@ -179,15 +176,17 @@ public class ModConfig
             {
                 string sanitised = TextHelper.SanitiseNumericInput(field.m_Text);
                 field.m_Text = sanitised;
-            }, onDeselect: property.ApplyFromInputField);
-
-            inputObj.GetComponent<ReloadedInputField>().m_Text = property.GetValue()?.ToString();
+            });
         }
-        // Basic string input is the default fallback
+        // Create dropdown for enum type
+        else if(property.ValueType == typeof(Enum))
+        {
+            inputObj = UIHelper.CreateDropdown(name, parent, property.ValueType);
+        }
+        // Basic string input as the default fallback
         else
         {
-            inputObj = UIHelper.CreateTextField(name, parent, typeName, onDeselect: property.ApplyFromInputField);
-            inputObj.GetComponent<ReloadedInputField>().m_Text = property.GetValue()?.ToString();
+            inputObj = UIHelper.CreateTextField(name, parent, typeName);
         }
 
         var layout = inputObj.AddComponent<LayoutElement>();
@@ -221,7 +220,7 @@ public class ModConfig
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();
         backButton.onClick.RemoveAllListeners();
-        backButton.onClick.AddListener((UnityAction)(() => SetPageIndex(PageIndex - 1)));
+        backButton.onClick.AddListener(() => SetPageIndex(PageIndex - 1));
 
         // Create page count label
         pageCountLabel = GameObject.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
@@ -232,7 +231,7 @@ public class ModConfig
         pageNextButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var nextButton = pageNextButton.GetComponent<Button>();
         nextButton.onClick.RemoveAllListeners();
-        nextButton.onClick.AddListener((UnityAction)(() => SetPageIndex(PageIndex + 1)));
+        nextButton.onClick.AddListener(() => SetPageIndex(PageIndex + 1));
 
         SetPageIndex(0);
     }
@@ -244,7 +243,7 @@ public class ModConfig
     public void ShowPanel()
     {
         // Populate input fields with current property values
-        foreach (var (property, field) in propertyFields)
+        foreach (var (property, field) in propertyInputs)
             field.GetComponent<ReloadedInputField>().text = property.GetValue().ToString();
 
         SetPageIndex(0);

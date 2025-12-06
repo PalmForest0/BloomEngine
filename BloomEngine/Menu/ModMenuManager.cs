@@ -29,7 +29,7 @@ internal class ModMenuManager : MonoBehaviour
 
     private void CreateButtons()
     {
-        GameObject obj = UIHelper.CreatePvZButton("ModsButton", transform, "Mods", OpenModList);
+        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", OpenModList);
 
         // Position the modsButton in the bottom left corner
         RectTransform rect = obj.GetComponent<RectTransform>();
@@ -75,7 +75,7 @@ internal class ModMenuManager : MonoBehaviour
                 if (registered.Config is not null)
                 {
                     Button configButton = modObj.transform.Find("Icon").gameObject.AddComponent<Button>();
-                    configButton.onClick.AddListener((UnityAction)(() => ModMenu.ShowConfigPanel(registered)));
+                    configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(registered));
                 }
             }
 

@@ -1,13 +1,11 @@
-﻿using Il2Cpp;
-using Il2CppReloaded;
+﻿using Il2CppReloaded;
+using Il2CppReloaded.Binders;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
 using Il2CppSource.UI;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
 using Il2CppTMPro;
-using MelonLoader;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -20,17 +18,31 @@ public static class UIHelper
     public static TMP_FontAsset Font1 { get; private set; }
     public static TMP_FontAsset Font2 { get; private set; }
 
+    private static GameObject textFieldTemplate;
+    private static GameObject buttonTemplate;
+    private static GameObject checkboxTemplate;
+    private static GameObject dropdownTemplate;
+    private static GameObject sliderTemplate;
+
     internal static void Initialize(MainMenuPanelView mainMenu)
     {
         MainMenu = mainMenu;
         Font1 = MainMenu.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
         Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
+
+        Transform optionsPanelContent = GameObject.Find("GlobalPanels(Clone)").transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
+
+        textFieldTemplate = MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject;
+        buttonTemplate = MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject;
+        checkboxTemplate = optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject;
+        dropdownTemplate = optionsPanelContent.Find("Resolution/Dropdown").gameObject;
+        sliderTemplate = optionsPanelContent.Find("Music/MusicP_Slider").gameObject;
     }
 
-    public static GameObject CreatePvZButton(string name, Transform parent, string text, Action onClick)
+    public static GameObject CreateButton(string name, Transform parent, string text, Action onClick)
     {
-        GameObject button = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, parent);
-        UIHelper.ModifyPvZButton(button, name, text, onClick);
+        GameObject button = GameObject.Instantiate(buttonTemplate, parent);
+        UIHelper.ModifyButton(button, name, text, onClick);
 
         RectTransform rect = button.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(500f, rect.sizeDelta.y);
@@ -38,7 +50,7 @@ public static class UIHelper
         return button;
     }
 
-    public static GameObject ModifyPvZButton(GameObject buttonObj, string newName, string newText, Action onClick)
+    public static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
     {
         // Update name and text
         buttonObj.name = newName;
@@ -56,8 +68,8 @@ public static class UIHelper
 
         // Add onClick event
         var button = buttonObj.GetComponent<Button>();
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener((UnityAction)onClick);
+        button.onClick = new();
+        button.onClick.AddListener(onClick);
 
         return buttonObj;
     }
@@ -65,7 +77,7 @@ public static class UIHelper
 
     public static GameObject CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
-        GameObject obj = GameObject.Instantiate(MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, parent);
+        GameObject obj = GameObject.Instantiate(textFieldTemplate, parent);
         obj.name = name;
 
         GameObject.Destroy(obj.GetComponent<InputBinder>());
@@ -78,13 +90,82 @@ public static class UIHelper
         else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholder;
 
         ReloadedInputField field = obj.GetComponent<ReloadedInputField>();
-        field.onValueChanged.RemoveAllListeners();
-        field.onValueChanged.AddListener((Action<string>)(text => onTextChanged?.Invoke(field)));
+        field.onValueChanged = new();
+        field.onValueChanged.AddListener(text => onTextChanged?.Invoke(field));
         
-        field.onDeselect.RemoveAllListeners();
-        field.onDeselect.AddListener((Action<string>)(text => onDeselect?.Invoke(field)));
-        field.onSubmit.RemoveAllListeners();
-        field.onSubmit.AddListener((Action<string>)(text => onDeselect?.Invoke(field)));
+        field.onDeselect = new();
+        field.onDeselect.AddListener(text => onDeselect?.Invoke(field));
+        field.onSubmit = new();
+        field.onSubmit.AddListener(text => onDeselect?.Invoke(field));
+
+        return obj;
+    }
+
+    public static GameObject CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChange = null)
+    {
+        GameObject obj = GameObject.Instantiate(checkboxTemplate, parent);
+        obj.name = name;
+
+        GameObject.Destroy(obj.GetComponent<BinderContainer>());
+        GameObject.Destroy(obj.GetComponent<UnityToggleBinder>());
+        GameObject.Destroy(obj.GetComponent<ForwardOnInactiveSelectable>());
+
+        Toggle toggle = obj.GetComponent<Toggle>();
+        toggle.isOn = value;
+
+        toggle.onValueChanged = new();
+        toggle.onValueChanged.AddListener(val => onValueChange?.Invoke(val));
+
+        return obj;
+    }
+
+    public static GameObject CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChange = null)
+    {
+        if (!enumType.IsEnum)
+            return null;
+
+        GameObject obj = GameObject.Instantiate(dropdownTemplate, parent);
+        obj.name = name;
+
+        GameObject.Destroy(obj.GetComponent<BinderContainer>());
+        GameObject.Destroy(obj.GetComponent<UnityDropdownBinder>());
+        GameObject.Destroy(obj.GetComponent<ForwardOnInactiveSelectable>());
+
+        ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
+        dropdown.ClearOptions();
+
+        var values = Enum.GetValues(enumType).Cast<object>().ToArray();
+
+        if (selectedIndex > values.Length -1 || selectedIndex < 0)
+            selectedIndex = 0;
+
+        dropdown.AddOptions(values.Select(value => value.ToString()).ToIl2CppList());
+        dropdown.SetValueWithoutNotify(selectedIndex);
+        dropdown.RefreshShownValue();
+
+        // On value changed events
+        dropdown.onValueChanged = new();
+        dropdown.onValueChanged?.AddListener(selection => onValueChange?.Invoke((Enum)values[selection]));
+
+        return obj;
+    }
+
+    public static GameObject CreateSlider(string name, RectTransform parent, float minValue, float maxValue, float value, Action<float> onValueChange = null)
+    {
+        GameObject obj = GameObject.Instantiate(sliderTemplate, parent);
+        obj.name = name;
+
+        GameObject.Destroy(obj.GetComponent<BinderContainer>());
+        GameObject.Destroy(obj.GetComponent<UnitySliderBinder>());
+        GameObject.Destroy(obj.GetComponent<ForwardOnInactiveSelectable>());
+
+        Slider slider = obj.GetComponent<Slider>();
+        slider.minValue = minValue;
+        slider.maxValue = maxValue;
+        slider.SetValueWithoutNotify(value);
+
+        slider.onValueChanged = new();
+        slider.onValueChanged.AddListener(val => onValueChange?.Invoke(val));
 
         return obj;
     }
