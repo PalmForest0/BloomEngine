@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Menu;
+using BloomEngine.Types;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
@@ -178,10 +179,22 @@ public class ModConfig
                 field.m_Text = sanitised;
             });
         }
+        else if(property.ValueType == typeof(bool))
+        {
+            inputObj = UIHelper.CreateCheckbox(name, parent);
+        }
         // Create dropdown for enum type
-        else if(property.ValueType == typeof(Enum))
+        else if (property.ValueType == typeof(Enum))
         {
             inputObj = UIHelper.CreateDropdown(name, parent, property.ValueType);
+        }
+        else if (property.ValueType == typeof(NumericRange<object>))
+        {
+            float minValue = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).MinValue, typeof(float));
+            float maxValue = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).MaxValue, typeof(float));
+            float value = (float)Convert.ChangeType(((NumericRange<object>)property.GetValue()).Value, typeof(float));
+
+            inputObj = UIHelper.CreateSlider(name, parent, minValue, maxValue, value);
         }
         // Basic string input as the default fallback
         else
