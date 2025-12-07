@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PvZEnhanced.Patches;
 
 [HarmonyPatch(typeof(MainMenuPanelView))]
-static internal class ConfigPanelsPatch
+internal static class ConfigPanelsPatch
 {
     [HarmonyPatch(nameof(MainMenuPanelView.Start))]
     [HarmonyPostfix]
@@ -24,7 +24,7 @@ static internal class ConfigPanelsPatch
         var template = container.m_panels.FirstOrDefault(p => p.m_id == "quit");
 
         // Create a config panel for each mod that has a config
-        foreach (var mod in ModMenu.Mods.Values.Where(mod => mod is not null && mod.Config is not null && !mod.Config.InputFields.IsNullOrEmpty()))
+        foreach (var mod in ModMenu.Mods.Values.Where(mod => mod is not null && mod.HasConfig && !mod.ConfigInputFields.IsNullOrEmpty()))
         {
             var panel = GameObject.Instantiate(template.gameObject, container.transform);
             var config = new ConfigPanel(panel.GetComponent<PanelView>(), mod);

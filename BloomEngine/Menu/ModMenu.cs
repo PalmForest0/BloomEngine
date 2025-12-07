@@ -18,11 +18,6 @@ public static class ModMenu
     public static ReadOnlyDictionary<string, ModEntry> Mods => new ReadOnlyDictionary<string, ModEntry>(mods);
 
     /// <summary>
-    /// A read-only dictionary that maps mod entries to their corresponding configuration panels, if registered.
-    /// </summary>
-    public static ReadOnlyDictionary<ModEntry, ConfigPanel> Configs => new ReadOnlyDictionary<ModEntry, ConfigPanel>(configs);
-
-    /// <summary>
     /// Event invoked when a mod is registered to the Mod Menu
     /// </summary>
     public static event Action<ModEntry> OnModRegistered;
@@ -64,20 +59,16 @@ public static class ModMenu
         if (OnModRegistered is not null)
             OnModRegistered.Invoke(entry);
 
-        if (entry.Config is null)
+        if (!entry.HasConfig)
         {
-            Log($"Successfully registered {entry.DisplayName} with no config properties.");
+            Log($"Successfully registered {entry.DisplayName} with the mod menu.");
             return;
         }
 
-        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.Config.InputFields.Count} config input field{(entry.Config.InputFields.Count > 1 ? "s" : "")}.");
-        foreach (var prop in entry.Config.InputFields)
-        {
-            if (prop is null)
-                continue;
-
-            ModMenu.Log($"    - {prop.Name} ({prop.ValueType.ToString()})");
-        }
+        // List all registered input fields
+        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.ConfigInputFields.Count} config input field{(entry.ConfigInputFields.Count > 1 ? "s" : "")}.");
+        foreach (var field in entry.ConfigInputFields)
+            ModMenu.Log($"    - {field.Name} ({field.ValueType.ToString()})");
     }
 
     /// <summary>

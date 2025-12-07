@@ -1,6 +1,5 @@
-﻿using BloomEngine.Inputs;
+﻿using BloomEngine.Config.Inputs;
 using BloomEngine.Menu;
-using BloomEngine.Types;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppSource.UI;
@@ -13,7 +12,7 @@ using UnityEngine.UI;
 
 namespace BloomEngine.Config;
 
-public class ConfigPanel
+internal class ConfigPanel
 {
     public ModEntry Mod { get; set; }
 
@@ -26,7 +25,7 @@ public class ConfigPanel
     public int PageCount { get; private init; }
     public int PageIndex { get; private set; } = 0;
 
-    const int PropertiesPerPage = 7;
+    const int InputFieldsPerPage = 7;
 
     private RectTransform pageControlsRect;
     private GameObject pageCountLabel;
@@ -37,7 +36,7 @@ public class ConfigPanel
     internal ConfigPanel(PanelView panel, ModEntry mod)
     {
         Mod = mod;
-        PageCount = (int)Math.Ceiling((double)mod.Config.InputFields.Count / PropertiesPerPage);
+        PageCount = (int)Math.Ceiling((double)mod.ConfigInputFields.Count / InputFieldsPerPage);
 
         this.panel = panel.gameObject;
         panel.m_id = $"modConfig_{mod.Mod.Info.Name}";
@@ -56,7 +55,7 @@ public class ConfigPanel
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (IInputField field in Mod.Config.InputFields)
+            foreach (IInputField field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
 
             ModMenu.HideConfigPanel();
@@ -87,12 +86,12 @@ public class ConfigPanel
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             GameObject.Destroy(localiser);
 
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.Config.InputFields.Count} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.ConfigInputFields.Count} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
     }
 
     private void CreatePages()
     {
-        var pages = Mod.Config.InputFields.Chunk(PropertiesPerPage).ToList();
+        var pages = Mod.ConfigInputFields.Chunk(InputFieldsPerPage).ToList();
 
         for (int i = 0; i < pages.Count; i++)
         {
@@ -167,12 +166,11 @@ public class ConfigPanel
     private static GameObject CreateInput(IInputField field, RectTransform parent)
     {
         GameObject inputObj = null;
-        string name = $"PropertyInput_{field.Name}";
-        string typeName = field.ValueType.Name;
+        string name = $"InputField_{field.Name}";
         
         // Create the correct input field
         if (field.InputObjectType == typeof(ReloadedInputField))
-            inputObj = UIHelper.CreateTextField(name, parent, typeName, onTextChanged: (_) => field.OnUIChanged());
+            inputObj = UIHelper.CreateTextField(name, parent, field.ValueType.Name, onTextChanged: (_) => field.OnUIChanged());
         else if(field.InputObjectType == typeof(Toggle))
             inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => field.OnUIChanged());
         else if (field.InputObjectType == typeof(ReloadedDropdown))
@@ -234,7 +232,7 @@ public class ConfigPanel
     public void ShowPanel()
     {
         // Populate input fields with current field values
-        foreach (IInputField field in Mod.Config.InputFields)
+        foreach (IInputField field in Mod.ConfigInputFields)
             field.RefreshUI();
 
         SetPageIndex(0);

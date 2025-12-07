@@ -1,18 +1,21 @@
-﻿using BloomEngine.Config;
+﻿using BloomEngine.Config.Inputs;
 using MelonLoader;
+using System.Reflection;
 using UnityEngine;
 
 namespace BloomEngine.Menu;
 
 public class ModEntry
 {
-    public string DisplayName { get; private set; }
-    public string Description { get; private set; }
-
-    public Texture2D Image { get; private set; }
     public MelonMod Mod { get; private set; }
 
-    public ModConfigBase Config { get; private set; }
+    public string DisplayName { get; private set; }
+    public string Description { get; private set; }
+    public Texture2D Image { get; private set; }
+
+    public Type ConfigClassType { get; private set; }
+    public List<IInputField> ConfigInputFields { get; private set; }
+    public bool HasConfig { get; private set; }
 
     internal ModEntry(MelonMod mod, string displayName)
     {
@@ -32,39 +35,41 @@ public class ModEntry
         return this;
     }
 
-
-    /// <summary>
-    /// Adds a <see cref="ModConfigBase"/> instance to this mod entry, making all of its properties appear in the in-game config.
-    /// Alternatively, you can use <see cref="AddConfigProperty{T}(string, T, Action{T}, Func{T, bool}, Func{T, T})"/> to manually add individual properties.
-    /// </summary>
-    /// <param name="configInstance"></param>
-    /// <returns></returns>
-    public ModEntry AddConfig(ModConfigBase configInstance)
+    public ModEntry AddConfig<T>()
     {
-        // Assign the config or merge with existing properties
-        if(Config is null) Config = configInstance;
-        else Config.InputFields.AddRange(configInstance.InputFields);
+        ConfigClassType = typeof(T);
+        ConfigInputFields = new List<IInputField>();
 
+        // Get all input field fields
+        var fields = typeof(T).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (var field in fields)
+        {
+            // Null instance for static class
+            if (field.GetValue(null) is IInputField inputField)
+                ConfigInputFields.Add(inputField);
+        }
+
+        // Get all input field properties
+        var properties = typeof(T).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (var prop in properties)
+        {
+            // Must be readable or skip
+            if (!prop.CanRead)
+                continue;
+
+            // Protect from throwing in getter
+            try
+            {
+                // Null instance for static class
+                if (prop.GetValue(null) is IInputField inputField)
+                    ConfigInputFields.Add(inputField);
+            }
+            catch { continue; }
+        }
+
+        HasConfig = true;
         return this;
     }
-
-    /// <summary>
-    /// Adds a property to the in-game config of this mod.
-    /// </summary>
-    /// <typeparam name="T">The value type of this property.</typeparam>
-    /// <param name="name">The text that will appear next to the property input field in the config panel.</param>
-    /// <param name="defaultValue">Default value of this property.</param>
-    /// <param name="onValueUpdated">A callback that provides the new value when it is updated.</param>
-    /// <param name="validateFunc">A function that validates the value before the setter is called.</param>
-    /// <param name="transformFunc">A function that allows any transformation to be made to the value before the setter is called.</param>
-    /// <returns>The modified mod entry with this config property.</returns>
-    //public ModEntry AddConfigProperty<T>(string name, T defaultValue, Action<T> onValueUpdated = null, Func<T, bool> validateFunc = null, Func<T, T> transformFunc = null)
-    //{
-    //    Config ??= new ModConfigBase();
-    //    Config.AddProperty(name, defaultValue, onValueUpdated, validateFunc, transformFunc);
-
-    //    return this;
-    //}
 
     /// <summary>
     /// Registers this <see cref="ModEntry"/>, making it appear in the mod menu with the provided information.

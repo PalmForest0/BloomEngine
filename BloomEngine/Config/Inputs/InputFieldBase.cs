@@ -1,4 +1,4 @@
-﻿namespace BloomEngine.Inputs;
+﻿namespace BloomEngine.Config.Inputs;
 
 public abstract class InputFieldBase<T> : IInputField<T>
 {

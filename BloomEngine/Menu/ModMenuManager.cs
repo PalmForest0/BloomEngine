@@ -72,7 +72,7 @@ internal class ModMenuManager : MonoBehaviour
                 description = registered.Description ?? description;
 
                 // Create a button for the modInfo's config panel if it has one
-                if (registered.Config is not null)
+                if (registered.HasConfig)
                 {
                     Button configButton = modObj.transform.Find("Icon").gameObject.AddComponent<Button>();
                     configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(registered));

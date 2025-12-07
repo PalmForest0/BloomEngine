@@ -6,7 +6,7 @@ using UnityEngine;
 namespace BloomEngine.Patches;
 
 [HarmonyPatch(typeof(AchievementsUI))]
-static internal class ModMenuPatch
+internal static class ModMenuPatch
 {
     [HarmonyPatch(nameof(AchievementsUI.Start))]
     [HarmonyPostfix]

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Inputs;
+namespace BloomEngine.Config.Inputs;
 
 public class FloatInputField(string name, float value, float minValue, float maxValue, Action<float> onValueChanged, Action onInputChanged, Func<float, float> transformValue, Func<float, bool> validateValue) : InputFieldBase<float>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

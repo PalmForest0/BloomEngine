@@ -1,4 +1,4 @@
-﻿namespace BloomEngine.Inputs;
+﻿namespace BloomEngine.Config.Inputs;
 
 public interface IInputField
 {

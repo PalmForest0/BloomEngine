@@ -2,7 +2,7 @@
 using Il2CppReloaded.Input;
 using UnityEngine;
 
-namespace BloomEngine.Inputs;
+namespace BloomEngine.Config.Inputs;
 
 public class IntInputField(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : InputFieldBase<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
