@@ -21,29 +21,31 @@ public static class ModMenu
     public static ReadOnlyDictionary<MelonMod, ModEntry> Entries => new ReadOnlyDictionary<MelonMod, ModEntry>(entries);
 
     /// <summary>
-    /// Event invoked when a mod is registered to the Mod Menu
+    /// Event that is invoked when a mod is added to the mod menu using <see cref="ModEntry.Register"/>."/>
     /// </summary>
     public static event Action<ModEntry> OnModRegistered;
 
     /// <summary>
-    /// Creates a new mod entry which can be customised and added with <see cref="ModEntry.Register"/>.
+    /// Creates a new mod entry which can be customised and added to the mod menu with <see cref="ModEntry.Register"/>.
     /// </summary>
     /// <param name="mod">The mod this entry belongs to.</param>
-    /// <param name="displayName"></param>
-    /// <returns></returns>
+    /// <returns>A new mod entry for the given mod</returns>
     public static ModEntry CreateEntry(MelonMod mod)
     {
         if(entries.ContainsKey(mod))
         {
-            Log($"Cannot create an entry for the mod {mod.Info.Name} since one has already been created.");
+            LogInfo($"Cannot create an entry for the mod {mod.Info.Name} since one has already been created.");
             return null;
         }
 
         return new ModEntry(mod);
     }
 
-    internal static void RegisterConfigPanel(ConfigPanel panel) => configs[panel.Mod] = panel;
-
+    /// <summary>
+    /// Displays the config panel for the specified mod if it is registered and no other configuration panel is currently open.
+    /// If the mod does not have a registered config panel, a warning is logged.
+    /// </summary>
+    /// <param name="mod">The mod for which to display the configuration panel. Must not be null.</param>
     public static void ShowConfigPanel(ModEntry mod)
     {
         if (currentConfigPanel is not null)
@@ -54,9 +56,12 @@ public static class ModMenu
             panel.ShowPanel();
             currentConfigPanel = panel;
         }
-        else Log($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.", LogType.Warning);
+        else LogWarning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
     }
 
+    /// <summary>
+    /// Hides the currently displayed configuration panel, if there is one.
+    /// </summary>
     public static void HideConfigPanel()
     {
         if (currentConfigPanel is null)
@@ -69,43 +74,30 @@ public static class ModMenu
     /// <summary>
     /// Registers a mod entry with the mod menu and invoked the <see cref="OnModRegistered"/> event.
     /// </summary>
-    internal static void Register(ModEntry entry)
+    internal static void RegisterModEntry(ModEntry entry)
     {
         entries[entry.Mod] = entry;
+        OnModRegistered?.Invoke(entry);
 
-        if (OnModRegistered is not null)
-            OnModRegistered.Invoke(entry);
-
-        if (!entry.HasConfig)
-        {
-            Log($"Successfully registered {entry.DisplayName} with the mod menu.");
-            return;
-        }
-
-        // List all registered input fields
-        ModMenu.Log($"Successfully registered {entry.DisplayName} with {entry.ConfigInputFields.Count} config input field{(entry.ConfigInputFields.Count > 1 ? "s" : "")}.");
-        foreach (var field in entry.ConfigInputFields)
-            ModMenu.Log($"    - {field.Name} ({field.ValueType.ToString()})");
+        if (entry.HasConfig)
+            LogInfo($"Successfully added {entry.DisplayName} to the mod menu with {entry.ConfigInputFields.Count} config input field{(entry.ConfigInputFields.Count > 1 ? "s" : "")}.");
+        else LogInfo($"Successfully added {entry.DisplayName} to the mod menu.");
     }
+
+    internal static void RegisterConfigPanel(ConfigPanel panel) => configs[panel.Mod] = panel;
 
     /// <summary>
-    /// Logs a message to the MelonLoader console with the ModMenu prefix.
-    /// Uses Unity's LogType enum because I can't be bothered to make my own XD.
-    /// Defaults to Log, can also use Warning or Error.
+    /// Logs a message to the console with the <c>[ModMenu]</c> prefix.
     /// </summary>
-    internal static void Log(string text, LogType type = LogType.Log)
-    {
-        switch (type)
-        {
-            case LogType.Warning:
-                Melon<BloomEngineMod>.Logger.Warning($"[ModMenu] {text}");
-                break;
-            case LogType.Error:
-                Melon<BloomEngineMod>.Logger.Error($"[ModMenu] {text}");
-                break;
-            default:
-                Melon<BloomEngineMod>.Logger.Msg($"[ModMenu] {text}");
-                break;
-        }
-    }
+    internal static void LogInfo(object value) => MelonLogger.Msg($"[ModMenu] {value.ToString()}");
+
+    /// <summary>
+    /// Logs a warning to the console with the <c>[ModMenu]</c> prefix.
+    /// </summary>
+    internal static void LogWarning(object value) => MelonLogger.Warning($"[ModMenu] {value.ToString()}");
+
+    /// <summary>
+    /// Logs an error to the console with the <c>[ModMenu]</c> prefix.
+    /// </summary>
+    internal static void LogError(object value) => MelonLogger.Error($"[ModMenu] {value.ToString()}");
 }

@@ -11,8 +11,7 @@ namespace BloomEngine.Menu;
 internal class ModMenuManager : MonoBehaviour
 {
     public bool ModMenuOpen { get; private set; } = false;
-    public List<GameObject> ModEntryObjects { get; } = new List<GameObject>();
-
+    private readonly List<GameObject> entryObjects = new List<GameObject>();
     private Transform container;
     private AchievementsUI ui;
 
@@ -28,8 +27,7 @@ internal class ModMenuManager : MonoBehaviour
         container.parent.FindComponent<Image>("Header/Shadow").raycastTarget = false;
         container.parent.FindComponent<Image>("Header/Left/Background_grass02").raycastTarget = false;
 
-        foreach (var mod in MelonMod.RegisteredMelons)
-            CreateEntry(mod);
+        CreateEntries();
     }
 
 
@@ -48,41 +46,44 @@ internal class ModMenuManager : MonoBehaviour
         transform.parent.parent.FindComponent<Button>("Main/BG_Tree/AchievementsButton").onClick.AddListener((UnityAction)(() =>
         {
             SetHeaderText("Achievements");
-            ShowModEntries(false);
+            SetEntriesEnabled(false);
         }));
 
         ui.m_backButton.onClick.AddListener((UnityAction)(() => ModMenuOpen = false));
     }
 
-    private void CreateEntry(MelonMod mod)
+    private void CreateEntries()
     {
-        // Create a new mod achievement for this mod
-        GameObject modObj = GameObject.Instantiate(transform.parent.parent.Find("Achievements/AchievementItem").gameObject, container);
-        modObj.SetActive(true);
-        modObj.name = $"ModEntry_{mod.Info.Name}";
-        ModEntryObjects.Add(modObj);
-
-        string name = mod.Info.Name;
-        string description = $"{mod.Info.Author}\n{mod.Info.Version}";
-
-        // If the mod is registered in the ModMenu, use its display name and description
-        if (ModMenu.Entries.TryGetValue(mod, out ModEntry registered))
+        foreach (var mod in MelonMod.RegisteredMelons)
         {
-            name = registered.DisplayName;
-            description = registered.Description ?? description;
+            // Create a new mod achievement for this mod
+            GameObject modObj = GameObject.Instantiate(transform.parent.parent.Find("Achievements/AchievementItem").gameObject, container);
+            modObj.SetActive(true);
+            modObj.name = $"ModEntry_{mod.Info.Name}";
+            entryObjects.Add(modObj);
 
-            // Create a button for the modInfo's config panel if it has one
-            if (registered.HasConfig)
+            string name = mod.Info.Name;
+            string description = $"{mod.Info.Author}\n{mod.Info.Version}";
+
+            // If the mod is registered in the ModMenu, use its display name and description
+            if (ModMenu.Entries.TryGetValue(mod, out ModEntry registered))
             {
-                Button configButton = modObj.transform.Find("Icon").gameObject.AddComponent<Button>();
-                configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(registered));
-            }
-        }
-        // If it isn't registered, make its heading yellow
-        else modObj.FindComponent<TextMeshProUGUI>("Title").color = new Color(1f, 0.6f, 0.1f, 1f);
+                name = registered.DisplayName;
+                description = registered.Description ?? description;
 
-        modObj.FindComponent<TextMeshProUGUI>("Title").text = name;
-        modObj.FindComponent<TextMeshProUGUI>("Subheader").text = description;
+                // Create a button for the modInfo's config panel if it has one
+                if (registered.HasConfig)
+                {
+                    Button configButton = modObj.transform.Find("Icon").gameObject.AddComponent<Button>();
+                    configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(registered));
+                }
+            }
+            // If it isn't registered, make its heading yellow
+            else modObj.FindComponent<TextMeshProUGUI>("Title").color = new Color(1f, 0.6f, 0.1f, 1f);
+
+            modObj.FindComponent<TextMeshProUGUI>("Title").text = name;
+            modObj.FindComponent<TextMeshProUGUI>("Subheader").text = description;
+        }
     }
 
     /// <summary>
@@ -98,12 +99,12 @@ internal class ModMenuManager : MonoBehaviour
     /// <summary>
     /// Replaces the achievement entries with the mod entires, or vice versa.
     /// </summary>
-    /// <param name="show">Whether to show the mod list of the achievement list.</param>
-    private void ShowModEntries(bool showMods)
+    /// <param name="enableMods">Whether to show the mod list or the achievement list.</param>
+    private void SetEntriesEnabled(bool enableMods)
     {
         // Change the state of all mod entries
-        foreach(var mod in ModEntryObjects)
-            mod.SetActive(showMods);
+        foreach(var mod in entryObjects)
+            mod.SetActive(enableMods);
 
         // Change the state of all achievement entries
         for (int i = 0; i < container.childCount; i++)
@@ -111,7 +112,7 @@ internal class ModMenuManager : MonoBehaviour
             GameObject achievement = container.GetChild(i).gameObject;
 
             if (achievement.name.StartsWith("P_") && achievement.name.EndsWith("(Clone)"))
-                achievement.SetActive(!showMods);
+                achievement.SetActive(!enableMods);
         }
     }
 
@@ -121,7 +122,7 @@ internal class ModMenuManager : MonoBehaviour
     private void OpenModList()
     {
         SetHeaderText("Mods");
-        ShowModEntries(true);
+        SetEntriesEnabled(true);
 
         PlayTransitionAnim();
         ModMenuOpen = true;

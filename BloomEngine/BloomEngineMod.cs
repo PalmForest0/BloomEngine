@@ -12,13 +12,13 @@ namespace BloomEngine;
 internal class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
-    public const string Version = "v0.1.0-alpha";
+    public const string Version = "0.1.0-alpha";
     public const string Author = "PalmForest";
     public const string Id = "com.palmforest.bloomengine";
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg($"Successfully initialised {nameof(BloomEngine)}.");
         Il2CppHelper.RegisterAllMonoBehaviours(MelonAssembly.Assembly);
+        LoggerInstance.Msg($"Successfully loaded version {Version} of {nameof(BloomEngine)}.");
     }
 }

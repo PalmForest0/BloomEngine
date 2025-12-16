@@ -49,7 +49,7 @@ public class ModEntry
         return this;
     }
 
-    // TODO: add this. or not...
+    // TODO: Add the required functionality and uncomment this method
     //public ModEntry AddImage(Texture2D image)
     //{
     //    Image = image;
@@ -80,12 +80,15 @@ public class ModEntry
     }
 
     /// <summary>
-    /// Registers this <see cref="ModEntry"/>, making it appear in the mod menu with the provided information.
+    /// Registers this <see cref="ModEntry"/> and adds it to the mod menu with the provided information.
     /// </summary>
+    /// <remarks>
+    /// Calling this method invokes the <see cref="ModMenu.OnModRegistered"/> event.
+    /// </remarks>
     /// <returns>The registered entry.</returns>
     public ModEntry Register()
     {
-        ModMenu.Register(this);
+        ModMenu.RegisterModEntry(this);
         return this;
     }
 }
