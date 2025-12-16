@@ -25,11 +25,4 @@ public interface IInputField<T> : IInputField
     Func<T, bool> ValidateValue { get; set; }
 
     T Value { get; set; }
-
-    object GetValueObject();
-    void SetValueObject(object value);
-
-    void UpdateFromUI();
-    void RefreshUI();
-    void OnUIChanged();
 }

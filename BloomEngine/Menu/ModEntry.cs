@@ -1,30 +1,45 @@
 ﻿using BloomEngine.Config.Inputs;
 using MelonLoader;
 using System.Reflection;
-using UnityEngine;
 
 namespace BloomEngine.Menu;
 
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
 /// </summary>
-public class ModEntry
+public class ModEntry(MelonMod mod)
 {
-    public MelonMod Mod { get; private set; }
+    /// <summary>
+    /// The MelonLoader mod this entry belongs to.
+    /// </summary>
+    public MelonMod Mod { get; } = mod;
 
+    /// <summary>
+    /// The display name that shows up in the mod menu for this entry.
+    /// </summary>
     public string DisplayName { get; private set; }
+
+    /// <summary>
+    /// The description that shows up under the mod name in the mod menu.
+    /// </summary>
     public string Description { get; private set; }
 
-    //public Texture2D Image { get; private set; }
+    // TODO: Add the required functionality and uncomment this property, adding documentation
+    //public Texture2D Icon { get; private set; }
 
+    /// <summary>
+    /// A list of all the registered config input fields for this mod.
+    /// </summary>
+    /// <remarks>
+    /// It is not recommended to modify this list directly, use <see cref="AddConfig(Type)"/> instead.
+    /// </remarks>
     public List<IInputField> ConfigInputFields { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this mod has a registered config.
+    /// </summary>
     public bool HasConfig { get; private set; }
 
-
-    internal ModEntry(MelonMod mod)
-    {
-        Mod = mod;
-    }
 
     /// <summary>
     /// Adds a custom display name that will replace this entry's mod name in the mod menu.
@@ -49,8 +64,8 @@ public class ModEntry
         return this;
     }
 
-    // TODO: Add the required functionality and uncomment this method
-    //public ModEntry AddImage(Texture2D image)
+    // TODO: Add the required functionality, uncomment this method and document it
+    //public ModEntry AddIcon(Texture2D image)
     //{
     //    Image = image;
     //    return this;
