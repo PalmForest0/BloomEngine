@@ -1,15 +1,13 @@
-﻿using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using System.Reflection;
+﻿using System.Reflection;
 using UnityEngine;
 
 namespace BloomEngine.Utilities;
 
+/// <summary>
+/// Static helper class for loading assets from embedded resources.
+/// </summary>
 public static class AssetHelper
 {
-    private delegate bool DLoadImage(IntPtr tex, IntPtr data, bool markNonReadable);
-    private static DLoadImage _iCallLoadImage;
-
     /// <summary>
     /// Loads a sprite from an embedded resource stream using the specified asset path.
     /// </summary>
@@ -24,40 +22,37 @@ public static class AssetHelper
     /// texture.</returns>
     public static Sprite LoadSprite(string assetPath)
     {
-        Texture2D texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+        Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+
         Assembly assembly = Assembly.GetExecutingAssembly();
-        Stream stream = assembly.GetManifestResourceStream(assetPath);
+        using Stream stream = assembly.GetManifestResourceStream(assetPath);
 
-        if (stream != null)
-        {
-            var data = new byte[stream.Length];
-            var _ = stream.Read(data, 0, (int)stream.Length);
-            LoadImage(texture, data, false);
-        }
+        if (stream is null)
+            throw new ArgumentException($"Embedded image resource not found: {assetPath}", nameof(assetPath));
 
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), texture.width);
+        byte[] data = stream.ReadFully();
+
+        if (!ImageConversion.LoadImage(texture, data, false))
+            throw new Exception("ImageConversion.LoadImage call failed");
+
+        texture.Apply(false, false);
+
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
     }
 
-    private static bool LoadImage(Texture2D texture, byte[] data, bool markNonReadable)
-    {
-        _iCallLoadImage ??= IL2CPP.ResolveICall<DLoadImage>("UnityEngine.ImageConversion::LoadImage");
-        var il2CPPArray = (Il2CppStructArray<byte>)data;
-
-        return _iCallLoadImage.Invoke(texture.Pointer, il2CPPArray.Pointer, markNonReadable);
-    }
 
     /// <summary>
     /// Loads an embedded AssetBundle resource from the Assets directory.
     /// </summary>
-    /// <param name="bundleName">Filename of the AssetBundle</param>
+    /// <param name="bundlePath">Filename of the AssetBundle</param>
     /// <returns>Loaded AssetBundle</returns>
-    public static AssetBundle LoadAssetBundle(string bundleName)
+    public static AssetBundle LoadAssetBundle(string bundlePath)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        using Stream stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Assets.{bundleName}");
+        using Stream stream = assembly.GetManifestResourceStream(bundlePath);
 
         if (stream is null)
-            throw new ArgumentException($"Embedded resource at 'Assets/{bundleName}' not found.");
+            throw new ArgumentException($"Embedded resource at 'Assets/{bundlePath}' not found.", nameof(bundlePath));
 
         return AssetBundle.LoadFromMemory(stream.ReadFully());
     }
