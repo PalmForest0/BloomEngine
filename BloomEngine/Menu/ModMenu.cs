@@ -16,6 +16,11 @@ public static class ModMenu
     private static ConfigPanel currentConfigPanel = null;
 
     /// <summary>
+    /// A value that indicates whether a mod config panel is currently open.
+    /// </summary>
+    public static bool IsConfigPanelOpen => currentConfigPanel is not null;
+
+    /// <summary>
     /// A read-only dictionary of all registered mod entries in the Mod Menu, indexed by their associated MelonMod.
     /// </summary>
     public static ReadOnlyDictionary<MelonMod, ModEntry> Entries => new ReadOnlyDictionary<MelonMod, ModEntry>(entries);
