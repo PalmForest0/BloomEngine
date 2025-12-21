@@ -19,6 +19,12 @@ internal class ModMenuManager : MonoBehaviour
     private AchievementsUI achievementsUi;
 
     private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Assets.ConfigIcon.png");
+    private static Sprite defaultIconSprite = AssetHelper.LoadSprite("BloomEngine.Assets.DefaultModIcon.png");
+    private static Sprite modIconBorderSprite = AssetHelper.LoadSprite("BloomEngine.Assets.ModIconBorder.png");
+
+    private const int ModIconSize = 225;
+    private const int ModIconBorderSize = 275;
+
 
     public void Start()
     {
@@ -26,23 +32,36 @@ internal class ModMenuManager : MonoBehaviour
         achievementsContainer = transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
         achievementsUi = transform.GetComponent<AchievementsUI>();
 
-        // Setup the mods container
-        modsContainer = GameObject.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
-        modsContainer.name = "ModEntries";
-
-        for (int i = 0; i < modsContainer.transform.childCount; i++)
-            GameObject.Destroy(modsContainer.transform.GetChild(i).gameObject);
-
         // Prevent header from blocking clicks on mod entries
         header = transform.Find("ScrollView/Viewport/Content/Header").gameObject;
         header.transform.Find("Shadow").GetComponent<Image>().raycastTarget = false;
         header.transform.Find("Left/Background_grass02").GetComponent<Image>().raycastTarget = false;
 
-        // Create the buttons and mod entries
         CreateButtons();
+        CreateModsContainer();
         CreateEntries();
+
+        Melon<BloomEngineMod>.Logger.Msg("Successfully initialized mod menu and created all mod entries.");
     }
 
+
+    private void CreateModsContainer()
+    {
+        modsContainer = GameObject.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
+        modsContainer.name = "ModEntries";
+
+        RectTransform modsContainerRect = modsContainer.GetComponent<RectTransform>();
+        modsContainerRect.sizeDelta = new Vector2(2800, modsContainerRect.sizeDelta.y);
+        modsContainerRect.anchoredPosition = new Vector2(70, -1020);
+
+        GridLayoutGroup modsContainerGrid = modsContainer.GetComponent<GridLayoutGroup>();
+        modsContainerGrid.childAlignment = TextAnchor.UpperCenter;
+        modsContainerGrid.cellSize = new Vector2(1100, 250);
+        modsContainerGrid.spacing = new Vector2(150, 100);
+
+        for (int i = 0; i < modsContainer.transform.childCount; i++)
+            GameObject.Destroy(modsContainer.transform.GetChild(i).gameObject);
+    }
 
     private void CreateButtons()
     {
@@ -76,8 +95,32 @@ internal class ModMenuManager : MonoBehaviour
             var title = modObj.FindComponent<TextMeshProUGUI>("Title");
             var subheader = modObj.FindComponent<TextMeshProUGUI>("Subheader");
 
+            title.GetComponent<RectTransform>().anchoredPosition = new Vector2(125, 15);
+            subheader.GetComponent<RectTransform>().anchoredPosition = new Vector2(125, -67);
+            subheader.maxVisibleLines = 4;
+
+            // Update the icon's pivot and size
+            GameObject modIconObj = modObj.transform.Find("Icon").gameObject;
+            RectTransform modIconRect = modIconObj.GetComponent<RectTransform>();
+            modIconRect.pivot = new Vector2(0.5f, 0.5f);
+            modIconRect.sizeDelta = new Vector2(ModIconSize, ModIconSize);
+
+            // Set the mod icon to either the mod's custom icon or the default icon
+            modIconObj.GetComponent<Image>().sprite = entry is null ? defaultIconSprite : (entry.Icon ?? defaultIconSprite);
+
+            // Create an icon container to hold the icon and border ( + config icon)
+            GameObject iconContainer = GameObject.Instantiate(modIconObj, modObj.transform);
+            GameObject.Destroy(iconContainer.GetComponent<Image>());
+            iconContainer.name = "IconContainer";
+            modIconObj.transform.SetParent(iconContainer.transform);
+
+            RectTransform iconContainerRect = iconContainer.GetComponent<RectTransform>();
+            iconContainerRect.pivot = new Vector2(0.2f, 0.5f);
+
+            CreateModIconBorder(modIconObj, iconContainerRect);
+
             // Sets the name and description of unregistered mods to default values
-            if(!isRegistered)
+            if (!isRegistered)
             {
                 title.text = mod.Info.Name;
                 title.color = new Color(1f, 0.6f, 0.1f, 1f);
@@ -89,49 +132,76 @@ internal class ModMenuManager : MonoBehaviour
             title.text = entry.DisplayName;
             subheader.text = entry.Description;
 
-            GameObject modIconObj = modObj.transform.Find("Icon").gameObject;
-            if(entry.Icon is not null) modIconObj.GetComponent<Image>().sprite = entry.Icon;
-
             // If this entry has a config, create a config button
             if (entry.HasConfig)
             {
-                // Add a button component to the icon object
-                Button configButton = modIconObj.AddComponent<Button>();
-                configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(entry));
-
-                // Adjust the icon's colors on hover
-                var colors = configButton.colors;
-                colors.normalColor = Color.white;
-                colors.highlightedColor = new Color(0.7f, 0.7f, 0.7f, 1f);
-                colors.fadeDuration = 0.1f;
-                configButton.colors = colors;
-
-                // Create a config icon that appears when you hover over the mod entry
-                GameObject configIconObj = GameObject.Instantiate(modIconObj, modIconObj.transform.parent);
-                RectTransform configIconRect = configIconObj.GetComponent<RectTransform>();
-                configIconRect.sizeDelta = new Vector2(150, 150);
-                configIconRect.anchoredPosition = new Vector2(25, 0);
-                Image configIconImg = configIconObj.GetComponent<Image>();
-                configIconImg.sprite = configIconSprite;
-                configIconImg.raycastTarget = false;
-                configIconObj.AddComponent<CanvasGroup>().alpha = 0f;
-
-                EventTrigger trigger = modIconObj.AddComponent<EventTrigger>();
-                trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
-
-                // On pointer enter trigger - fade in config icon
-                EventTrigger.Entry pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-                pointerEnter.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 1f, 0.25f));
-                trigger.triggers.Add(pointerEnter);
-
-                // On pointer exit trigger - fade out config icon
-                EventTrigger.Entry pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-                pointerExit.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 0f, 0.25f));
-                trigger.triggers.Add(pointerExit);
+                RectTransform configIconRect = CreateModConfigIcon(modIconObj, iconContainerRect);
+                SetupdModConfigButton(modIconObj, configIconRect, entry);
             }
         }
     }
 
+    private static RectTransform CreateModConfigIcon(GameObject modIcon, RectTransform iconContainer)
+    {
+        // Create a config icon that appears when you hover over the mod entry
+        GameObject configIcon = GameObject.Instantiate(modIcon, iconContainer);
+        configIcon.name = "ConfigIcon";
+
+        RectTransform configIconRect = configIcon.GetComponent<RectTransform>();
+        configIconRect.pivot = new Vector2(0.5f, 0.5f);
+
+        configIconRect.sizeDelta = new Vector2(ModIconSize, ModIconSize);
+        Image configIconImg = configIcon.GetComponent<Image>();
+        configIconImg.sprite = configIconSprite;
+        configIconImg.raycastTarget = false;
+
+        configIcon.AddComponent<CanvasGroup>().alpha = 0f;
+
+        return configIconRect;
+    }
+
+    private static void SetupdModConfigButton(GameObject modIcon, RectTransform configIconRect, ModEntry modEntry)
+    {
+        // Add a button component to the icon object
+        Button configButton = modIcon.AddComponent<Button>();
+        configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(modEntry));
+
+        // Adjust the icon's hover colors
+        var colors = configButton.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+        colors.fadeDuration = 0.1f;
+        configButton.colors = colors;
+
+        // Add event triggers for pointer enter and exit to fade in/out the config icon
+        EventTrigger trigger = modIcon.AddComponent<EventTrigger>();
+        trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
+
+        // On pointer enter trigger - fade in config icon
+        EventTrigger.Entry pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        pointerEnter.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 1f, 0.2f));
+        trigger.triggers.Add(pointerEnter);
+
+        // On pointer exit trigger - fade out config icon
+        EventTrigger.Entry pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+        pointerExit.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 0f, 0.2f));
+        trigger.triggers.Add(pointerExit);
+    }
+
+    private static void CreateModIconBorder(GameObject modIcon, RectTransform iconContainer)
+    {
+        // Create a border around the mod icon to indicate it has a config
+        GameObject iconBorder = GameObject.Instantiate(modIcon, iconContainer);
+        iconBorder.name = "IconBorder";
+
+        RectTransform borderRect = iconBorder.GetComponent<RectTransform>();
+        borderRect.pivot = new Vector2(0.5f, 0.5f);
+        borderRect.sizeDelta = new Vector2(ModIconBorderSize, ModIconBorderSize);
+
+        Image borderImg = iconBorder.GetComponent<Image>();
+        borderImg.sprite = modIconBorderSprite;
+        borderImg.raycastTarget = false;
+    }
 
     /// <summary>
     /// Sets the title text of the container screen

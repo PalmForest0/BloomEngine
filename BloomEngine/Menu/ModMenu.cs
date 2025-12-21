@@ -84,9 +84,7 @@ public static class ModMenu
         entries[entry.Mod] = entry;
         OnModRegistered?.Invoke(entry);
 
-        if (entry.HasConfig)
-            LogInfo($"Successfully added {entry.DisplayName} to the mod menu with {entry.ConfigInputFields.Count} config input field{(entry.ConfigInputFields.Count > 1 ? "s" : "")}.");
-        else LogInfo($"Successfully added {entry.DisplayName} to the mod menu.");
+        LogInfo($"Successfully added {entry.DisplayName} to the mod menu.");
     }
 
     internal static void RegisterConfigPanel(ConfigPanel panel) => configs[panel.Mod] = panel;

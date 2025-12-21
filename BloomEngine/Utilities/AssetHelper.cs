@@ -18,9 +18,10 @@ public static class AssetHelper
     /// </param>
     /// <returns>
     /// A <see cref="Sprite"/> object created from the embedded resource.
+    /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
     /// If the resource cannot be found, the created sprite will be a 2x2 placeholder image.
     /// </returns>
-    public static Sprite LoadSprite(string assetPath)
+    public static Sprite LoadSprite(string assetPath, float pixelsPerUnit = 100f)
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
         using Stream stream = assembly.GetManifestResourceStream(assetPath);
@@ -29,7 +30,7 @@ public static class AssetHelper
             throw new ArgumentException($"Embedded image resource not found: {assetPath}", nameof(assetPath));
 
         byte[] data = stream.ReadFully();
-        return CreateSpriteFromData(data);
+        return CreateSpriteFromData(data, pixelsPerUnit);
     }
 
     /// <summary>
@@ -51,8 +52,9 @@ public static class AssetHelper
     /// Creates a new Sprite from the specified image data in memory.
     /// </summary>
     /// <param name="imageData">A byte array containing image data in a supported format, such as PNG or JPEG.</param>
+    
     /// <returns>A Sprite object created from the provided image data.</returns>
-    public static Sprite CreateSpriteFromData(byte[] imageData)
+    public static Sprite CreateSpriteFromData(byte[] imageData, float pixelsPerUnit = 100f)
     {
         Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
 
@@ -61,7 +63,7 @@ public static class AssetHelper
 
         texture.Apply(false, false);
 
-        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
         sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
 
         return sprite;
