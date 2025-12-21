@@ -16,6 +16,8 @@ internal class ModMenuManager : MonoBehaviour
     private GameObject modsContainer;
     private GameObject header;
 
+    private GameObject bloomEngineLabel;
+
     private AchievementsUI achievementsUi;
 
     private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Assets.ConfigIcon.png");
@@ -38,6 +40,7 @@ internal class ModMenuManager : MonoBehaviour
         header.transform.Find("Left/Background_grass02").GetComponent<Image>().raycastTarget = false;
 
         CreateButtons();
+        CreateBloomEngineLabel();
         CreateModsContainer();
         CreateEntries();
 
@@ -78,6 +81,25 @@ internal class ModMenuManager : MonoBehaviour
         Button achievementsButton = transform.parent.FindComponent<Button>("Main/BG_Tree/AchievementsButton");
         achievementsButton.onClick.AddListener(() => SetCurrentMenu(showModMenu: false));
         achievementsUi.m_backButton.onClick.AddListener(() => ModMenuOpen = false);
+    }
+
+    private void CreateBloomEngineLabel()
+    {
+        bloomEngineLabel = new GameObject("BloomEngineLabel");
+        bloomEngineLabel.transform.SetParent(transform, false);
+
+        TextMeshProUGUI label = bloomEngineLabel.AddComponent<TextMeshProUGUI>();
+        label.fontSize = 52;
+        label.characterSpacing = 0;
+        label.font = UIHelper.Font1;
+        label.text = $"BloomEngine  v{BloomEngineMod.Version}";
+
+        RectTransform rect = label.GetComponent<RectTransform>();
+        rect.pivot = new Vector2(0, 0);
+        rect.anchorMin = new Vector2(0, 0);
+        rect.anchorMax = new Vector2(0, 0);
+        rect.sizeDelta = new Vector2(600, 50);
+        rect.anchoredPosition = new Vector2(40, 40);
     }
 
     private void CreateEntries()
@@ -122,9 +144,9 @@ internal class ModMenuManager : MonoBehaviour
             // Sets the name and description of unregistered mods to default values
             if (!isRegistered)
             {
-                title.text = mod.Info.Name;
+                title.text = ModEntry.GetDefaultModName(mod);
                 title.color = new Color(1f, 0.6f, 0.1f, 1f);
-                subheader.text = $"{mod.Info.Author}\n{mod.Info.Version}";
+                subheader.text = ModEntry.GetDefaultModDescription(mod);
                 continue;
             }
 
@@ -220,6 +242,8 @@ internal class ModMenuManager : MonoBehaviour
     private void SetCurrentMenu(bool showModMenu)
     {
         SetHeaderText(showModMenu ? "Mods" : "Achievements");
+        bloomEngineLabel.SetActive(showModMenu);
+
         achievementsContainer.SetActive(!showModMenu);
         modsContainer.SetActive(showModMenu);
     }

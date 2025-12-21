@@ -52,7 +52,7 @@ public static class AssetHelper
     /// Creates a new Sprite from the specified image data in memory.
     /// </summary>
     /// <param name="imageData">A byte array containing image data in a supported format, such as PNG or JPEG.</param>
-    
+    /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
     /// <returns>A Sprite object created from the provided image data.</returns>
     public static Sprite CreateSpriteFromData(byte[] imageData, float pixelsPerUnit = 100f)
     {

@@ -19,12 +19,12 @@ public class ModEntry(MelonMod mod)
     /// <summary>
     /// The display name that shows up in the mod menu for this entry.
     /// </summary>
-    public string DisplayName { get; private set; } = mod.Info.Name;
+    public string DisplayName { get; private set; } = GetDefaultModName(mod);
 
     /// <summary>
     /// The description that shows up under the mod name in the mod menu.
     /// </summary>
-    public string Description { get; private set; } = $"{mod.Info.Author}\n{mod.Info.Version}";
+    public string Description { get; private set; } = GetDefaultModDescription(mod);
 
     /// <summary>
     /// Sprite that shows up as the icon for this mod in the mod menu.
@@ -72,7 +72,7 @@ public class ModEntry(MelonMod mod)
     /// </summary>
     /// <param name="iconSprite">
     /// The iconSprite to replace the default icon with.<br/>
-    /// To load a iconSprite, you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string)"/>.
+    /// To load a iconSprite, you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string, float)"/>.
     /// </param>
     /// <returns>This mod entry with the new icon.</returns>
     public ModEntry AddIcon(Sprite iconSprite)
@@ -116,4 +116,7 @@ public class ModEntry(MelonMod mod)
         ModMenu.RegisterModEntry(this);
         return this;
     }
+
+    internal static string GetDefaultModName(MelonMod mod) => mod?.Info?.Name ?? "???";
+    internal static string GetDefaultModDescription(MelonMod mod) => $"By {mod?.Info?.Author ?? "???"}\nVersion {mod?.Info?.Version ?? "???"}";
 }
