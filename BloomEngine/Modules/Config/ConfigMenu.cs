@@ -1,6 +1,8 @@
-﻿using BloomEngine.Config.Inputs;
+﻿using BloomEngine.Interfaces;
+using BloomEngine.Modules.Config.Inputs;
+using BloomEngine.Modules.Menu;
 
-namespace BloomEngine.Config;
+namespace BloomEngine.Modules.Config;
 
 /// <summary>
 /// A static class which provides methods for creating input fields for a mod config menu.
@@ -11,7 +13,7 @@ public static class ConfigMenu
     /// <summary>
     /// Creates a <see cref="string"/> input field in the form of a textbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="BloomEngine.Menu.ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -26,7 +28,7 @@ public static class ConfigMenu
     /// <summary>
     /// Creates an <see cref="int"/> input field in the form of a numeric textbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="BloomEngine.Menu.ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -42,7 +44,7 @@ public static class ConfigMenu
     /// <summary>
     /// Creates a <see cref="float"/> input field in the form of a slider in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="BloomEngine.Menu.ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -60,7 +62,7 @@ public static class ConfigMenu
     /// <summary>
     /// Creates a <see cref="bool"/> input field in the form of a checkbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="BloomEngine.Menu.ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -74,7 +76,7 @@ public static class ConfigMenu
     /// <summary>
     /// Creates an <see cref="Enum"/> input field in the form of a dropdown in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="BloomEngine.Menu.ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>

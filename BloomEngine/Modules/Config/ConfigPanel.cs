@@ -1,5 +1,6 @@
-﻿using BloomEngine.Config.Inputs;
-using BloomEngine.Menu;
+﻿using BloomEngine.Interfaces;
+using BloomEngine.Modules.Config.Inputs;
+using BloomEngine.Modules.Menu;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppSource.UI;
@@ -10,7 +11,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Config;
+namespace BloomEngine.Modules.Config;
 
 internal class ConfigPanel
 {
@@ -46,7 +47,7 @@ internal class ConfigPanel
         // Make panel size static if there are multiple pages
         if (PageCount > 1)
         {
-            GameObject.Destroy(window.GetComponent<ContentSizeFitter>());
+            UnityEngine.Object.Destroy(window.GetComponent<ContentSizeFitter>());
             window.sizeDelta = new Vector2(2500, 1900);
             window.anchoredPosition = new Vector2(0, -80);
         }
@@ -57,7 +58,7 @@ internal class ConfigPanel
         {
             foreach (IInputField field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
-
+            
             ModMenu.HideConfigPanel();
         });
 
@@ -73,18 +74,18 @@ internal class ConfigPanel
 
         // Create inputs for each field on each page
         CreatePages();
-        GameObject.Destroy(window.Find("SubheadingText").gameObject);
+        UnityEngine.Object.Destroy(window.Find("SubheadingText").gameObject);
 
         // Create page controls if there are multiple pages
         if (PageCount > 1)
             CreatePageControls(window.parent.GetComponent<RectTransform>());
 
         // Add click blocker background
-        GameObject.Instantiate(UIHelper.MainMenu.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
+        UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
 
         // Destroy all localisers
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
-            GameObject.Destroy(localiser);
+            UnityEngine.Object.Destroy(localiser);
 
         Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.ConfigInputFields.Count} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
     }
@@ -205,19 +206,19 @@ internal class ConfigPanel
         horizontalLayout.childForceExpandHeight = false;
 
         // Create previous page button
-        pageBackButton = GameObject.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
-        GameObject.Destroy(pageBackButton.GetComponent<NavigationCheck>());
+        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
+        UnityEngine.Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(() => SetPageIndex(PageIndex - 1));
 
         // Create page count label
-        pageCountLabel = GameObject.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
+        pageCountLabel = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
 
         // Create next page button
-        pageNextButton = GameObject.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
-        GameObject.Destroy(pageNextButton.GetComponent<NavigationCheck>());
+        pageNextButton = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
+        UnityEngine.Object.Destroy(pageNextButton.GetComponent<NavigationCheck>());
         pageNextButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var nextButton = pageNextButton.GetComponent<Button>();
         nextButton.onClick.RemoveAllListeners();

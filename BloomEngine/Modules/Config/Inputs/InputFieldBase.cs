@@ -1,4 +1,6 @@
-﻿namespace BloomEngine.Config.Inputs;
+﻿using BloomEngine.Interfaces;
+
+namespace BloomEngine.Modules.Config.Inputs;
 
 public abstract class InputFieldBase<T> : IInputField<T>
 {

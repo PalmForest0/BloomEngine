@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Modules.Config.Inputs;
 
 public class BoolInputField(string name, bool value, Action<bool> onValueChanged, Action onInputChanged, Func<bool, bool> transformValue, Func<bool, bool> validateValue) : InputFieldBase<bool>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

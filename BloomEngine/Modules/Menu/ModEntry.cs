@@ -1,10 +1,10 @@
-﻿using BloomEngine.Config.Inputs;
+﻿using BloomEngine.Interfaces;
 using BloomEngine.Utilities;
 using MelonLoader;
 using System.Reflection;
 using UnityEngine;
 
-namespace BloomEngine.Menu;
+namespace BloomEngine.Modules.Menu;
 
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
@@ -83,7 +83,7 @@ public class ModEntry(MelonMod mod)
 
     /// <summary>
     /// Adds a config to this mod using a static config class.
-    /// To add input fields, use the static methods provided by <see cref="BloomEngine.Config.ConfigMenu"/> and make the result publicly accessible.
+    /// To add input fields, use the static methods provided by <see cref="Config.ConfigMenu"/> and make the result publicly accessible.
     /// </summary>
     /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>

@@ -1,3 +1,5 @@
+namespace BloomEngine.Interfaces;
+
 public interface IInputField<T> : IInputField
 {
     Action<T> OnValueChanged { get; set; }

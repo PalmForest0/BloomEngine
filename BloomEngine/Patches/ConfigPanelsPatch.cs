@@ -1,10 +1,10 @@
-﻿using BloomEngine.Menu;
-using BloomEngine.Config;
-using BloomEngine.Utilities;
+﻿using BloomEngine.Utilities;
 using HarmonyLib;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using UnityEngine;
+using BloomEngine.Modules.Menu;
+using BloomEngine.Modules.Config;
 
 namespace PvZEnhanced.Patches;
 

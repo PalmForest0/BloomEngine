@@ -1,10 +1,10 @@
-﻿using BloomEngine.Config;
+﻿using BloomEngine.Modules.Config;
 using MelonLoader;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-namespace BloomEngine.Menu;
+namespace BloomEngine.Modules.Menu;
 
 /// <summary>
 /// A static class responsible for registering mod entries and adding them to the mod menu.

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace BloomEngine.Menu;
+namespace BloomEngine.Modules.Menu;
 
 internal class ModMenuManager : MonoBehaviour
 {
@@ -50,7 +50,7 @@ internal class ModMenuManager : MonoBehaviour
 
     private void CreateModsContainer()
     {
-        modsContainer = GameObject.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
+        modsContainer = Instantiate(achievementsContainer, achievementsContainer.transform.parent);
         modsContainer.name = "ModEntries";
 
         RectTransform modsContainerRect = modsContainer.GetComponent<RectTransform>();
@@ -63,7 +63,7 @@ internal class ModMenuManager : MonoBehaviour
         modsContainerGrid.spacing = new Vector2(150, 100);
 
         for (int i = 0; i < modsContainer.transform.childCount; i++)
-            GameObject.Destroy(modsContainer.transform.GetChild(i).gameObject);
+            Destroy(modsContainer.transform.GetChild(i).gameObject);
     }
 
     private void CreateButtons()
@@ -107,7 +107,7 @@ internal class ModMenuManager : MonoBehaviour
         foreach (var mod in MelonMod.RegisteredMelons)
         {
             // Create a new mod achievement for this mod
-            GameObject modObj = GameObject.Instantiate(transform.Find("AchievementItem").gameObject, modsContainer.transform);
+            GameObject modObj = Instantiate(transform.Find("AchievementItem").gameObject, modsContainer.transform);
             modObj.SetActive(true);
             modObj.name = $"ModEntry_{mod.Info.Name}";
 
@@ -128,11 +128,11 @@ internal class ModMenuManager : MonoBehaviour
             modIconRect.sizeDelta = new Vector2(ModIconSize, ModIconSize);
 
             // Set the mod icon to either the mod's custom icon or the default icon
-            modIconObj.GetComponent<Image>().sprite = entry is null ? defaultIconSprite : (entry.Icon ?? defaultIconSprite);
+            modIconObj.GetComponent<Image>().sprite = entry is null ? defaultIconSprite : entry.Icon ?? defaultIconSprite;
 
             // Create an icon container to hold the icon and border ( + config icon)
-            GameObject iconContainer = GameObject.Instantiate(modIconObj, modObj.transform);
-            GameObject.Destroy(iconContainer.GetComponent<Image>());
+            GameObject iconContainer = Instantiate(modIconObj, modObj.transform);
+            Destroy(iconContainer.GetComponent<Image>());
             iconContainer.name = "IconContainer";
             modIconObj.transform.SetParent(iconContainer.transform);
 
@@ -166,7 +166,7 @@ internal class ModMenuManager : MonoBehaviour
     private static RectTransform CreateModConfigIcon(GameObject modIcon, RectTransform iconContainer)
     {
         // Create a config icon that appears when you hover over the mod entry
-        GameObject configIcon = GameObject.Instantiate(modIcon, iconContainer);
+        GameObject configIcon = Instantiate(modIcon, iconContainer);
         configIcon.name = "ConfigIcon";
 
         RectTransform configIconRect = configIcon.GetComponent<RectTransform>();
@@ -213,7 +213,7 @@ internal class ModMenuManager : MonoBehaviour
     private static void CreateModIconBorder(GameObject modIcon, RectTransform iconContainer)
     {
         // Create a border around the mod icon to indicate it has a config
-        GameObject iconBorder = GameObject.Instantiate(modIcon, iconContainer);
+        GameObject iconBorder = Instantiate(modIcon, iconContainer);
         iconBorder.name = "IconBorder";
 
         RectTransform borderRect = iconBorder.GetComponent<RectTransform>();

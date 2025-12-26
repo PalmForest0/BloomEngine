@@ -2,7 +2,7 @@
 using Il2CppSource.UI;
 using UnityEngine;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Modules.Config.Inputs;
 
 public class EnumInputField(string name, Enum value, Action<Enum> onValueChanged, Action onInputChanged, Func<Enum, Enum> transformValue, Func<Enum, bool> validateValue) : InputFieldBase<Enum>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

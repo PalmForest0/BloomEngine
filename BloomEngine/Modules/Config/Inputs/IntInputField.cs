@@ -4,7 +4,7 @@ using MelonLoader;
 using System.Text;
 using UnityEngine;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Modules.Config.Inputs;
 
 public class IntInputField(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : InputFieldBase<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
