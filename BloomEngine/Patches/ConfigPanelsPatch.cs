@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace PvZEnhanced.Patches;
 
-[HarmonyPatch(typeof(MainMenuPanelView))]
+[HarmonyPatch]
 internal static class ConfigPanelsPatch
 {
-    [HarmonyPatch(nameof(MainMenuPanelView.Start))]
+    [HarmonyPatch(typeof(MainMenuPanelView), nameof(MainMenuPanelView.Start))]
     [HarmonyPostfix]
-    private static void MainMenuStartPostfix(MainMenuPanelView __instance)
+    private static void MainMenuPanelView_Start_Postfix(MainMenuPanelView __instance)
     {
         UIHelper.Initialize(__instance);
         CreateConfigPanels(__instance.transform.GetComponentInParent<PanelViewContainer>());
