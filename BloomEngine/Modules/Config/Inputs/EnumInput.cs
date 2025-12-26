@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public sealed class EnumInputField(string name, Enum value, Action<Enum> onValueChanged, Action onInputChanged, Func<Enum, Enum> transformValue, Func<Enum, bool> validateValue) : InputFieldBase<Enum>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class EnumInput(string name, Enum value, Action<Enum> onValueChanged, Action onInputChanged, Func<Enum, Enum> transformValue, Func<Enum, bool> validateValue) : BaseInput<Enum>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public ReloadedDropdown Dropdown { get; private set; }
 

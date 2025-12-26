@@ -56,7 +56,7 @@ internal class ConfigPanel
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (IInputField field in Mod.ConfigInputFields)
+            foreach (IInput field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
             
             ModMenu.HideConfigPanel();
@@ -115,7 +115,7 @@ internal class ConfigPanel
             RectTransform labelColumn = CreateColumn(pageRect, "LabelsColumn");
             RectTransform fieldColumn = CreateColumn(pageRect, "FieldsColumn");
 
-            foreach (IInputField field in pages[i])
+            foreach (IInput field in pages[i])
             {
                 CreateLabel(field, labelColumn);
                 CreateInput(field, fieldColumn);
@@ -148,7 +148,7 @@ internal class ConfigPanel
         return columnRect;
     }
 
-    private void CreateLabel(IInputField field, RectTransform parent)
+    private void CreateLabel(IInput field, RectTransform parent)
     {
         GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         obj.name = $"PropertyLabel_{field.Name}";
@@ -164,7 +164,7 @@ internal class ConfigPanel
         text.enabled = true;
     }
 
-    private static void CreateInput(IInputField field, RectTransform parent)
+    private static void CreateInput(IInput field, RectTransform parent)
     {
         GameObject inputObj = null;
         string name = $"InputField_{field.Name.Replace(" ", "")}";
@@ -176,7 +176,7 @@ internal class ConfigPanel
             inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => field.OnUIChanged());
         else if (field.InputObjectType == typeof(ReloadedDropdown))
             inputObj = UIHelper.CreateDropdown(name, parent, field.ValueType, onValueChanged: (_) => field.OnUIChanged());
-        else if (field.InputObjectType == typeof(Slider) && field is FloatInputField sliderInput)
+        else if (field.InputObjectType == typeof(Slider) && field is FloatInput sliderInput)
             inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, sliderInput.MinValue, onValueChanged: (_) => field.OnUIChanged());
 
         var layout = inputObj.AddComponent<LayoutElement>();
@@ -234,7 +234,7 @@ internal class ConfigPanel
     public void ShowPanel()
     {
         // Populate input fields with current field values
-        foreach (IInputField field in Mod.ConfigInputFields)
+        foreach (IInput field in Mod.ConfigInputFields)
             field.RefreshUI();
 
         SetPageIndex(0);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public abstract class InputFieldBase<T> : IInputField
+public abstract class BaseInput<T> : IInput
 {
     public string Name { get; set; }
 
@@ -26,7 +26,7 @@ public abstract class InputFieldBase<T> : IInputField
     public Func<T, T> TransformValue { get; set; }
     public Func<T, bool> ValidateValue { get; set; }
 
-    public InputFieldBase(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
+    public BaseInput(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
     {
         Name = name;
         Value = value;
@@ -35,9 +35,6 @@ public abstract class InputFieldBase<T> : IInputField
         TransformValue = transformValue;
         ValidateValue = validateValue;
     }
-
-    public object GetValueObject() => Value;
-    public void SetValueObject(object value) => Value = (T)Convert.ChangeType(value, typeof(T));
 
     public virtual void SetInputObject(GameObject inputObject)
     {

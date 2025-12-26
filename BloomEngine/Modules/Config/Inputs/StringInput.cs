@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public sealed class StringInputField(string name, string value, Action<string> onValueChanged, Action onInputChanged, Func<string, string> transformValue, Func<string, bool> validateValue) : InputFieldBase<string>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class StringInput(string name, string value, Action<string> onValueChanged, Action onInputChanged, Func<string, string> transformValue, Func<string, bool> validateValue) : BaseInput<string>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public ReloadedInputField Textbox { get; private set; }
 

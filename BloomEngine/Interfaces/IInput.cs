@@ -2,7 +2,7 @@
 
 namespace BloomEngine.Interfaces;
 
-public interface IInputField
+public interface IInput
 {
     string Name { get; set; }
 
@@ -12,9 +12,6 @@ public interface IInputField
     Type InputObjectType { get; }
 
     void SetInputObject(GameObject inputObject);
-
-    object GetValueObject();
-    void SetValueObject(object value);
 
     void UpdateFromUI();
     void RefreshUI();

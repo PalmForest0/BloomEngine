@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public sealed class BoolInputField(string name, bool value, Action<bool> onValueChanged, Action onInputChanged, Func<bool, bool> transformValue, Func<bool, bool> validateValue) : InputFieldBase<bool>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class BoolInput(string name, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null, Func<bool, bool> transformValue = null, Func<bool, bool> validateValue = null)
+    : BaseInput<bool>(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public Toggle Toggle { get; private set; }
 
