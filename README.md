@@ -1,4 +1,9 @@
-# Setup
+[![](https://gamebanana.com/mods/embeddables/640948?type=large)](https://gamebanana.com/mods/640948)
+# BloomEngine
+[![GameBanana](https://img.shields.io/badge/GameBanana-Visit-orange?logo=gamebanana&logoColor=white)](https://gamebanana.com/mods/640948)
+[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/UfBMKTHN5b)
+
+## Setup
 To register your mod with the BloomEngine mod menu, you must first reference it.
 
 ### 1. Download the latest version
