@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<EmbeddedResource Include="Assets\**\*" />
-	<None Remove="Assets\**\*" />
+	<EmbeddedResource Include="Resources\**\*" />
+	<None Remove="Resources\**\*" />
   </ItemGroup>
 
   <ItemGroup>

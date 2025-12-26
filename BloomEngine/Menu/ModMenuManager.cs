@@ -20,9 +20,9 @@ internal class ModMenuManager : MonoBehaviour
 
     private AchievementsUI achievementsUi;
 
-    private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Assets.ConfigIcon.png");
-    private static Sprite defaultIconSprite = AssetHelper.LoadSprite("BloomEngine.Assets.DefaultModIcon.png");
-    private static Sprite modIconBorderSprite = AssetHelper.LoadSprite("BloomEngine.Assets.ModIconBorder.png");
+    private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ConfigIcon.png");
+    private static Sprite defaultIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.DefaultModIcon.png");
+    private static Sprite modIconBorderSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ModIconBorder.png");
 
     private const int ModIconSize = 225;
     private const int ModIconBorderSize = 275;

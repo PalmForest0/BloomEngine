@@ -14,7 +14,7 @@ public static class AssetHelper
     /// </summary>
     /// <param name="assetPath">
     /// The path to the embedded resource image. This must be a valid resource path within the executing assembly 
-    /// (eg. "BloomEngine.Assets.Icon.png"). Make sure that the resource's Build Action is set to <strong>Embedded Resource</strong>
+    /// (eg. "BloomEngine.Resources.Icon.png"). Make sure that the resource's Build Action is set to <strong>Embedded Resource</strong>
     /// </param>
     /// <returns>
     /// A <see cref="Sprite"/> object created from the embedded resource.
@@ -70,7 +70,7 @@ public static class AssetHelper
     }
 
     /// <summary>
-    /// Loads an embedded AssetBundle resource from the Assets directory.
+    /// Loads an AssetBundle from an embedded resource.
     /// </summary>
     /// <param name="bundlePath">Filename of the AssetBundle</param>
     /// <returns>Loaded AssetBundle</returns>

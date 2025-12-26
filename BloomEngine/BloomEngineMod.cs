@@ -17,7 +17,7 @@ internal class BloomEngineMod : MelonMod
 
         ModMenu.CreateEntry(this)
             .AddDescription($"Mod menu and config manager library for PvZ Replanted.")
-            .AddIcon(AssetHelper.LoadSprite("BloomEngine.Assets.ModIcon.png"))
+            .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.ModIcon.png"))
             .Register();
     }
 }
