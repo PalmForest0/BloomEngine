@@ -118,7 +118,7 @@ internal class ConfigPanel
             foreach (IInputField field in pages[i])
             {
                 CreateLabel(field, labelColumn);
-                field.InputObject = CreateInput(field, fieldColumn);
+                CreateInput(field, fieldColumn);
             }
 
             pageObjects.Add(pageRect);
@@ -164,7 +164,7 @@ internal class ConfigPanel
         text.enabled = true;
     }
 
-    private static GameObject CreateInput(IInputField field, RectTransform parent)
+    private static void CreateInput(IInputField field, RectTransform parent)
     {
         GameObject inputObj = null;
         string name = $"InputField_{field.Name.Replace(" ", "")}";
@@ -183,7 +183,7 @@ internal class ConfigPanel
         layout.preferredHeight = 134;
         layout.preferredWidth = 900;
 
-        return inputObj;
+        field.SetInputObject(inputObj);
     }
 
     private void CreatePageControls(RectTransform parent)

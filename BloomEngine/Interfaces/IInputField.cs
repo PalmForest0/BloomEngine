@@ -1,4 +1,6 @@
-﻿namespace BloomEngine.Interfaces;
+﻿using UnityEngine;
+
+namespace BloomEngine.Interfaces;
 
 public interface IInputField
 {
@@ -6,8 +8,10 @@ public interface IInputField
 
     Type ValueType { get; }
 
-    object InputObject { get; set; }
+    GameObject InputObject { get; }
     Type InputObjectType { get; }
+
+    void SetInputObject(GameObject inputObject);
 
     object GetValueObject();
     void SetValueObject(object value);

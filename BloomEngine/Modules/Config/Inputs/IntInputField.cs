@@ -6,10 +6,15 @@ using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public class IntInputField(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : InputFieldBase<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class IntInputField(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : InputFieldBase<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
-    public override Type InputObjectType => typeof(ReloadedInputField);
-    public ReloadedInputField Textbox => ((GameObject)InputObject).GetComponent<ReloadedInputField>();
+    public ReloadedInputField Textbox { get; private set; }
+
+    public override void SetInputObject(GameObject inputObject)
+    {
+        base.SetInputObject(inputObject);
+        Textbox = inputObject.GetComponent<ReloadedInputField>();
+    }
 
     public override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
     public override void RefreshUI() => Textbox.SetTextWithoutNotify(Value.ToString());
@@ -18,7 +23,6 @@ public class IntInputField(string name, int value, Action<int> onValueChanged, A
         Textbox.SetTextWithoutNotify(SanitiseNumericInput(Textbox.text));
         base.OnUIChanged();
     }
-
 
     /// <summary>
     /// Performs basic sanitisation of numeric input strings to be used for live input fields. Does not perform clamping, parsing or type conversion.

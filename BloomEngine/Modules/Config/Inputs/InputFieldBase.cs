@@ -1,8 +1,9 @@
 ﻿using BloomEngine.Interfaces;
+using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public abstract class InputFieldBase<T> : IInputField<T>
+public abstract class InputFieldBase<T> : IInputField
 {
     public string Name { get; set; }
 
@@ -17,8 +18,8 @@ public abstract class InputFieldBase<T> : IInputField<T>
         }
     }
 
-    public object InputObject { get; set; }
-    public abstract Type InputObjectType { get;}
+    public GameObject InputObject { get; private set; }
+    public Type InputObjectType { get; private set; }
 
     public Action<T> OnValueChanged { get; set; }
     public Action OnInputChanged { get; set; }
@@ -37,6 +38,12 @@ public abstract class InputFieldBase<T> : IInputField<T>
 
     public object GetValueObject() => Value;
     public void SetValueObject(object value) => Value = (T)Convert.ChangeType(value, typeof(T));
+
+    public virtual void SetInputObject(GameObject inputObject)
+    {
+        InputObject = inputObject;
+        InputObjectType = inputObject.GetType();
+    }
 
     public abstract void UpdateFromUI();
     public abstract void RefreshUI();
