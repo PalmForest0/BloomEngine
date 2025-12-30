@@ -1,4 +1,4 @@
-﻿using BloomEngine.Modules.Menu;
+﻿using BloomEngine.Services.ModMenu;
 using BloomEngine.Utilities;
 using MelonLoader;
 
@@ -15,7 +15,7 @@ internal class BloomEngineMod : MelonMod
         Il2CppHelper.RegisterAllMonoBehaviours(MelonAssembly.Assembly);
         LoggerInstance.Msg($"Successfully loaded version {Version} of {Name}.");
 
-        ModMenu.CreateEntry(this)
+        ModMenuService.CreateEntry(this)
             .AddDescription($"Mod menu and config manager library for PvZ Replanted.")
             .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.ModIcon.png"))
             .Register();

@@ -1,4 +1,5 @@
-﻿using BloomEngine.Modules.Menu;
+﻿using BloomEngine.Services.ModMenu;
+using BloomEngine.UI;
 using HarmonyLib;
 using Il2CppUI.Scripts;
 
@@ -25,7 +26,7 @@ internal static class ModMenuPatches
     [HarmonyPrefix]
     private static void AchievementsUI_SetAchievementsIsActive_Prefix(AchievementsUI __instance, bool isActive)
     {
-        if (!isActive && ModMenu.IsConfigPanelOpen)
-            ModMenu.HideConfigPanel();
+        if (!isActive && ModMenuService.IsConfigPanelOpen)
+            ModMenuService.HideConfigPanel();
     }
 }

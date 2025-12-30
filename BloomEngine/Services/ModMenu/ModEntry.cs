@@ -4,7 +4,7 @@ using MelonLoader;
 using System.Reflection;
 using UnityEngine;
 
-namespace BloomEngine.Modules.Menu;
+namespace BloomEngine.Services.ModMenu;
 
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
@@ -83,7 +83,7 @@ public class ModEntry(MelonMod mod)
 
     /// <summary>
     /// Adds a config to this mod using a static config class.
-    /// To add input fields, use the static methods provided by <see cref="Config.ConfigMenu"/> and make the result publicly accessible.
+    /// To add input fields, use the static methods provided by <see cref="Config.ConfigService"/> and make the result publicly accessible.
     /// </summary>
     /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>
@@ -108,12 +108,12 @@ public class ModEntry(MelonMod mod)
     /// Registers this <see cref="ModEntry"/> and adds it to the mod menu with the provided information.
     /// </summary>
     /// <remarks>
-    /// Calling this method invokes the <see cref="ModMenu.OnModRegistered"/> event.
+    /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
     /// </remarks>
     /// <returns>The registered entry.</returns>
     public ModEntry Register()
     {
-        ModMenu.RegisterModEntry(this);
+        ModMenuService.RegisterModEntry(this);
         return this;
     }
 

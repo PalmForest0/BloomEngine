@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public sealed class FloatInput(string name, float value, float minValue, float maxValue, Action<float> onValueChanged, Action onInputChanged, Func<float, float> transformValue, Func<float, bool> validateValue) : BaseInput<float>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class FloatConfigInput(string name, float value, float minValue, float maxValue, Action<float> onValueChanged, Action onInputChanged, Func<float, float> transformValue, Func<float, bool> validateValue) : BaseConfigInput<float>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public float MinValue { get; set; } = minValue;
     public float MaxValue { get; set; } = maxValue;

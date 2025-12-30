@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Interfaces;
 using BloomEngine.Modules.Config.Inputs;
-using BloomEngine.Modules.Menu;
+using BloomEngine.Services.ModMenu;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppSource.UI;
@@ -11,7 +11,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Modules.Config;
+namespace BloomEngine.UI;
 
 internal class ConfigPanel
 {
@@ -59,10 +59,10 @@ internal class ConfigPanel
             foreach (IInput field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
             
-            ModMenu.HideConfigPanel();
+            ModMenuService.HideConfigPanel();
         });
 
-        UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ModMenu.HideConfigPanel);
+        UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ModMenuService.HideConfigPanel);
 
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
@@ -176,7 +176,7 @@ internal class ConfigPanel
             inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => field.OnUIChanged());
         else if (field.InputObjectType == typeof(ReloadedDropdown))
             inputObj = UIHelper.CreateDropdown(name, parent, field.ValueType, onValueChanged: (_) => field.OnUIChanged());
-        else if (field.InputObjectType == typeof(Slider) && field is FloatInput sliderInput)
+        else if (field.InputObjectType == typeof(Slider) && field is FloatConfigInput sliderInput)
             inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, sliderInput.MinValue, onValueChanged: (_) => field.OnUIChanged());
 
         var layout = inputObj.AddComponent<LayoutElement>();

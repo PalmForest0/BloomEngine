@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public sealed class IntInput(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : BaseInput<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class IntConfigInput(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : BaseConfigInput<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public ReloadedInputField Textbox { get; private set; }
 

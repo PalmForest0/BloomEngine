@@ -1,4 +1,5 @@
-﻿using BloomEngine.Utilities;
+﻿using BloomEngine.Services.ModMenu;
+using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
@@ -6,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace BloomEngine.Modules.Menu;
+namespace BloomEngine.UI;
 
 internal class ModMenuManager : MonoBehaviour
 {
@@ -112,7 +113,7 @@ internal class ModMenuManager : MonoBehaviour
             modObj.name = $"ModEntry_{mod.Info.Name}";
 
             // Get this mod's mod menu entry if it has one
-            bool isRegistered = ModMenu.Entries.TryGetValue(mod, out ModEntry entry);
+            bool isRegistered = ModMenuService.Entries.TryGetValue(mod, out ModEntry entry);
 
             var title = modObj.FindComponent<TextMeshProUGUI>("Title");
             var subheader = modObj.FindComponent<TextMeshProUGUI>("Subheader");
@@ -186,7 +187,7 @@ internal class ModMenuManager : MonoBehaviour
     {
         // Add a button component to the icon object
         Button configButton = modIcon.AddComponent<Button>();
-        configButton.onClick.AddListener(() => ModMenu.ShowConfigPanel(modEntry));
+        configButton.onClick.AddListener(() => ModMenuService.ShowConfigPanel(modEntry));
 
         // Adjust the icon's hover colors
         var colors = configButton.colors;

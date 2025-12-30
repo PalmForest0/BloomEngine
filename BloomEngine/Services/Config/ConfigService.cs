@@ -1,14 +1,14 @@
 ﻿using BloomEngine.Interfaces;
 using BloomEngine.Modules.Config.Inputs;
-using BloomEngine.Modules.Menu;
+using BloomEngine.Services.ModMenu;
 
-namespace BloomEngine.Modules.Config;
+namespace BloomEngine.Services.Config;
 
 /// <summary>
 /// A static class which provides methods for creating input fields for a mod config menu.
 /// The supported types are: <c>string, int, float, bool and enum</c>
 /// </summary>
-public static class ConfigMenu
+public static class ConfigService
 {
     /// <summary>
     /// Creates a <see cref="string"/> input field in the form of a textbox in your mod's config menu and returns it.
@@ -21,9 +21,9 @@ public static class ConfigMenu
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>A <see cref="StringInput"/> instance. You can read and modify the value of this config property using <see cref="BaseInput{T}.Value"/>.</returns>
-    public static StringInput CreateStringInput(string name, string defaultValue, Action<string> onValueChanged = null, Action onInputChanged = null, Func<string, string> transformValue = null, Func<string, bool> validateValue = null)
-        => new StringInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
+    /// <returns>A <see cref="StringConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    public static StringConfigInput CreateStringInput(string name, string defaultValue, Action<string> onValueChanged = null, Action onInputChanged = null, Func<string, string> transformValue = null, Func<string, bool> validateValue = null)
+        => new StringConfigInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
     /// <summary>
     /// Creates an <see cref="int"/> input field in the form of a numeric textbox in your mod's config menu and returns it.
@@ -36,9 +36,9 @@ public static class ConfigMenu
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>An <see cref="IntInput"/> instance. You can read and modify the value of this config property using <see cref="BaseInput{T}.Value"/>.</returns>
-    public static IntInput CreateIntInput(string name, int defaultValue, Action<int> onValueChanged = null, Action onInputChanged = null, Func<int, int> transformValue = null, Func<int, bool> validateValue = null)
-        => new IntInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
+    /// <returns>An <see cref="IntConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    public static IntConfigInput CreateIntInput(string name, int defaultValue, Action<int> onValueChanged = null, Action onInputChanged = null, Func<int, int> transformValue = null, Func<int, bool> validateValue = null)
+        => new IntConfigInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
 
     /// <summary>
@@ -54,9 +54,9 @@ public static class ConfigMenu
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>A <see cref="FloatInput"/> instance. You can read and modify the value of this config property using <see cref="BaseInput{T}.Value"/>.</returns>
-    public static FloatInput CreateFloatInput(string name, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null, Action onInputChanged = null, Func<float, float> transformValue = null, Func<float, bool> validateValue = null)
-        => new FloatInput(name, defaultValue, minValue, maxValue, onValueChanged, onInputChanged, transformValue, validateValue);
+    /// <returns>A <see cref="FloatConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    public static FloatConfigInput CreateFloatInput(string name, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null, Action onInputChanged = null, Func<float, float> transformValue = null, Func<float, bool> validateValue = null)
+        => new FloatConfigInput(name, defaultValue, minValue, maxValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
 
     /// <summary>
@@ -68,9 +68,9 @@ public static class ConfigMenu
     /// <param name="defaultValue">This default value of this config input field.</param>
     /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
-    /// <returns>A <see cref="BoolInput"/> instance. You can read and modify the value of this config property using <see cref="BaseInput{T}.Value"/>.</returns>
-    public static BoolInput CreateBoolInput(string name, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null)
-        => new BoolInput(name, defaultValue, onValueChanged, onInputChanged, null, null);
+    /// <returns>A <see cref="BoolConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    public static BoolConfigInput CreateBoolInput(string name, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null)
+        => new BoolConfigInput(name, defaultValue, onValueChanged, onInputChanged, null, null);
 
 
     /// <summary>
@@ -83,7 +83,7 @@ public static class ConfigMenu
     /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>An <see cref="EnumInput"/> instance. You can read and modify the value of this config property using <see cref="BaseInput{T}.Value"/>.</returns>
-    public static EnumInput CreateEnumInput(string name, Enum defaultValue, Action<Enum> onValueChanged = null, Action onInputChanged = null, Func<Enum, bool> validateValue = null)
-        => new EnumInput(name, defaultValue, onValueChanged, onInputChanged, null, validateValue);
+    /// <returns>An <see cref="EnumConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    public static EnumConfigInput CreateEnumInput(string name, Enum defaultValue, Action<Enum> onValueChanged = null, Action onInputChanged = null, Func<Enum, bool> validateValue = null)
+        => new EnumConfigInput(name, defaultValue, onValueChanged, onInputChanged, null, validateValue);
 }
