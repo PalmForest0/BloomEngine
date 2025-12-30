@@ -18,13 +18,29 @@ public class ModConfig
 
     internal ConfigPanel Panel { get; set; }
 
-    internal ModConfig(ModMenuEntry modMenuEntry, Type staticConfigType)
+    /// <summary>
+    /// Creates a mod config from an array of inputs (used by <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>).
+    /// </summary>
+    internal ModConfig(ModMenuEntry modEntry, BaseConfigInput[] inputs)
     {
-        ModEntry = modMenuEntry;
-        MelonCategory = MelonPreferences.CreateCategory(modMenuEntry.Identifier, modMenuEntry.DisplayName);
-        ConfigInputs = GetInputsFromStaticClass(staticConfigType);
+        ModEntry = modEntry;
+        MelonCategory = MelonPreferences.CreateCategory(modEntry.Identifier, modEntry.DisplayName);
+        ConfigInputs = inputs.ToList();
 
-        foreach(var input in ConfigInputs)
+        foreach (var input in ConfigInputs)
+            input.CreateMelonEntry(MelonCategory);
+    }
+
+    /// <summary>
+    /// Creates a mod config from a static config class (used by <see cref="ModMenuEntry.AddConfigClass(Type)"/>).
+    /// </summary>
+    internal ModConfig(ModMenuEntry modEntry, Type staticConfig)
+    {
+        ModEntry = modEntry;
+        MelonCategory = MelonPreferences.CreateCategory(modEntry.Identifier, modEntry.DisplayName);
+        ConfigInputs = GetInputsFromStaticClass(staticConfig);
+
+        foreach (var input in ConfigInputs)
             input.CreateMelonEntry(MelonCategory);
     }
 

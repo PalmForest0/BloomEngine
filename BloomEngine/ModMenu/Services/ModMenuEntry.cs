@@ -1,4 +1,5 @@
-﻿using BloomEngine.Config.Services;
+﻿using BloomEngine.Config.Inputs;
+using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
 using MelonLoader;
 using UnityEngine;
@@ -36,7 +37,7 @@ public class ModMenuEntry(MelonMod mod)
     public Sprite Icon { get; private set; }
 
     /// <summary>
-    /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfig(Type)"/>.
+    /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfigInputs(BaseConfigInput[])"/> or <see cref="AddConfigClass(Type)"/>.
     /// </summary>
     public ModConfig Config { get; private set; }
 
@@ -78,12 +79,29 @@ public class ModMenuEntry(MelonMod mod)
     }
 
     /// <summary>
+    /// Creates a config for this mod and adds all the provided inputs.
+    /// To create a config input, use the static methods provided by <see cref="ConfigService"/>.
+    /// </summary>
+    /// <param name="inputs">An array of inputs to create the config with.
+    /// If a config already exists, these inputs will be added to the existing ones.
+    /// </param>
+    /// <returns>This mod entry with the added config inputs.</returns>
+    public ModMenuEntry AddConfigInputs(params BaseConfigInput[] inputs)
+    {
+        if (Config is null)
+            Config = new ModConfig(this, inputs);
+        else Config.ConfigInputs.AddRange(inputs);
+
+        return this;
+    }
+
+    /// <summary>
     /// Adds a config to this mod using a static config class.
     /// To add input fields, use the static methods provided by <see cref="ConfigService"/> and make the result publicly accessible.
     /// </summary>
     /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>
-    public ModMenuEntry AddConfig(Type staticConfig)
+    public ModMenuEntry AddConfigClass(Type staticConfig)
     {
         Config = new ModConfig(this, staticConfig);
         return this;

@@ -11,11 +11,10 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
         set
         {
             T oldValue = field;
-
             field = TransformValue is not null ? TransformValue.Invoke(value) : value;
 
             // Don't call event or update MelonEntry value if there was no change
-            if(!field.Equals(oldValue))
+            if (!EqualityComparer<T>.Default.Equals(field, oldValue))
             {
                 OnValueChanged?.Invoke(field);
                 MelonEntry?.Value = field;
