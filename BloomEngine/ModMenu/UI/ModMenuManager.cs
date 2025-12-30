@@ -1,4 +1,5 @@
-﻿using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config.Services;
+using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
@@ -113,7 +114,7 @@ internal class ModMenuManager : MonoBehaviour
             modObj.name = $"ModEntry_{mod.Info.Name}";
 
             // Get this mod's mod menu entry if it has one
-            bool isRegistered = ModMenuService.Entries.TryGetValue(mod, out ModEntry entry);
+            bool isRegistered = ModMenuService.Entries.TryGetValue(mod, out ModMenuEntry entry);
 
             var title = modObj.FindComponent<TextMeshProUGUI>("Title");
             var subheader = modObj.FindComponent<TextMeshProUGUI>("Subheader");
@@ -145,9 +146,9 @@ internal class ModMenuManager : MonoBehaviour
             // Sets the name and description of unregistered mods to default values
             if (!isRegistered)
             {
-                title.text = ModEntry.GetDefaultModName(mod);
+                title.text = ModMenuEntry.GetDefaultModName(mod);
                 title.color = new Color(1f, 0.6f, 0.1f, 1f);
-                subheader.text = ModEntry.GetDefaultModDescription(mod);
+                subheader.text = ModMenuEntry.GetDefaultModDescription(mod);
                 continue;
             }
 
@@ -183,11 +184,11 @@ internal class ModMenuManager : MonoBehaviour
         return configIconRect;
     }
 
-    private static void SetupdModConfigButton(GameObject modIcon, RectTransform configIconRect, ModEntry modEntry)
+    private static void SetupdModConfigButton(GameObject modIcon, RectTransform configIconRect, ModMenuEntry modEntry)
     {
         // Add a button component to the icon object
         Button configButton = modIcon.AddComponent<Button>();
-        configButton.onClick.AddListener(() => ModMenuService.ShowConfigPanel(modEntry));
+        configButton.onClick.AddListener(() => ConfigService.ShowConfigPanel(modEntry));
 
         // Adjust the icon's hover colors
         var colors = configButton.colors;

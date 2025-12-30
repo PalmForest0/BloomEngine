@@ -5,6 +5,7 @@ using Il2CppTekly.PanelViews;
 using UnityEngine;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.Config.UI;
+using BloomEngine.Config.Services;
 
 namespace PvZEnhanced.Patches;
 
@@ -28,7 +29,7 @@ internal static class ConfigPanelsPatch
         {
             var panel = GameObject.Instantiate(template.gameObject, container.transform);
             var config = new ConfigPanel(panel.GetComponent<PanelView>(), mod);
-            ModMenuService.RegisterConfigPanel(config);
+            ConfigService.RegisterConfigPanel(config);
         }
     }
 }

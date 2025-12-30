@@ -1,4 +1,5 @@
-﻿using BloomEngine.Modules.Config.Inputs;
+﻿using BloomEngine.Config.Internal;
+using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
 using MelonLoader;
 using System.Reflection;
@@ -9,7 +10,7 @@ namespace BloomEngine.ModMenu.Services;
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
 /// </summary>
-public class ModEntry(MelonMod mod)
+public class ModMenuEntry(MelonMod mod)
 {
     /// <summary>
     /// The MelonLoader mod this entry belongs to.
@@ -49,7 +50,7 @@ public class ModEntry(MelonMod mod)
     /// </summary>
     /// <param name="displayName">The string containing the custom display name.</param>
     /// <returns>This mod entry with the custom display name.</returns>
-    public ModEntry AddDisplayName(string displayName)
+    public ModMenuEntry AddDisplayName(string displayName)
     {
         DisplayName = displayName;
         return this;
@@ -61,7 +62,7 @@ public class ModEntry(MelonMod mod)
     /// </summary>
     /// <param name="description">A string containing the description of this mod.</param>
     /// <returns>This mod entry with the new description.</returns>
-    public ModEntry AddDescription(string description)
+    public ModMenuEntry AddDescription(string description)
     {
         Description = description;
         return this;
@@ -75,7 +76,7 @@ public class ModEntry(MelonMod mod)
     /// To load a iconSprite, you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string, float)"/>.
     /// </param>
     /// <returns>This mod entry with the new icon.</returns>
-    public ModEntry AddIcon(Sprite iconSprite)
+    public ModMenuEntry AddIcon(Sprite iconSprite)
     {
         Icon = iconSprite;
         return this;
@@ -83,11 +84,11 @@ public class ModEntry(MelonMod mod)
 
     /// <summary>
     /// Adds a config to this mod using a static config class.
-    /// To add input fields, use the static methods provided by <see cref="Config.ConfigService"/> and make the result publicly accessible.
+    /// To add input fields, use the static methods provided by <see cref="ConfigService"/> and make the result publicly accessible.
     /// </summary>
     /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>
-    public ModEntry AddConfig(Type staticConfig)
+    public ModMenuEntry AddConfig(Type staticConfig)
     {
         ConfigInputFields = new List<IConfigInput>();
 
@@ -105,13 +106,13 @@ public class ModEntry(MelonMod mod)
     }
 
     /// <summary>
-    /// Registers this <see cref="ModEntry"/> and adds it to the mod menu with the provided information.
+    /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.
     /// </summary>
     /// <remarks>
     /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
     /// </remarks>
     /// <returns>The registered entry.</returns>
-    public ModEntry Register()
+    public ModMenuEntry Register()
     {
         ModMenuService.RegisterModEntry(this);
         return this;

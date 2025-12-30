@@ -1,5 +1,7 @@
-﻿using BloomEngine.ModMenu.Services;
-using BloomEngine.Modules.Config.Inputs;
+﻿using BloomEngine.Config.Internal;
+using BloomEngine.Config.UI;
+using BloomEngine.ModMenu.Services;
+using MelonLoader;
 
 namespace BloomEngine.Config.Services;
 
@@ -9,10 +11,60 @@ namespace BloomEngine.Config.Services;
 /// </summary>
 public static class ConfigService
 {
+    private static readonly Dictionary<ModMenuEntry, ConfigPanel> configs = new();
+    private static readonly MelonLogger.Instance logger = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
+    
+    private static ConfigPanel currentConfigPanel;
+
+    /// <summary>
+    /// A value that indicates whether a mod config panel is currently open.
+    /// </summary>
+    public static bool IsConfigPanelOpen => currentConfigPanel is not null;
+
+    /// <summary>
+    /// Displays the config panel for the specified mod if it is registered and no other configuration panel is currently open.
+    /// If the mod does not have a registered config panel, a warning is logged.
+    /// </summary>
+    /// <param name="mod">The mod for which to display the configuration panel. Must not be null.</param>
+    public static void ShowConfigPanel(ModMenuEntry mod)
+    {
+        if (currentConfigPanel is not null)
+            return;
+
+        if (configs.TryGetValue(mod, out var panel))
+        {
+            panel.ShowPanel();
+            currentConfigPanel = panel;
+        }
+        else logger.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
+    }
+
+    /// <summary>
+    /// Hides the currently displayed configuration panel, if there is one.
+    /// </summary>
+    public static void HideConfigPanel()
+    {
+        if (currentConfigPanel is null)
+            return;
+
+        currentConfigPanel.HidePanel();
+        currentConfigPanel = null;
+    }
+
+
+    internal static void RegisterConfigPanel(ConfigPanel panel)
+    {
+        if(configs.ContainsKey(panel.Mod))
+            logger.Warning($"Mod {panel.Mod.DisplayName} attempted to register multiple config panels. Overwriting previous panel.", "Config");
+
+        configs[panel.Mod] = panel;
+    }
+    
+
     /// <summary>
     /// Creates a <see cref="string"/> input field in the form of a textbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -27,7 +79,7 @@ public static class ConfigService
     /// <summary>
     /// Creates an <see cref="int"/> input field in the form of a numeric textbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -43,7 +95,7 @@ public static class ConfigService
     /// <summary>
     /// Creates a <see cref="float"/> input field in the form of a slider in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -61,7 +113,7 @@ public static class ConfigService
     /// <summary>
     /// Creates a <see cref="bool"/> input field in the form of a checkbox in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>
@@ -75,7 +127,7 @@ public static class ConfigService
     /// <summary>
     /// Creates an <see cref="Enum"/> input field in the form of a dropdown in your mod's config menu and returns it.
     /// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-    /// and call <see cref="ModEntry.AddConfig(Type)"/>, passing in your config class as the type.
+    /// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
     /// </summary>
     /// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">This default value of this config input field.</param>

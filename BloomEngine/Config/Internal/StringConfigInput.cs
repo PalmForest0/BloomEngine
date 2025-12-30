@@ -1,7 +1,7 @@
 ﻿using Il2CppReloaded.Input;
 using UnityEngine;
 
-namespace BloomEngine.Modules.Config.Inputs;
+namespace BloomEngine.Config.Internal;
 
 public sealed class StringConfigInput(string name, string value, Action<string> onValueChanged, Action onInputChanged, Func<string, string> transformValue, Func<string, bool> validateValue) : BaseConfigInput<string>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

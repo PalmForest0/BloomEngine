@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BloomEngine.Modules.Config.Inputs;
+namespace BloomEngine.Config.Internal;
 
 public abstract class BaseConfigInput<T> : IConfigInput
 {

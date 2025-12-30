@@ -4,7 +4,7 @@ using MelonLoader;
 using System.Text;
 using UnityEngine;
 
-namespace BloomEngine.Modules.Config.Inputs;
+namespace BloomEngine.Config.Internal;
 
 public sealed class IntConfigInput(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : BaseConfigInput<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

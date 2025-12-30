@@ -1,8 +1,5 @@
-﻿using BloomEngine.Config.UI;
-using MelonLoader;
-using System.Collections.Concurrent;
+﻿using MelonLoader;
 using System.Collections.ObjectModel;
-using UnityEngine;
 
 namespace BloomEngine.ModMenu.Services;
 
@@ -11,96 +8,41 @@ namespace BloomEngine.ModMenu.Services;
 /// </summary>
 public static class ModMenuService
 {
-    private static Dictionary<MelonMod, ModEntry> entries = new();
-    private static Dictionary<ModEntry, ConfigPanel> configs = new();
-    private static ConfigPanel currentConfigPanel;
-
-    /// <summary>
-    /// A value that indicates whether a mod config panel is currently open.
-    /// </summary>
-    public static bool IsConfigPanelOpen => currentConfigPanel is not null;
+    private static readonly Dictionary<MelonMod, ModMenuEntry> entries = new();
+    private static readonly MelonLogger.Instance logger = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(ModMenu)}");
 
     /// <summary>
     /// A read-only dictionary of all registered mod entries in the Mod Menu, indexed by their associated MelonMod.
     /// </summary>
-    public static ReadOnlyDictionary<MelonMod, ModEntry> Entries => new ReadOnlyDictionary<MelonMod, ModEntry>(entries);
+    public static ReadOnlyDictionary<MelonMod, ModMenuEntry> Entries => new ReadOnlyDictionary<MelonMod, ModMenuEntry>(entries);
 
     /// <summary>
-    /// Event that is invoked when a mod is added to the mod menu using <see cref="ModEntry.Register"/>."/>
+    /// Event that is invoked when a mod is added to the mod menu using <see cref="ModMenuEntry.Register"/>."/>
     /// </summary>
-    public static event Action<ModEntry> OnModRegistered;
+    public static event Action<ModMenuEntry> OnModRegistered;
 
     /// <summary>
-    /// Creates a new mod entry which can be customised and added to the mod menu with <see cref="ModEntry.Register"/>.
+    /// Creates a new mod entry which can be customised and added to the mod menu with <see cref="ModMenuEntry.Register"/>.
     /// </summary>
     /// <param name="mod">The mod this entry belongs to.</param>
     /// <returns>A new mod entry for the given mod</returns>
-    public static ModEntry CreateEntry(MelonMod mod)
+    public static ModMenuEntry CreateEntry(MelonMod mod)
     {
-        if(entries.ContainsKey(mod))
-        {
-            LogInfo($"Cannot create an entry for the mod {mod.Info.Name} since one has already been created.");
-            return null;
-        }
+        if(!entries.ContainsKey(mod))
+            return new ModMenuEntry(mod);
 
-        return new ModEntry(mod);
-    }
-
-    /// <summary>
-    /// Displays the config panel for the specified mod if it is registered and no other configuration panel is currently open.
-    /// If the mod does not have a registered config panel, a warning is logged.
-    /// </summary>
-    /// <param name="mod">The mod for which to display the configuration panel. Must not be null.</param>
-    public static void ShowConfigPanel(ModEntry mod)
-    {
-        if (currentConfigPanel is not null)
-            return;
-
-        if (configs.TryGetValue(mod, out var panel))
-        {
-            panel.ShowPanel();
-            currentConfigPanel = panel;
-        }
-        else LogWarning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
-    }
-
-    /// <summary>
-    /// Hides the currently displayed configuration panel, if there is one.
-    /// </summary>
-    public static void HideConfigPanel()
-    {
-        if (currentConfigPanel is null)
-            return;
-
-        currentConfigPanel.HidePanel();
-        currentConfigPanel = null;
+        logger.Warning($"Failed to create a mod menu entry for {mod.Info.Name} since one has already been created.");
+        return null;
     }
 
     /// <summary>
     /// Registers a mod entry with the mod menu and invoked the <see cref="OnModRegistered"/> event.
     /// </summary>
-    internal static void RegisterModEntry(ModEntry entry)
+    internal static void RegisterModEntry(ModMenuEntry entry)
     {
         entries[entry.Mod] = entry;
         OnModRegistered?.Invoke(entry);
 
-        LogInfo($"Successfully added {entry.DisplayName} to the mod menu.");
+        logger.Msg($"Successfully added {entry.DisplayName} to the mod menu.");
     }
-
-    internal static void RegisterConfigPanel(ConfigPanel panel) => configs[panel.Mod] = panel;
-
-    /// <summary>
-    /// Logs a message to the console with the <c>[ModMenu]</c> prefix.
-    /// </summary>
-    internal static void LogInfo(object value) => MelonLogger.Msg($"[ModMenu] {value.ToString()}");
-
-    /// <summary>
-    /// Logs a warning to the console with the <c>[ModMenu]</c> prefix.
-    /// </summary>
-    internal static void LogWarning(object value) => MelonLogger.Warning($"[ModMenu] {value.ToString()}");
-
-    /// <summary>
-    /// Logs an error to the console with the <c>[ModMenu]</c> prefix.
-    /// </summary>
-    internal static void LogError(object value) => MelonLogger.Error($"[ModMenu] {value.ToString()}");
 }

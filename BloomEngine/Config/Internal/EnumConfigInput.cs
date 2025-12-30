@@ -1,7 +1,7 @@
 ﻿using Il2CppSource.UI;
 using UnityEngine;
 
-namespace BloomEngine.Modules.Config.Inputs;
+namespace BloomEngine.Config.Internal;
 
 public sealed class EnumConfigInput(string name, Enum value, Action<Enum> onValueChanged, Action onInputChanged, Func<Enum, Enum> transformValue, Func<Enum, bool> validateValue) : BaseConfigInput<Enum>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {

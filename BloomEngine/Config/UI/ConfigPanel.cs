@@ -1,5 +1,6 @@
-﻿using BloomEngine.ModMenu.Services;
-using BloomEngine.Modules.Config.Inputs;
+﻿using BloomEngine.Config.Internal;
+using BloomEngine.Config.Services;
+using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppSource.UI;
@@ -14,7 +15,7 @@ namespace BloomEngine.Config.UI;
 
 internal class ConfigPanel
 {
-    public ModEntry Mod { get; set; }
+    public ModMenuEntry Mod { get; set; }
 
     private readonly List<RectTransform> pageObjects = new List<RectTransform>();
 
@@ -33,7 +34,7 @@ internal class ConfigPanel
     private GameObject pageNextButton;
 
 
-    internal ConfigPanel(PanelView panel, ModEntry mod)
+    internal ConfigPanel(PanelView panel, ModMenuEntry mod)
     {
         Mod = mod;
         PageCount = (int)Math.Ceiling((double)mod.ConfigInputFields.Count / InputFieldsPerPage);
@@ -58,10 +59,10 @@ internal class ConfigPanel
             foreach (IConfigInput field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
             
-            ModMenuService.HideConfigPanel();
+            ConfigService.HideConfigPanel();
         });
 
-        UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ModMenuService.HideConfigPanel);
+        UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ConfigService.HideConfigPanel);
 
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
