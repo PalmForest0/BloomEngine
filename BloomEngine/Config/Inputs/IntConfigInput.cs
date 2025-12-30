@@ -5,7 +5,7 @@ using MelonLoader;
 using System.Text;
 using UnityEngine;
 
-namespace BloomEngine.Config.Internal;
+namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// Creates an <see cref="int"/> input field in the form of a numeric textbox in your mod's config menu and returns it.

@@ -2,7 +2,7 @@
 using Il2CppSource.UI;
 using UnityEngine;
 
-namespace BloomEngine.Config.Internal;
+namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// Creates an <see cref="Enum"/> input field in the form of a dropdown in your mod's config menu and returns it.

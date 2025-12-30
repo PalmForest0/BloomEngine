@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Config.Internal;
+namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// Creates a <see cref="bool"/> input field in the form of a checkbox in your mod's config menu and returns it.

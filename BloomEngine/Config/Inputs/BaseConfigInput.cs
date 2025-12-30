@@ -1,7 +1,7 @@
 ﻿using MelonLoader;
 using UnityEngine;
 
-namespace BloomEngine.Config.Internal;
+namespace BloomEngine.Config.Inputs;
 
 public abstract class BaseConfigInput
 {

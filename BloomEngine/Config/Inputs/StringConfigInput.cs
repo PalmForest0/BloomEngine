@@ -2,7 +2,7 @@
 using Il2CppReloaded.Input;
 using UnityEngine;
 
-namespace BloomEngine.Config.Internal;
+namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// Creates a <see cref="string"/> input field in the form of a textbox in your mod's config menu and returns it.
