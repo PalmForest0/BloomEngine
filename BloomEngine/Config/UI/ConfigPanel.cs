@@ -165,24 +165,11 @@ internal class ConfigPanel
 
     private static void CreateInput(BaseConfigInput input, RectTransform parent)
     {
-        GameObject inputObj = null;
-        string name = $"InputField_{input.Name.Replace(" ", "")}";
-        
-        // Create the correct input input
-        if (input.InputObjectType == typeof(ReloadedInputField))
-            inputObj = UIHelper.CreateTextField(name, parent, input.ValueType.Name, onTextChanged: (_) => input.OnUIChanged());
-        else if(input.InputObjectType == typeof(Toggle))
-            inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => input.OnUIChanged());
-        else if (input.InputObjectType == typeof(ReloadedDropdown))
-            inputObj = UIHelper.CreateDropdown(name, parent, input.ValueType, onValueChanged: (_) => input.OnUIChanged());
-        else if (input.InputObjectType == typeof(Slider) && input is FloatConfigInput sliderInput)
-            inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, sliderInput.MinValue, onValueChanged: (_) => input.OnUIChanged());
+        GameObject inputObj = input.CreateInputObject(parent);
 
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.preferredHeight = 134;
         layout.preferredWidth = 900;
-
-        input.SetInputObject(inputObj);
     }
 
     private void CreatePageControls(RectTransform parent)

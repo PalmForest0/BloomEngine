@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BloomEngine.Config.Inputs;
 
-public abstract class BaseConfigInputT<T> : BaseConfigInput
+public abstract class TypedConfigInput<T> : BaseConfigInput
 {
     public T Value
     {
@@ -30,7 +30,7 @@ public abstract class BaseConfigInputT<T> : BaseConfigInput
     public Func<T, T> TransformValue { get; set; }
     public Func<T, bool> ValidateValue { get; set; }
 
-    protected BaseConfigInputT(string name, string description, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
+    protected TypedConfigInput(string name, string description, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
     {
         Name = name;
         Description = description;
@@ -46,8 +46,6 @@ public abstract class BaseConfigInputT<T> : BaseConfigInput
 
     internal override void CreateMelonEntry(MelonPreferences_Category melonCategory)
         => MelonEntry = melonCategory.CreateEntry(Name, Value, Name, Description);
-
-    internal override void SetInputObject(GameObject inputObject) => InputObject = inputObject;
 
     internal override void OnUIChanged() => OnInputChanged?.Invoke();
 }

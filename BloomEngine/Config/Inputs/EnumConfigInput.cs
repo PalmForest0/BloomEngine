@@ -1,4 +1,5 @@
 ﻿using BloomEngine.ModMenu.Services;
+using BloomEngine.Utilities;
 using Il2CppSource.UI;
 using UnityEngine;
 
@@ -16,15 +17,14 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class EnumConfigInput(string name, string description, Enum defaultValue, Action<Enum> onValueChanged = null, Action onInputChanged = null, Func<Enum, bool> validateValue = null)
-    : BaseConfigInputT<Enum>(name, description, defaultValue, onValueChanged, onInputChanged, null, validateValue)
+    : TypedConfigInput<Enum>(name, description, defaultValue, onValueChanged, onInputChanged, null, validateValue)
 {
-    public override Type InputObjectType { get; } = typeof(ReloadedDropdown);
     public ReloadedDropdown Dropdown { get; private set; }
 
-    internal override void SetInputObject(GameObject inputObject)
+    internal override GameObject CreateInputObject(RectTransform parent)
     {
-        base.SetInputObject(inputObject);
-        Dropdown = inputObject.GetComponent<ReloadedDropdown>();
+        Dropdown = UIHelper.CreateDropdown(InputObjectName, parent, ValueType, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
+        return Dropdown.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = GetOptions()[Dropdown.value];

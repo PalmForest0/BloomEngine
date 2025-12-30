@@ -1,4 +1,5 @@
 ﻿using BloomEngine.ModMenu.Services;
+using BloomEngine.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,15 +16,14 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
 public sealed class BoolConfigInput(string name, string description, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null)
-    : BaseConfigInputT<bool>(name, description, defaultValue, onValueChanged, onInputChanged, null, null)
+    : TypedConfigInput<bool>(name, description, defaultValue, onValueChanged, onInputChanged, null, null)
 {
-    public override Type InputObjectType { get; } = typeof(Toggle);
     public Toggle Toggle { get; private set; }
 
-    internal override void SetInputObject(GameObject inputObject)
+    internal override GameObject CreateInputObject(RectTransform parent)
     {
-        base.SetInputObject(inputObject);
-        Toggle = inputObject.GetComponent<Toggle>();
+        Toggle = UIHelper.CreateCheckbox(InputObjectName, parent, Value, onValueChanged: _ => OnUIChanged());
+        return Toggle.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = Toggle.isOn;

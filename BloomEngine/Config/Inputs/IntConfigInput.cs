@@ -20,15 +20,14 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class IntConfigInput(string name, string description, int defaultValue, Action<int> onValueChanged = null, Action onInputChanged = null, Func<int, int> transformValue = null, Func<int, bool> validateValue = null)
-    : BaseConfigInputT<int>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+    : TypedConfigInput<int>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
 {
-    public override Type InputObjectType { get; } = typeof(ReloadedInputField);
     public ReloadedInputField Textbox { get; private set; }
 
-    internal override void SetInputObject(GameObject inputObject)
+    internal override GameObject CreateInputObject(RectTransform parent)
     {
-        base.SetInputObject(inputObject);
-        Textbox = inputObject.GetComponent<ReloadedInputField>();
+        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
+        return Textbox.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));

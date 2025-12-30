@@ -1,4 +1,5 @@
 ﻿using BloomEngine.ModMenu.Services;
+using BloomEngine.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,18 +20,17 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null, Action onInputChanged = null, Func<float, float> transformValue = null, Func<float, bool> validateValue = null)
-    : BaseConfigInputT<float>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+    : TypedConfigInput<float>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public float MinValue { get; set; } = minValue;
     public float MaxValue { get; set; } = maxValue;
 
-    public override Type InputObjectType { get; } = typeof(Slider);
     public Slider Slider { get; private set; }
 
-    internal override void SetInputObject(GameObject inputObject)
+    internal override GameObject CreateInputObject(RectTransform parent)
     {
-        base.SetInputObject(inputObject);
-        Slider = inputObject.GetComponent<Slider>();
+        Slider = UIHelper.CreateSlider(InputObjectName, parent, Value, MinValue, MaxValue, onValueChanged: _ => OnUIChanged());
+        return Slider.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = Slider.value;

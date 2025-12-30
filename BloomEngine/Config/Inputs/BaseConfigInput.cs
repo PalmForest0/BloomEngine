@@ -10,12 +10,10 @@ public abstract class BaseConfigInput
 
     public Type ValueType { get; protected set; }
 
-    public GameObject InputObject { get; protected set; }
-    public abstract Type InputObjectType { get; }
+    protected string InputObjectName => $"ConfigInput_{Name.Trim().Replace(" ", "")}";
+    internal abstract GameObject CreateInputObject(RectTransform parent);
 
     internal abstract void CreateMelonEntry(MelonPreferences_Category melonCategory);
-
-    internal abstract void SetInputObject(GameObject inputObject);
 
     internal abstract void UpdateFromUI();
     internal abstract void RefreshUI();

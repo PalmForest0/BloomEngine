@@ -1,4 +1,5 @@
 ﻿using BloomEngine.ModMenu.Services;
+using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using UnityEngine;
 
@@ -17,15 +18,14 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class StringConfigInput(string name, string description, string defaultValue, Action<string> onValueChanged = null, Action onInputChanged = null, Func<string, string> transformValue = null, Func<string, bool> validateValue = null)
-    : BaseConfigInputT<string>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+    : TypedConfigInput<string>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
 {
-    public override Type InputObjectType { get; } = typeof(ReloadedInputField);
     public ReloadedInputField Textbox { get; private set; }
 
-    internal override void SetInputObject(GameObject inputObject)
+    internal override GameObject CreateInputObject(RectTransform parent)
     {
-        base.SetInputObject(inputObject);
-        Textbox = inputObject.GetComponent<ReloadedInputField>();
+        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
+        return Textbox.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = Textbox.text;

@@ -116,7 +116,7 @@ public static class UIHelper
     }
 
 
-    public static GameObject CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
+    public static ReloadedInputField CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
         GameObject obj = GameObject.Instantiate(textFieldTemplate, parent);
         obj.name = name;
@@ -139,10 +139,10 @@ public static class UIHelper
         field.onSubmit = new();
         field.onSubmit.AddListener(text => onDeselect?.Invoke(field));
 
-        return obj;
+        return field;
     }
 
-    public static GameObject CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
+    public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(checkboxTemplate, parent);
         obj.name = name;
@@ -157,10 +157,10 @@ public static class UIHelper
         toggle.onValueChanged = new();
         toggle.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
-        return obj;
+        return toggle;
     }
 
-    public static GameObject CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChanged = null)
+    public static ReloadedDropdown CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChanged = null)
     {
         if (!enumType.IsEnum)
             return null;
@@ -188,10 +188,10 @@ public static class UIHelper
         dropdown.onValueChanged = new();
         dropdown.onValueChanged?.AddListener(selection => onValueChanged?.Invoke((Enum)values[selection]));
 
-        return obj;
+        return dropdown;
     }
 
-    public static GameObject CreateSlider(string name, RectTransform parent, float minValue, float maxValue, float value, Action<float> onValueChanged = null)
+    public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(sliderTemplate, parent);
         obj.name = name;
@@ -203,7 +203,7 @@ public static class UIHelper
         Slider slider = obj.GetComponent<Slider>();
         slider.minValue = minValue;
         slider.maxValue = maxValue;
-        slider.SetValueWithoutNotify(value);
+        slider.SetValueWithoutNotify(defaultValue);
 
         slider.onValueChanged = new();
         slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
@@ -232,6 +232,6 @@ public static class UIHelper
         // Force a layout rebuild so the UI updates
         LayoutRebuilder.ForceRebuildLayoutImmediate(obj.GetComponent<RectTransform>());
 
-        return obj;
+        return slider;
     }
 }
