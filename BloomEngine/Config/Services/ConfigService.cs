@@ -1,8 +1,7 @@
-﻿using BloomEngine.Interfaces;
+﻿using BloomEngine.ModMenu.Services;
 using BloomEngine.Modules.Config.Inputs;
-using BloomEngine.Services.ModMenu;
 
-namespace BloomEngine.Services.Config;
+namespace BloomEngine.Config.Services;
 
 /// <summary>
 /// A static class which provides methods for creating input fields for a mod config menu.

@@ -1,6 +1,5 @@
-﻿using BloomEngine.Interfaces;
+﻿using BloomEngine.ModMenu.Services;
 using BloomEngine.Modules.Config.Inputs;
-using BloomEngine.Services.ModMenu;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppSource.UI;
@@ -11,7 +10,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.UI;
+namespace BloomEngine.Config.UI;
 
 internal class ConfigPanel
 {
@@ -56,7 +55,7 @@ internal class ConfigPanel
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (IInput field in Mod.ConfigInputFields)
+            foreach (IConfigInput field in Mod.ConfigInputFields)
                 field.UpdateFromUI();
             
             ModMenuService.HideConfigPanel();
@@ -115,7 +114,7 @@ internal class ConfigPanel
             RectTransform labelColumn = CreateColumn(pageRect, "LabelsColumn");
             RectTransform fieldColumn = CreateColumn(pageRect, "FieldsColumn");
 
-            foreach (IInput field in pages[i])
+            foreach (IConfigInput field in pages[i])
             {
                 CreateLabel(field, labelColumn);
                 CreateInput(field, fieldColumn);
@@ -148,7 +147,7 @@ internal class ConfigPanel
         return columnRect;
     }
 
-    private void CreateLabel(IInput field, RectTransform parent)
+    private void CreateLabel(IConfigInput field, RectTransform parent)
     {
         GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         obj.name = $"PropertyLabel_{field.Name}";
@@ -164,7 +163,7 @@ internal class ConfigPanel
         text.enabled = true;
     }
 
-    private static void CreateInput(IInput field, RectTransform parent)
+    private static void CreateInput(IConfigInput field, RectTransform parent)
     {
         GameObject inputObj = null;
         string name = $"InputField_{field.Name.Replace(" ", "")}";
@@ -234,7 +233,7 @@ internal class ConfigPanel
     public void ShowPanel()
     {
         // Populate input fields with current field values
-        foreach (IInput field in Mod.ConfigInputFields)
+        foreach (IConfigInput field in Mod.ConfigInputFields)
             field.RefreshUI();
 
         SetPageIndex(0);

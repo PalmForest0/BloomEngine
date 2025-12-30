@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace BloomEngine.Interfaces;
+namespace BloomEngine.Modules.Config.Inputs;
 
-public interface IInput
+public interface IConfigInput
 {
     string Name { get; set; }
 

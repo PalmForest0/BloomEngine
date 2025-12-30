@@ -3,8 +3,8 @@ using HarmonyLib;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using UnityEngine;
-using BloomEngine.Services.ModMenu;
-using BloomEngine.UI;
+using BloomEngine.ModMenu.Services;
+using BloomEngine.Config.UI;
 
 namespace PvZEnhanced.Patches;
 

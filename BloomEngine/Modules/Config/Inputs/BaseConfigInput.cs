@@ -1,9 +1,8 @@
-﻿using BloomEngine.Interfaces;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BloomEngine.Modules.Config.Inputs;
 
-public abstract class BaseConfigInput<T> : IInput
+public abstract class BaseConfigInput<T> : IConfigInput
 {
     public string Name { get; set; }
 
@@ -26,7 +25,7 @@ public abstract class BaseConfigInput<T> : IInput
     public Func<T, T> TransformValue { get; set; }
     public Func<T, bool> ValidateValue { get; set; }
 
-    public BaseConfigInput(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
+    protected BaseConfigInput(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
     {
         Name = name;
         Value = value;

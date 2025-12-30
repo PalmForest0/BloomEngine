@@ -1,4 +1,4 @@
-﻿using BloomEngine.Services.ModMenu;
+﻿using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace BloomEngine.UI;
+namespace BloomEngine.ModMenu.UI;
 
 internal class ModMenuManager : MonoBehaviour
 {

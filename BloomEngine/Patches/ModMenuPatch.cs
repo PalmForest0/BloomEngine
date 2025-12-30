@@ -1,5 +1,5 @@
-﻿using BloomEngine.Services.ModMenu;
-using BloomEngine.UI;
+﻿using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu.UI;
 using HarmonyLib;
 using Il2CppUI.Scripts;
 
