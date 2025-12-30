@@ -38,7 +38,7 @@ public class ModMenuEntry(MelonMod mod)
     /// <remarks>
     /// It is not recommended to modify this list directly, use <see cref="AddConfig(Type)"/> instead.
     /// </remarks>
-    public List<IConfigInput> ConfigInputFields { get; private set; }
+    public List<BaseConfigInput> ConfigInputFields { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this mod has a registered config.
@@ -90,14 +90,14 @@ public class ModMenuEntry(MelonMod mod)
     /// <returns>This mod entry with the config added.</returns>
     public ModMenuEntry AddConfig(Type staticConfig)
     {
-        ConfigInputFields = new List<IConfigInput>();
+        ConfigInputFields = new List<BaseConfigInput>();
 
         // Use reflection to find all fields and properties that define input fields
         var fields = staticConfig.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
         foreach (var field in fields)
         {
             // Null instance for static class
-            if (field.GetValue(null) is IConfigInput inputField)
+            if (field.GetValue(null) is BaseConfigInput inputField)
                 ConfigInputFields.Add(inputField);
         }
 

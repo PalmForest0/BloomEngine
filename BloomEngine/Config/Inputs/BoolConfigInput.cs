@@ -4,16 +4,16 @@ using UnityEngine.UI;
 namespace BloomEngine.Config.Internal;
 
 public sealed class BoolConfigInput(string name, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null, Func<bool, bool> transformValue = null, Func<bool, bool> validateValue = null)
-    : BaseConfigInput<bool>(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+    : BaseConfigInputT<bool>(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public Toggle Toggle { get; private set; }
 
-    public override void SetInputObject(GameObject inputObject)
+    internal override void SetInputObject(GameObject inputObject)
     {
         base.SetInputObject(inputObject);
         Toggle = inputObject.GetComponent<Toggle>();
     }
 
-    public override void UpdateFromUI() => Value = Toggle.isOn;
-    public override void RefreshUI() => Toggle.SetIsOnWithoutNotify(Value);   
+    internal override void UpdateFromUI() => Value = Toggle.isOn;
+    internal override void RefreshUI() => Toggle.SetIsOnWithoutNotify(Value);   
 }

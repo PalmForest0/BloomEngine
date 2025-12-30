@@ -6,19 +6,19 @@ using UnityEngine;
 
 namespace BloomEngine.Config.Internal;
 
-public sealed class IntConfigInput(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : BaseConfigInput<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class IntConfigInput(string name, int value, Action<int> onValueChanged, Action onInputChanged, Func<int, int> transformValue, Func<int, bool> validateValue) : BaseConfigInputT<int>(name, value, onValueChanged, onInputChanged, transformValue, validateValue)
 {
     public ReloadedInputField Textbox { get; private set; }
 
-    public override void SetInputObject(GameObject inputObject)
+    internal override void SetInputObject(GameObject inputObject)
     {
         base.SetInputObject(inputObject);
         Textbox = inputObject.GetComponent<ReloadedInputField>();
     }
 
-    public override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
-    public override void RefreshUI() => Textbox.SetTextWithoutNotify(Value.ToString());
-    public override void OnUIChanged()
+    internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
+    internal override void RefreshUI() => Textbox.SetTextWithoutNotify(Value.ToString());
+    internal override void OnUIChanged()
     {
         Textbox.SetTextWithoutNotify(SanitiseNumericInput(Textbox.text));
         base.OnUIChanged();

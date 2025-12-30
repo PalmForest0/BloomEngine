@@ -72,7 +72,7 @@ public static class ConfigService
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>A <see cref="StringConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    /// <returns>A <see cref="StringConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInputT{T}.Value"/>.</returns>
     public static StringConfigInput CreateStringInput(string name, string defaultValue, Action<string> onValueChanged = null, Action onInputChanged = null, Func<string, string> transformValue = null, Func<string, bool> validateValue = null)
         => new StringConfigInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
@@ -87,7 +87,7 @@ public static class ConfigService
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>An <see cref="IntConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    /// <returns>An <see cref="IntConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInputT{T}.Value"/>.</returns>
     public static IntConfigInput CreateIntInput(string name, int defaultValue, Action<int> onValueChanged = null, Action onInputChanged = null, Func<int, int> transformValue = null, Func<int, bool> validateValue = null)
         => new IntConfigInput(name, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
@@ -105,7 +105,7 @@ public static class ConfigService
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>A <see cref="FloatConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    /// <returns>A <see cref="FloatConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInputT{T}.Value"/>.</returns>
     public static FloatConfigInput CreateFloatInput(string name, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null, Action onInputChanged = null, Func<float, float> transformValue = null, Func<float, bool> validateValue = null)
         => new FloatConfigInput(name, defaultValue, minValue, maxValue, onValueChanged, onInputChanged, transformValue, validateValue);
 
@@ -119,7 +119,7 @@ public static class ConfigService
     /// <param name="defaultValue">This default value of this config input field.</param>
     /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
-    /// <returns>A <see cref="BoolConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    /// <returns>A <see cref="BoolConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInputT{T}.Value"/>.</returns>
     public static BoolConfigInput CreateBoolInput(string name, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null)
         => new BoolConfigInput(name, defaultValue, onValueChanged, onInputChanged, null, null);
 
@@ -134,7 +134,7 @@ public static class ConfigService
     /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
     /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
     /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-    /// <returns>An <see cref="EnumConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInput{T}.Value"/>.</returns>
+    /// <returns>An <see cref="EnumConfigInput"/> instance. You can read and modify the value of this config property using <see cref="BaseConfigInputT{T}.Value"/>.</returns>
     public static EnumConfigInput CreateEnumInput(string name, Enum defaultValue, Action<Enum> onValueChanged = null, Action onInputChanged = null, Func<Enum, bool> validateValue = null)
         => new EnumConfigInput(name, defaultValue, onValueChanged, onInputChanged, null, validateValue);
 }

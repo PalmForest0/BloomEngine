@@ -2,11 +2,8 @@
 
 namespace BloomEngine.Config.Internal;
 
-public abstract class BaseConfigInput<T> : IConfigInput
+public abstract class BaseConfigInputT<T> : BaseConfigInput
 {
-    public string Name { get; set; }
-
-    public Type ValueType => Value.GetType();
     public T Value
     {
         get => field;
@@ -17,15 +14,12 @@ public abstract class BaseConfigInput<T> : IConfigInput
         }
     }
 
-    public GameObject InputObject { get; private set; }
-    public Type InputObjectType { get; private set; }
-
     public Action<T> OnValueChanged { get; set; }
     public Action OnInputChanged { get; set; }
     public Func<T, T> TransformValue { get; set; }
     public Func<T, bool> ValidateValue { get; set; }
 
-    protected BaseConfigInput(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
+    protected BaseConfigInputT(string name, T value, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
     {
         Name = name;
         Value = value;
@@ -35,13 +29,11 @@ public abstract class BaseConfigInput<T> : IConfigInput
         ValidateValue = validateValue;
     }
 
-    public virtual void SetInputObject(GameObject inputObject)
+    internal override void SetInputObject(GameObject inputObject)
     {
         InputObject = inputObject;
         InputObjectType = inputObject.GetType();
     }
 
-    public abstract void UpdateFromUI();
-    public abstract void RefreshUI();
-    public virtual void OnUIChanged() => OnInputChanged?.Invoke();
+    internal override void OnUIChanged() => OnInputChanged?.Invoke();
 }
