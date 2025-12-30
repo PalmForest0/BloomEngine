@@ -1,6 +1,4 @@
-﻿using BloomEngine.Config.Inputs;
-using BloomEngine.Config.UI;
-using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.ModMenu.Services;
 using MelonLoader;
 
 namespace BloomEngine.Config.Services;
@@ -11,56 +9,63 @@ namespace BloomEngine.Config.Services;
 /// </summary>
 public static class ConfigService
 {
-    private static readonly Dictionary<ModMenuEntry, ConfigPanel> configs = new();
-    private static readonly MelonLogger.Instance logger = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
+    internal static MelonLogger.Instance ConfigLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
+    internal static Dictionary<ModMenuEntry, ModConfig> ModConfigs { get; } = new();
     
-    private static ConfigPanel currentConfigPanel;
+    private static ModConfig currentConfig;
 
     /// <summary>
-    /// A value that indicates whether a mod config panel is currently open.
+    /// A value that indicates whether a mod config config is currently open.
     /// </summary>
-    public static bool IsConfigPanelOpen => currentConfigPanel is not null;
+    public static bool IsConfigPanelOpen => currentConfig is not null;
 
     /// <summary>
-    /// Displays the config panel for the specified mod if it is registered and no other configuration panel is currently open.
-    /// If the mod does not have a registered config panel, a warning is logged.
+    /// Displays the config config for the specified mod if it is registered and no other configuration config is currently open.
+    /// If the mod does not have a registered config config, a warning is logged.
     /// </summary>
-    /// <param name="mod">The mod for which to display the configuration panel. Must not be null.</param>
+    /// <param name="mod">The mod for which to display the configuration config. Must not be null.</param>
     public static void ShowConfigPanel(ModMenuEntry mod)
     {
-        if (currentConfigPanel is not null)
+        // Return if a panel is already open
+        if (currentConfig is not null)
             return;
 
-        if (configs.TryGetValue(mod, out var panel))
+        // Log a warning if there is no config panel
+        if (!ModConfigs.TryGetValue(mod, out var config))
         {
-            panel.ShowPanel();
-            currentConfigPanel = panel;
+            ConfigLogger.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
+            return;
         }
-        else logger.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
+
+        config.ShowPanel();
+        currentConfig = config;
     }
 
     /// <summary>
-    /// Hides the currently displayed configuration panel, if there is one.
+    /// Hides the currently displayed configuration config, if there is one.
     /// </summary>
     public static void HideConfigPanel()
     {
-        if (currentConfigPanel is null)
+        if (currentConfig is null)
             return;
 
-        currentConfigPanel.HidePanel();
-        currentConfigPanel = null;
+        currentConfig.HidePanel();
+        currentConfig = null;
     }
 
 
-    internal static void RegisterConfigPanel(ConfigPanel panel)
+    internal static void RegisterModConfig(ModConfig config)
     {
-        if(configs.ContainsKey(panel.Mod))
-            logger.Warning($"Mod {panel.Mod.DisplayName} attempted to register multiple config panels. Overwriting previous panel.", "Config");
+        if(config is null)
+            return;
 
-        configs[panel.Mod] = panel;
+        if (ModConfigs.ContainsKey(config.ModEntry))
+            ConfigLogger.Warning($"Mod {config.ModEntry.DisplayName} attempted to register a config multiple times. Overwriting previous mod config.");
+
+        ModConfigs[config.ModEntry] = config;
+
+        SaveModConfig(config, false);
     }
-
-    internal static void RegisterModConfig(ModConfig config) => SaveModConfig(config, false);
 
     internal static void SaveModConfig(ModConfig config, bool printMessage)
     {
@@ -70,6 +75,6 @@ public static class ConfigService
         config.MelonCategory.SaveToFile(false);
 
         if(printMessage)
-            logger.Msg($"Updated mod config for {config.ModMenuEntry.DisplayName} and saved MelonPreferences.");
+            ConfigLogger.Msg($"Updated mod config for {config.ModEntry.DisplayName} and saved MelonPreferences.");
     }
 }

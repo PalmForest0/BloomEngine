@@ -36,7 +36,7 @@ internal class ModMenuManager : MonoBehaviour
         achievementsContainer = transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
         achievementsUi = transform.GetComponent<AchievementsUI>();
 
-        // Prevent header from blocking clicks on mod entries
+        // Prevent header from blocking clicks on mod ModEntries
         header = transform.Find("ScrollView/Viewport/Content/Header").gameObject;
         header.transform.Find("Shadow").GetComponent<Image>().raycastTarget = false;
         header.transform.Find("Left/Background_grass02").GetComponent<Image>().raycastTarget = false;
@@ -79,7 +79,7 @@ internal class ModMenuManager : MonoBehaviour
         rect.anchorMax = new Vector2(0, 1);
         rect.anchoredPosition = new Vector2(25, rect.rect.height + 100);
 
-        // Update the achievements button to reset the text and hide the mod entries
+        // Update the achievements button to reset the text and hide the mod ModEntries
         Button achievementsButton = transform.parent.FindComponent<Button>("Main/BG_Tree/AchievementsButton");
         achievementsButton.onClick.AddListener(() => SetCurrentMenu(showModMenu: false));
         achievementsUi.m_backButton.onClick.AddListener(() => ModMenuOpen = false);
@@ -114,7 +114,7 @@ internal class ModMenuManager : MonoBehaviour
             modObj.name = $"ModEntry_{mod.Info.Name}";
 
             // Get this mod's mod menu entry if it has one
-            bool isRegistered = ModMenuService.Entries.TryGetValue(mod, out ModMenuEntry entry);
+            bool isRegistered = ModMenuService.ModEntries.TryGetValue(mod, out ModMenuEntry entry);
 
             var title = modObj.FindComponent<TextMeshProUGUI>("Title");
             var subheader = modObj.FindComponent<TextMeshProUGUI>("Subheader");

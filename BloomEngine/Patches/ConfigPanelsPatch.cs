@@ -1,12 +1,13 @@
-﻿using BloomEngine.Utilities;
+﻿using BloomEngine.Config.Services;
+using BloomEngine.Config.UI;
+using BloomEngine.ModMenu.Services;
+using BloomEngine.Utilities;
 using HarmonyLib;
+using Il2CppBest.HTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
-using UnityEngine;
-using BloomEngine.ModMenu.Services;
-using BloomEngine.Config.UI;
-using BloomEngine.Config.Services;
 using MelonLoader;
+using UnityEngine;
 
 namespace PvZEnhanced.Patches;
 
@@ -25,12 +26,11 @@ internal static class ConfigPanelsPatch
     {
         var template = container.m_panels.FirstOrDefault(p => p.m_id == "quit");
 
-        // Create a config panel for each mod that has a config
-        foreach (var mod in ModMenuService.Entries.Values.Where(mod => mod is not null && mod.Config is not null && !mod.Config.IsEmpty))
+        // Create a config panel for each mod with a registered config
+        foreach (ModConfig config in ConfigService.ModConfigs.Values.Where(cfg => !cfg.IsEmpty))
         {
-            var panel = GameObject.Instantiate(template.gameObject, container.transform);
-            var config = new ConfigPanel(panel.GetComponent<PanelView>(), mod);
-            ConfigService.RegisterConfigPanel(config);
+            var panelObj = GameObject.Instantiate(template.gameObject, container.transform);
+            config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config.ModEntry);
         }
     }
 }

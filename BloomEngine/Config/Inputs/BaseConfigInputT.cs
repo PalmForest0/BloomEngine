@@ -10,9 +10,16 @@ public abstract class BaseConfigInputT<T> : BaseConfigInput
         get => field;
         set
         {
+            T oldValue = field;
+
             field = TransformValue is not null ? TransformValue.Invoke(value) : value;
-            OnValueChanged?.Invoke(field);
-            MelonEntry?.Value = field;
+
+            // Don't call event or update MelonEntry value if there was no change
+            if(!field.Equals(oldValue))
+            {
+                OnValueChanged?.Invoke(field);
+                MelonEntry?.Value = field;
+            }
         }
     }
 

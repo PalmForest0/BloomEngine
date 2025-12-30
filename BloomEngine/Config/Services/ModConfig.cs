@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Config.Inputs;
+using BloomEngine.Config.UI;
 using BloomEngine.ModMenu.Services;
 using MelonLoader;
 using System.Reflection;
@@ -7,7 +8,7 @@ namespace BloomEngine.Config.Services;
 
 public class ModConfig
 {
-    public ModMenuEntry ModMenuEntry { get; private init; }
+    public ModMenuEntry ModEntry { get; private init; }
 
     public List<BaseConfigInput> ConfigInputs { get; private init; }
     public MelonPreferences_Category MelonCategory { get; private init; }
@@ -15,15 +16,21 @@ public class ModConfig
     public int InputCount => ConfigInputs.Count;
     public bool IsEmpty => InputCount == 0;
 
+    internal ConfigPanel Panel { get; set; }
+
     internal ModConfig(ModMenuEntry modMenuEntry, Type staticConfigType)
     {
-        ModMenuEntry = modMenuEntry;
+        ModEntry = modMenuEntry;
         MelonCategory = MelonPreferences.CreateCategory(modMenuEntry.Identifier, modMenuEntry.DisplayName);
         ConfigInputs = GetInputsFromStaticClass(staticConfigType);
 
         foreach(var input in ConfigInputs)
             input.CreateMelonEntry(MelonCategory);
     }
+
+    public void ShowPanel() => Panel.ShowPanel();
+    public void HidePanel() => Panel.HidePanel();
+
 
     internal void UpdateAllFromUI()
     {
