@@ -37,7 +37,7 @@ internal class ConfigPanel
     internal ConfigPanel(PanelView panel, ModMenuEntry mod)
     {
         Mod = mod;
-        PageCount = (int)Math.Ceiling((double)mod.ConfigInputFields.Count / InputFieldsPerPage);
+        PageCount = (int)Math.Ceiling((double)mod.Config.InputCount / InputFieldsPerPage);
 
         this.panel = panel.gameObject;
         panel.m_id = $"modConfig_{mod.Mod.Info.Name}";
@@ -56,9 +56,8 @@ internal class ConfigPanel
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            foreach (BaseConfigInput field in Mod.ConfigInputFields)
-                field.UpdateFromUI();
-            
+            Mod.Config.UpdateAllFromUI();
+            mod.Config.SaveConfig();
             ConfigService.HideConfigPanel();
         });
 
@@ -72,7 +71,7 @@ internal class ConfigPanel
         headerLayout.preferredWidth = header.GetComponent<RectTransform>().sizeDelta.x;
         headerLayout.preferredHeight = header.GetComponent<RectTransform>().sizeDelta.y;
 
-        // Create inputs for each field on each page
+        // Create inputs for each input on each page
         CreatePages();
         UnityEngine.Object.Destroy(window.Find("SubheadingText").gameObject);
 
@@ -87,12 +86,12 @@ internal class ConfigPanel
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             UnityEngine.Object.Destroy(localiser);
 
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.ConfigInputFields.Count} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.Config.InputCount} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
     }
 
     private void CreatePages()
     {
-        var pages = Mod.ConfigInputFields.Chunk(InputFieldsPerPage).ToList();
+        var pages = Mod.Config.ConfigInputs.Chunk(InputFieldsPerPage).ToList();
 
         for (int i = 0; i < pages.Count; i++)
         {
@@ -111,7 +110,7 @@ internal class ConfigPanel
             pageLayout.childControlWidth = true;
             pageLayout.childControlHeight = true;
 
-            // Populate the columns with field labels and input fields
+            // Populate the columns with input labels and input fields
             RectTransform labelColumn = CreateColumn(pageRect, "LabelsColumn");
             RectTransform fieldColumn = CreateColumn(pageRect, "FieldsColumn");
 
@@ -164,26 +163,26 @@ internal class ConfigPanel
         text.enabled = true;
     }
 
-    private static void CreateInput(BaseConfigInput field, RectTransform parent)
+    private static void CreateInput(BaseConfigInput input, RectTransform parent)
     {
         GameObject inputObj = null;
-        string name = $"InputField_{field.Name.Replace(" ", "")}";
+        string name = $"InputField_{input.Name.Replace(" ", "")}";
         
-        // Create the correct input field
-        if (field.InputObjectType == typeof(ReloadedInputField))
-            inputObj = UIHelper.CreateTextField(name, parent, field.ValueType.Name, onTextChanged: (_) => field.OnUIChanged());
-        else if(field.InputObjectType == typeof(Toggle))
-            inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => field.OnUIChanged());
-        else if (field.InputObjectType == typeof(ReloadedDropdown))
-            inputObj = UIHelper.CreateDropdown(name, parent, field.ValueType, onValueChanged: (_) => field.OnUIChanged());
-        else if (field.InputObjectType == typeof(Slider) && field is FloatConfigInput sliderInput)
-            inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, sliderInput.MinValue, onValueChanged: (_) => field.OnUIChanged());
+        // Create the correct input input
+        if (input.InputObjectType == typeof(ReloadedInputField))
+            inputObj = UIHelper.CreateTextField(name, parent, input.ValueType.Name, onTextChanged: (_) => input.OnUIChanged());
+        else if(input.InputObjectType == typeof(Toggle))
+            inputObj = UIHelper.CreateCheckbox(name, parent, onValueChanged: (_) => input.OnUIChanged());
+        else if (input.InputObjectType == typeof(ReloadedDropdown))
+            inputObj = UIHelper.CreateDropdown(name, parent, input.ValueType, onValueChanged: (_) => input.OnUIChanged());
+        else if (input.InputObjectType == typeof(Slider) && input is FloatConfigInput sliderInput)
+            inputObj = UIHelper.CreateSlider(name, parent, sliderInput.MinValue, sliderInput.MaxValue, sliderInput.MinValue, onValueChanged: (_) => input.OnUIChanged());
 
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.preferredHeight = 134;
         layout.preferredWidth = 900;
 
-        field.SetInputObject(inputObj);
+        input.SetInputObject(inputObj);
     }
 
     private void CreatePageControls(RectTransform parent)
@@ -233,9 +232,8 @@ internal class ConfigPanel
     /// </summary>
     public void ShowPanel()
     {
-        // Populate input fields with current field values
-        foreach (BaseConfigInput field in Mod.ConfigInputFields)
-            field.RefreshUI();
+        // Populate input fields with current input values
+        Mod.Config.RefreshAllUI();
 
         SetPageIndex(0);
         panel.SetActive(true);

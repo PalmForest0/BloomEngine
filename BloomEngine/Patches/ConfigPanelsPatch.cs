@@ -6,6 +6,7 @@ using UnityEngine;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.Config.UI;
 using BloomEngine.Config.Services;
+using MelonLoader;
 
 namespace PvZEnhanced.Patches;
 
@@ -25,7 +26,7 @@ internal static class ConfigPanelsPatch
         var template = container.m_panels.FirstOrDefault(p => p.m_id == "quit");
 
         // Create a config panel for each mod that has a config
-        foreach (var mod in ModMenuService.Entries.Values.Where(mod => mod is not null && mod.HasConfig && !mod.ConfigInputFields.IsNullOrEmpty()))
+        foreach (var mod in ModMenuService.Entries.Values.Where(mod => mod is not null && mod.Config is not null && !mod.Config.IsEmpty))
         {
             var panel = GameObject.Instantiate(template.gameObject, container.transform);
             var config = new ConfigPanel(panel.GetComponent<PanelView>(), mod);

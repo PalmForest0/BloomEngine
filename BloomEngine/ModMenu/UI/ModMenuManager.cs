@@ -157,7 +157,7 @@ internal class ModMenuManager : MonoBehaviour
             subheader.text = entry.Description;
 
             // If this entry has a config, create a config button
-            if (entry.HasConfig)
+            if (entry.Config is not null)
             {
                 RectTransform configIconRect = CreateModConfigIcon(modIconObj, iconContainerRect);
                 SetupdModConfigButton(modIconObj, configIconRect, entry);

@@ -18,6 +18,11 @@ public class ModMenuEntry(MelonMod mod)
     public MelonMod Mod { get; } = mod;
 
     /// <summary>
+    /// A string that represents the unique identifier for this mod entry.
+    /// </summary>
+    public string Identifier { get; private set; } = mod.Info.Name.Trim().Replace(" ", "");
+
+    /// <summary>
     /// The display name that shows up in the mod menu for this entry.
     /// </summary>
     public string DisplayName { get; private set; } = GetDefaultModName(mod);
@@ -33,17 +38,9 @@ public class ModMenuEntry(MelonMod mod)
     public Sprite Icon { get; private set; }
 
     /// <summary>
-    /// A list of all the registered config input fields for this mod.
+    /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfig(Type)"/>.
     /// </summary>
-    /// <remarks>
-    /// It is not recommended to modify this list directly, use <see cref="AddConfig(Type)"/> instead.
-    /// </remarks>
-    public List<BaseConfigInput> ConfigInputFields { get; private set; }
-
-    /// <summary>
-    /// Gets a value indicating whether this mod has a registered config.
-    /// </summary>
-    public bool HasConfig { get; private set; }
+    public ModConfig Config { get; private set; }
 
     /// <summary>
     /// Adds a custom display name that will replace this entry's mod name in the mod menu.
@@ -90,18 +87,7 @@ public class ModMenuEntry(MelonMod mod)
     /// <returns>This mod entry with the config added.</returns>
     public ModMenuEntry AddConfig(Type staticConfig)
     {
-        ConfigInputFields = new List<BaseConfigInput>();
-
-        // Use reflection to find all fields and properties that define input fields
-        var fields = staticConfig.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        foreach (var field in fields)
-        {
-            // Null instance for static class
-            if (field.GetValue(null) is BaseConfigInput inputField)
-                ConfigInputFields.Add(inputField);
-        }
-
-        HasConfig = ConfigInputFields.Count > 0;
+        Config = new ModConfig(this, staticConfig);
         return this;
     }
 
@@ -115,6 +101,7 @@ public class ModMenuEntry(MelonMod mod)
     public ModMenuEntry Register()
     {
         ModMenuService.RegisterModEntry(this);
+        ConfigService.RegisterModConfig(Config);
         return this;
     }
 
