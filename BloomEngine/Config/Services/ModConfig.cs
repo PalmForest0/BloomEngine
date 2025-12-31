@@ -6,12 +6,12 @@ using System.Reflection;
 
 namespace BloomEngine.Config.Services;
 
-public class ModConfig
+public sealed class ModConfig
 {
     public ModMenuEntry ModEntry { get; private init; }
 
     public List<BaseConfigInput> ConfigInputs { get; private init; }
-    public MelonPreferences_Category MelonCategory { get; private init; }
+    public MelonPreferences_Category MelonCategory { get; private set; }
 
     public int InputCount => ConfigInputs.Count;
     public bool IsEmpty => InputCount == 0;
@@ -24,11 +24,9 @@ public class ModConfig
     internal ModConfig(ModMenuEntry modEntry, BaseConfigInput[] inputs)
     {
         ModEntry = modEntry;
-        MelonCategory = MelonPreferences.CreateCategory(modEntry.Identifier, modEntry.DisplayName);
         ConfigInputs = inputs.ToList();
 
-        foreach (var input in ConfigInputs)
-            input.CreateMelonEntry(MelonCategory);
+        SetupMelonPreferences();
     }
 
     /// <summary>
@@ -37,12 +35,19 @@ public class ModConfig
     internal ModConfig(ModMenuEntry modEntry, Type staticConfig)
     {
         ModEntry = modEntry;
-        MelonCategory = MelonPreferences.CreateCategory(modEntry.Identifier, modEntry.DisplayName);
         ConfigInputs = GetInputsFromStaticClass(staticConfig);
+
+        SetupMelonPreferences();
+    }
+
+    private void SetupMelonPreferences()
+    {
+        MelonCategory = MelonPreferences.CreateCategory(ModEntry.Identifier, ModEntry.DisplayName);
 
         foreach (var input in ConfigInputs)
             input.CreateMelonEntry(MelonCategory);
     }
+
 
     public void ShowPanel() => Panel.ShowPanel();
     public void HidePanel() => Panel.HidePanel();
@@ -60,7 +65,7 @@ public class ModConfig
             input.RefreshUI();
     }
 
-    internal void SaveConfig() => ConfigService.SaveModConfig(this, true);
+    internal void SaveConfig(bool printMessage) => ConfigService.SaveModConfig(this, printMessage);
 
     private static List<BaseConfigInput> GetInputsFromStaticClass(Type configType)
     {

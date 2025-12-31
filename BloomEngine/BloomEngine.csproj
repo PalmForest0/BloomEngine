@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<Version>0.2.0-beta</Version>
 	<Authors>PalmForest</Authors>
+	<Nullable>disable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>

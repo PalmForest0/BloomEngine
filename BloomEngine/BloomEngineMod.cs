@@ -1,4 +1,5 @@
-﻿using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config.Inputs;
+using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using MelonLoader;
 

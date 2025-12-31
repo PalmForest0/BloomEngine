@@ -75,6 +75,6 @@ public static class ConfigService
         config.MelonCategory.SaveToFile(false);
 
         if(printMessage)
-            ConfigLogger.Msg($"Updated mod config for {config.ModEntry.DisplayName} and saved MelonPreferences.");
+            ConfigLogger.Msg($"Updated mod config for {config.ModEntry.DisplayName} and saved preferences.");
     }
 }

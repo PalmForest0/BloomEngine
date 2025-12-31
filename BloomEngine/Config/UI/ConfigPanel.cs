@@ -57,7 +57,7 @@ internal class ConfigPanel
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
             Mod.Config.UpdateAllFromUI();
-            mod.Config.SaveConfig();
+            Mod.Config.SaveConfig(true);
             ConfigService.HideConfigPanel();
         });
 
