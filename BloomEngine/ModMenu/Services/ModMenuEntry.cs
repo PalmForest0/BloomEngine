@@ -113,7 +113,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     public ModMenuEntry Register()
     {
         ModMenuService.RegisterModEntry(this);
-        ConfigService.RegisterModConfig(Config);
+        Config?.Save(false);
         return this;
     }
 

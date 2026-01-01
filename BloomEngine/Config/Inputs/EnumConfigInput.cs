@@ -26,7 +26,7 @@ public sealed class EnumConfigInput : TypedConfigInput<Enum>
     internal override GameObject CreateInputObject(RectTransform parent)
     {
         Dropdown = UIHelper.CreateDropdown(InputObjectName, parent, ValueType, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
-        options = Enum.GetValues(Value.GetType()).Cast<Enum>().ToList();
+        options = Enum.GetValues(ValueType).Cast<Enum>().ToList();
 
         return Dropdown.gameObject;
     }

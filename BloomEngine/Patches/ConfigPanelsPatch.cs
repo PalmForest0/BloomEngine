@@ -26,8 +26,8 @@ internal static class ConfigPanelsPatch
     {
         var template = container.m_panels.FirstOrDefault(p => p.m_id == "quit");
 
-        // Create a config panel for each mod with a registered config
-        foreach (ModConfig config in ConfigService.ModConfigs.Values.Where(cfg => !cfg.IsEmpty))
+        // Create a config panel for each mod with a registered (and not empty) config
+        foreach (ModConfig config in ModMenuService.ModEntries.Values.Select(mod => mod.Config).Where(cfg => cfg is not null && !cfg.IsEmpty))
         {
             var panelObj = GameObject.Instantiate(template.gameObject, container.transform);
             config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config.ModEntry);

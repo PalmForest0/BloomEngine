@@ -12,7 +12,6 @@ namespace BloomEngine.Config.Services;
 public static class ConfigService
 {
     internal static MelonLogger.Instance ConfigLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
-    internal static Dictionary<ModMenuEntry, ModConfig> ModConfigs { get; } = new();
     
     /// <summary>
     /// The config panel UI that is currently open.
@@ -107,15 +106,21 @@ public static class ConfigService
         if (currentPanel is not null)
             return;
 
-        // Log a warning if there is no config panel
-        if (!ModConfigs.TryGetValue(mod, out var config))
+        // Log a warning if there is no config registered
+        if (mod.Config is null || mod.Config.IsEmpty)
         {
             ConfigLogger.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
             return;
         }
 
-        config.Panel.ShowPanel();
-        currentPanel = config.Panel;
+        if(mod.Config.Panel is null)
+        {
+            ConfigLogger.Error($"Failed to open mod config panel for {mod.DisplayName}: Config UI panel has not been created.");
+            return;
+        }
+
+        mod.Config.Panel.ShowPanel();
+        currentPanel = mod.Config.Panel;
     }
 
     /// <summary>
@@ -128,21 +133,5 @@ public static class ConfigService
 
         currentPanel.HidePanel();
         currentPanel = null;
-    }
-
-
-    /// <summary>
-    /// Adds a mod config instance to a static list and saves the default values
-    /// </summary>
-    internal static void RegisterModConfig(ModConfig config)
-    {
-        if(config is null)
-            return;
-
-        if (ModConfigs.ContainsKey(config.ModEntry))
-            ConfigLogger.Warning($"Mod {config.ModEntry.DisplayName} attempted to register a config multiple times. Overwriting previous config.");
-
-        ModConfigs[config.ModEntry] = config;
-        config?.Save(false);
     }
 }

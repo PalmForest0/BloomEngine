@@ -24,7 +24,7 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
                 return;
 
             // Don't call event or update MelonEntry value if there is no difference
-            if (!EqualityComparer<T>.Default.Equals(field, newValue))
+            if (EqualityComparer<T>.Default.Equals(field, newValue))
                 return;
             
             field = newValue;
