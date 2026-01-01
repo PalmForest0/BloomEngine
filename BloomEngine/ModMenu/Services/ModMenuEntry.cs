@@ -9,7 +9,7 @@ namespace BloomEngine.ModMenu.Services;
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
 /// </summary>
-public class ModMenuEntry(MelonMod mod)
+public sealed class ModMenuEntry(MelonMod mod)
 {
     /// <summary>
     /// The MelonLoader mod this entry belongs to.

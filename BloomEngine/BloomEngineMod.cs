@@ -1,11 +1,10 @@
-﻿using BloomEngine.Config.Inputs;
-using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using MelonLoader;
 
 namespace BloomEngine;
 
-internal class BloomEngineMod : MelonMod
+internal sealed class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
     public const string Version = "0.2.0-beta";

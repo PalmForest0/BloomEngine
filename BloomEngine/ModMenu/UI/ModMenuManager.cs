@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace BloomEngine.ModMenu.UI;
 
-internal class ModMenuManager : MonoBehaviour
+internal sealed class ModMenuManager : MonoBehaviour
 {
     public bool ModMenuOpen { get; private set; } = false;
 

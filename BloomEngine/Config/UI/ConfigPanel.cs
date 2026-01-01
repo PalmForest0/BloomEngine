@@ -3,7 +3,6 @@ using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
-using Il2CppSource.UI;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
@@ -13,7 +12,7 @@ using UnityEngine.UI;
 
 namespace BloomEngine.Config.UI;
 
-internal class ConfigPanel
+internal sealed class ConfigPanel
 {
     public ModMenuEntry Mod { get; set; }
 
