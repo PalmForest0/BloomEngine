@@ -1,7 +1,7 @@
 ﻿using MelonLoader;
 using UnityEngine;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Inputs.Base;
 
 /// <summary>
 /// Represents the base typeless structure of a config input, which is extended by

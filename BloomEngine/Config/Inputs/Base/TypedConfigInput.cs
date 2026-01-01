@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Inputs.Base;
 
 /// <summary>
 /// Represents a generic config input with a specificly typed <see cref="Value"/>.

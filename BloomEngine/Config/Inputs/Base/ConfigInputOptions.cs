@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Config.Services;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Inputs.Base;
 
 /// <summary>
 /// Optional options class through which additional logic can be added to a config input through actions and functions.<br/>

@@ -1,4 +1,5 @@
-﻿using BloomEngine.Config.Services;
+﻿using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
 using Il2CppSource.UI;
 using UnityEngine;
