@@ -1,4 +1,4 @@
-﻿using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,24 +6,24 @@ using UnityEngine.UI;
 namespace BloomEngine.Config.Inputs;
 
 /// <summary>
-/// Creates a <see cref="float"/> input field in the form of a slider in your mod's config menu and returns it.
-/// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-/// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
+/// A config input type which contains UI implementation for handling <see cref="float"/> input.<br/>
+/// To create a <see cref="FloatConfigInput"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float, ConfigInputOptions{float})"/>
 /// </summary>
-/// <param name="name">The name of this input slider, which will be displayed in the config menu.</param>
-/// <param name="description">The description of this input slider, which will be displayed in the config menu.</param>
-/// <param name="defaultValue">The default value of this config input slider.</param>
-/// <param name="minValue">The minimum value of this input slider.</param>
-/// <param name="maxValue">The maximum value of this input slider.</param>
-/// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
-/// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
-/// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
-/// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class FloatConfigInput : TypedConfigInput<float>
 {
+    /// <summary>
+    /// The minimum value constraint of this <see cref="float"/> input slider.
+    /// </summary>
     public float MinValue { get; private init; }
+
+    /// <summary>
+    /// The maximum value constraint of this <see cref="float"/> input slider.
+    /// </summary>
     public float MaxValue { get; private init; }
 
+    /// <summary>
+    /// The UI slider which corresponds to this config input in the config panel.
+    /// </summary>
     public Slider Slider { get; private set; }
 
     internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue, ConfigInputOptions<float> options) : base(name, description, defaultValue, options)

@@ -68,8 +68,8 @@ public class ModMenuEntry(MelonMod mod)
     /// Adds a custom icon to this entry in the mod menu.
     /// </summary>
     /// <param name="iconSprite">
-    /// The iconSprite to replace the default icon with.<br/>
-    /// To load a iconSprite, you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string, float)"/>.
+    /// The <see cref="Sprite"/> to replace the default icon with. To load a <see cref="Sprite"/>,
+    /// you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string, float)"/>.
     /// </param>
     /// <returns>This mod entry with the new icon.</returns>
     public ModMenuEntry AddIcon(Sprite iconSprite)
@@ -79,12 +79,10 @@ public class ModMenuEntry(MelonMod mod)
     }
 
     /// <summary>
-    /// Creates a config for this mod and adds all the provided inputs.
+    /// Creates a config for this mod and adds all the provided inputs, adding them to the existing ones if a config alredy exists.<br/>
     /// To create a config input, use the static methods provided by <see cref="ConfigService"/>.
     /// </summary>
-    /// <param name="inputs">An array of inputs to create the config with.
-    /// If a config already exists, these inputs will be added to the existing ones.
-    /// </param>
+    /// <param name="inputs">An array of inputs to create the config with.</param>
     /// <returns>This mod entry with the added config inputs.</returns>
     public ModMenuEntry AddConfigInputs(params BaseConfigInput[] inputs)
     {
@@ -96,8 +94,8 @@ public class ModMenuEntry(MelonMod mod)
     }
 
     /// <summary>
-    /// Adds a config to this mod using a static config class.
-    /// To add input fields, use the static methods provided by <see cref="ConfigService"/> and make the result publicly accessible.
+    /// Adds a config to this mod using a static config class. To add input fields,
+    /// use the static methods provided by <see cref="ConfigService"/> and make the config inputs publicly accessible.
     /// </summary>
     /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>
@@ -108,12 +106,10 @@ public class ModMenuEntry(MelonMod mod)
     }
 
     /// <summary>
-    /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.
-    /// </summary>
-    /// <remarks>
+    /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.<br/>
     /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
-    /// </remarks>
-    /// <returns>The registered entry.</returns>
+    /// </summary>
+    /// <returns>The registered mod menu entry.</returns>
     public ModMenuEntry Register()
     {
         ModMenuService.RegisterModEntry(this);

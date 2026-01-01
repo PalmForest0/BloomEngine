@@ -1,4 +1,4 @@
-﻿using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using MelonLoader;
@@ -8,19 +8,14 @@ using UnityEngine;
 namespace BloomEngine.Config.Inputs;
 
 /// <summary>
-/// Creates an <see cref="int"/> input field in the form of a numeric textbox in your mod's config menu and returns it.
-/// To register your config with the mod menu, make all your input fields publicly accessible in a static config class
-/// and call <see cref="ModMenuEntry.AddConfig(Type)"/>, passing in your config class as the type.
+/// A config input type which contains UI implementation for handling <see cref="int"/> input.<br/>
+/// To create an <see cref="IntConfigInput"/>, use <see cref="ConfigService.CreateInt(string, string, int, ConfigInputOptions{int})"/>
 /// </summary>
-/// <param name="name">The name of this input field, which will be displayed in the config menu.</param>
-/// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-/// <param name="defaultValue">This default value of this config input field.</param>
-/// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
-/// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
-/// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
-/// <param name="validateValue">A function to validate the new value before it is updated.</param>
 public sealed class IntConfigInput : TypedConfigInput<int>
 {
+    /// <summary>
+    /// The UI textbox which corresponds to this config input in the config panel.
+    /// </summary>
     public ReloadedInputField Textbox { get; private set; }
 
     internal IntConfigInput(string name, string description, int defaultValue, ConfigInputOptions<int> options) : base(name, description, defaultValue, options) { }
@@ -35,14 +30,15 @@ public sealed class IntConfigInput : TypedConfigInput<int>
     internal override void RefreshUI() => Textbox.SetTextWithoutNotify(Value.ToString());
     internal override void OnUIChanged()
     {
-        Textbox.SetTextWithoutNotify(SanitiseNumericInput(Textbox.text));
+        // Perform basic sanitization on live input change
+        Textbox.SetTextWithoutNotify(SanitizeNumericInput(Textbox.text));
         base.OnUIChanged();
     }
 
     /// <summary>
     /// Performs basic sanitisation of numeric input strings to be used for live input fields. Does not perform clamping, parsing or type conversion.
     /// </summary>
-    private static string SanitiseNumericInput(string input) => new string(input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.').ToArray());
+    private static string SanitizeNumericInput(string input) => new string(input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.').ToArray());
 
     /// <summary>
     /// Performs full validation of a string input for a numeric type, including sanitisation, parsing and clamping to the type's min/max values.

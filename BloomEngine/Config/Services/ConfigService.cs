@@ -6,8 +6,8 @@ using MelonLoader;
 namespace BloomEngine.Config.Services;
 
 /// <summary>
-/// A static class which provides methods for creating input fields for a mod config menu.
-/// The supported types are: <c>string, int, float, bool and enum</c>
+/// A static class which provides methods for creating config inputs.
+/// The supported types are: <see cref="string"/>, <see cref="int"/>, <see cref="float"/>, <see cref="bool"/> and <see cref="Enum"/>.
 /// </summary>
 public static class ConfigService
 {
