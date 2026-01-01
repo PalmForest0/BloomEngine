@@ -15,10 +15,11 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="defaultValue">This default value of this config input checkbox.</param>
 /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
-public sealed class BoolConfigInput(string name, string description, bool defaultValue, Action<bool> onValueChanged = null, Action onInputChanged = null)
-    : TypedConfigInput<bool>(name, description, defaultValue, onValueChanged, onInputChanged, null, null)
+public sealed class BoolConfigInput : TypedConfigInput<bool>
 {
     public Toggle Toggle { get; private set; }
+
+    internal BoolConfigInput(string name, string description, bool defaultValue, ConfigInputOptions<bool> options) : base(name, description, defaultValue, options) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

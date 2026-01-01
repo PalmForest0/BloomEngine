@@ -16,10 +16,11 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="onValueChanged">An action to run when the value is updated in the config.</param>
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-public sealed class EnumConfigInput(string name, string description, Enum defaultValue, Action<Enum> onValueChanged = null, Action onInputChanged = null, Func<Enum, bool> validateValue = null)
-    : TypedConfigInput<Enum>(name, description, defaultValue, onValueChanged, onInputChanged, null, validateValue)
+public sealed class EnumConfigInput : TypedConfigInput<Enum>
 {
     public ReloadedDropdown Dropdown { get; private set; }
+
+    internal EnumConfigInput(string name, string description, Enum defaultValue, ConfigInputOptions<Enum> options) : base(name, description, defaultValue, options) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

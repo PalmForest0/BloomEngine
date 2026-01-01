@@ -30,7 +30,7 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     public Func<T, T> TransformValue { get; set; }
     public Func<T, bool> ValidateValue { get; set; }
 
-    protected TypedConfigInput(string name, string description, T defaultValue, Action<T> onValueChanged, Action onInputChanged, Func<T, T> transformValue, Func<T, bool> validateValue)
+    protected TypedConfigInput(string name, string description, T defaultValue, ConfigInputOptions<T> options = null)
     {
         Name = name;
         Description = description;
@@ -39,10 +39,10 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
         DefaultValue = defaultValue;
         ValueType = defaultValue.GetType();
 
-        OnValueChanged = onValueChanged;
-        OnInputChanged = onInputChanged;
-        TransformValue = transformValue;
-        ValidateValue = validateValue;
+        OnValueChanged = options.OnValueChanged;
+        OnInputChanged = options.OnInputChanged;
+        TransformValue = options.TransformValue;
+        ValidateValue = options.ValidateValue;
     }
 
     internal override void CreateMelonEntry(MelonPreferences_Category melonCategory)

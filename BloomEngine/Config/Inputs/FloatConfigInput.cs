@@ -19,13 +19,18 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
 /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-public sealed class FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null, Action onInputChanged = null, Func<float, float> transformValue = null, Func<float, bool> validateValue = null)
-    : TypedConfigInput<float>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class FloatConfigInput : TypedConfigInput<float>
 {
-    public float MinValue { get; set; } = minValue;
-    public float MaxValue { get; set; } = maxValue;
+    public float MinValue { get; private init; }
+    public float MaxValue { get; private init; }
 
     public Slider Slider { get; private set; }
+
+    internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue, ConfigInputOptions<float> options) : base(name, description, defaultValue, options)
+    {
+        MinValue = minValue;
+        MaxValue = maxValue;
+    }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

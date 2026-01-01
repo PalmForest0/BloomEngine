@@ -57,7 +57,7 @@ internal class ConfigPanel
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
             Mod.Config.UpdateAllFromUI();
-            Mod.Config.SaveConfig(true);
+            Mod.Config.Save(true);
             ConfigService.HideConfigPanel();
         });
 
@@ -219,7 +219,7 @@ internal class ConfigPanel
     /// </summary>
     public void ShowPanel()
     {
-        // Populate input fields with current input values
+        // Populate inputs with currently stored values
         Mod.Config.RefreshAllUI();
 
         SetPageIndex(0);

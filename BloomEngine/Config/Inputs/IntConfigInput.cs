@@ -19,10 +19,11 @@ namespace BloomEngine.Config.Inputs;
 /// <param name="onInputChanged">An action to run every time the input is changed in the config.</param>
 /// <param name="transformValue">A transformer function that modifies the new value before it is updated.</param>
 /// <param name="validateValue">A function to validate the new value before it is updated.</param>
-public sealed class IntConfigInput(string name, string description, int defaultValue, Action<int> onValueChanged = null, Action onInputChanged = null, Func<int, int> transformValue = null, Func<int, bool> validateValue = null)
-    : TypedConfigInput<int>(name, description, defaultValue, onValueChanged, onInputChanged, transformValue, validateValue)
+public sealed class IntConfigInput : TypedConfigInput<int>
 {
     public ReloadedInputField Textbox { get; private set; }
+
+    internal IntConfigInput(string name, string description, int defaultValue, ConfigInputOptions<int> options) : base(name, description, defaultValue, options) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {
