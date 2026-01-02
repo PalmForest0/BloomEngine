@@ -47,10 +47,10 @@ internal sealed class ConfigPanel
         if (PageCount > 1)
         {
             UnityEngine.Object.Destroy(window.GetComponent<ContentSizeFitter>());
-            window.sizeDelta = new Vector2(2500, 1900);
-            window.anchoredPosition = new Vector2(0, -80);
+            window.sizeDelta = new Vector2(2800, 1900);
+            window.anchoredPosition = new Vector2(0, -75);
         }
-        else window.sizeDelta = new Vector2(2500, 0);
+        else window.sizeDelta = new Vector2(2800, 0);
 
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
@@ -62,13 +62,20 @@ internal sealed class ConfigPanel
 
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ConfigService.HideConfigPanel);
 
+        var windowLayout = window.GetComponent<VerticalLayoutGroup>();
+        windowLayout.childForceExpandHeight = false;
+
+
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
         header.text = $"{mod.DisplayName} Config";
         header.enableAutoSizing = false;
+        
         var headerLayout = header.gameObject.GetComponent<LayoutElement>();
-        headerLayout.preferredWidth = header.GetComponent<RectTransform>().sizeDelta.x;
-        headerLayout.preferredHeight = header.GetComponent<RectTransform>().sizeDelta.y;
+        headerLayout.minHeight = 130f;
+        headerLayout.preferredHeight = 130f;
+        headerLayout.flexibleHeight = 0;
+        header.GetComponent<RectTransform>().sizeDelta = new Vector2(header.GetComponent<RectTransform>().sizeDelta.x, 130f);
 
         // Create inputs for each input on each page
         CreatePages();
@@ -95,7 +102,7 @@ internal sealed class ConfigPanel
         for (int i = 0; i < pages.Count; i++)
         {
             // Create layout for this page
-            GameObject pageObj = new GameObject($"LayoutPage_{i}");
+            GameObject pageObj = new GameObject($"ConfigPage_{i}");
             var pageRect = pageObj.AddComponent<RectTransform>();
             pageRect.SetParent(window, false);
             pageRect.anchorMin = new Vector2(0, 1);
@@ -104,59 +111,65 @@ internal sealed class ConfigPanel
             pageRect.offsetMin = Vector2.zero;
             pageRect.offsetMax = Vector2.zero;
 
-            var pageLayout = pageObj.AddComponent<HorizontalLayoutGroup>();
+            var pageLayout = pageObj.AddComponent<VerticalLayoutGroup>();
             pageLayout.spacing = 10;
             pageLayout.childControlWidth = true;
-            pageLayout.childControlHeight = true;
+            pageLayout.childAlignment = TextAnchor.UpperLeft;
 
-            // Populate the columns with input labels and input fields
-            RectTransform labelColumn = CreateColumn(pageRect, "LabelsColumn");
-            RectTransform fieldColumn = CreateColumn(pageRect, "FieldsColumn");
+            var fitter = pageObj.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            foreach (BaseConfigInput field in pages[i])
-            {
-                CreateLabel(field, labelColumn);
-                CreateInput(field, fieldColumn);
-            }
+            foreach (BaseConfigInput input in pages[i])
+                CreateRow(input, pageRect);
 
             pageObjects.Add(pageRect);
         }
     }
 
-    private RectTransform CreateColumn(RectTransform parent, string name)
+    private void CreateRow(BaseConfigInput input, RectTransform parent)
     {
-        GameObject column = new GameObject(name);
-        var columnRect = column.AddComponent<RectTransform>();
-        columnRect.SetParent(parent, false);
+        // Create row GameObject
+        GameObject rowObj = new GameObject($"ConfigRow_{input.Name.Trim().Replace(" ", "")}");
+        RectTransform rowRect = rowObj.AddComponent<RectTransform>();
+        rowRect.SetParent(parent, false);
 
-        VerticalLayoutGroup columnLayout = column.AddComponent<VerticalLayoutGroup>();
-        columnLayout.spacing = 10;
-        columnLayout.childControlWidth = true;
-        columnLayout.childControlHeight = true;
-        columnLayout.childForceExpandWidth = true;
-        columnLayout.childForceExpandHeight = false;
-        
-        if(PageCount > 1)
-        {
-            var element = column.AddComponent<LayoutElement>();
-            element.preferredHeight = 2100;
-            element.preferredWidth = 998;
-        }
+        // Add a HorizontalLayoutGroup to the row to position elements
+        HorizontalLayoutGroup rowGroup = rowObj.AddComponent<HorizontalLayoutGroup>();
+        rowGroup.childAlignment = TextAnchor.MiddleLeft;
+        rowGroup.childControlWidth = true;
+        rowGroup.childControlHeight = false;
+        rowGroup.childForceExpandWidth = false;
+        rowGroup.childForceExpandHeight = false;
 
-        return columnRect;
+        // Create LayoutElement to fixate height
+        var layout = rowObj.AddComponent<LayoutElement>();
+        layout.minHeight = 134;
+        layout.preferredHeight = 134;
+        layout.flexibleHeight = 0;
+
+        // Create all the children in the right order
+        CreateLabel(input, rowRect);
+        CreateInput(input, rowRect);
+        CreateResetButton(input, rowRect);
+        CreateInfoButton(input, rowRect);
     }
 
-    private void CreateLabel(BaseConfigInput field, RectTransform parent)
+    private void CreateLabel(BaseConfigInput input, RectTransform parent)
     {
-        GameObject obj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        obj.name = $"PropertyLabel_{field.Name}";
-        obj.SetActive(true);
+        GameObject labelObj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
+        labelObj.name = $"Label_{input.Name.Trim().Replace(" ", "")}";
+        labelObj.SetActive(true);
 
-        var layout = obj.AddComponent<LayoutElement>();
-        layout.preferredHeight = 134;
+        LayoutElement layout = labelObj.AddComponent<LayoutElement>();
+        layout.minWidth = 1000;
+        layout.preferredWidth = 1000;
+        layout.flexibleWidth = 0;
 
-        var text = obj.GetComponent<TextMeshProUGUI>();
-        text.text = field.Name;
+        RectTransform labelRect = labelObj.GetComponent<RectTransform>();
+        labelRect.sizeDelta = new Vector2(900, 134);
+
+        var text = labelObj.GetComponent<TextMeshProUGUI>();
+        text.text = input.Name;
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.alignment = TextAlignmentOptions.Left;
         text.enabled = true;
@@ -165,10 +178,24 @@ internal sealed class ConfigPanel
     private static void CreateInput(BaseConfigInput input, RectTransform parent)
     {
         GameObject inputObj = input.CreateInputObject(parent);
+        LayoutElement layout = inputObj.AddComponent<LayoutElement>();
+        layout.minWidth = 1100;
+        layout.preferredWidth = 1100;
+        layout.flexibleWidth = 0;
 
-        var layout = inputObj.AddComponent<LayoutElement>();
+        layout.minHeight = 134;
         layout.preferredHeight = 134;
-        layout.preferredWidth = 900;
+        layout.flexibleHeight = 0;
+    }
+
+    private void CreateResetButton(BaseConfigInput input, RectTransform parent)
+    {
+
+    }
+
+    private void CreateInfoButton(BaseConfigInput input, RectTransform parent)
+    {
+
     }
 
     private void CreatePageControls(RectTransform parent)
