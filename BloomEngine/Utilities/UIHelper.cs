@@ -1,4 +1,5 @@
-﻿using Il2CppReloaded;
+﻿using BloomEngine.Modules;
+using Il2CppReloaded;
 using Il2CppReloaded.Binders;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
@@ -243,6 +244,14 @@ public static class UIHelper
 
 
     /// <summary>
+    /// Creates a custom popup that can be modified to display any message.
+    /// </summary>
+    /// <param name="panelId">The internal id of the new panel.</param>
+    /// <param name="panelName">The object name of the new panel.</param>
+    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
+    public static CustomPopup CreatePopup(string panelId, string panelName) => new CustomPopup(panelId, panelName);
+
+    /// <summary>
     /// Creates a new <see cref="GameObject"/> with a <see cref="RectTransform"/> and returns it.
     /// Useful for quickly creating a UI container object.
     /// </summary>
@@ -285,5 +294,17 @@ public static class UIHelper
         EventTrigger trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();
         trigger.triggers ??= new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
         trigger.triggers.Add(entry);
+    }
+
+    /// <summary>
+    /// Destroys all <see cref="TextLocalizer"/> and <see cref="Binder"/> components on an object and its children.
+    /// </summary>
+    /// <param name="obj">The <see cref="GameObject"/> to remove these components from.</param>
+    public static void RemoveBindersAndLocalizers(GameObject obj)
+    {
+        foreach(var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
+            GameObject.Destroy(localizer);
+        foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
+            GameObject.Destroy(binder);
     }
 }
