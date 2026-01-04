@@ -45,8 +45,6 @@ internal sealed class ModMenuManager : MonoBehaviour
         CreateBloomEngineLabel();
         CreateModsContainer();
         CreateEntries();
-
-        Melon<BloomEngineMod>.Logger.Msg("Successfully initialized mod menu and created all mod entries.");
     }
 
 

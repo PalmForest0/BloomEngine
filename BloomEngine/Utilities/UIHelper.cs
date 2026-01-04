@@ -5,6 +5,7 @@ using Il2CppReloaded.UI;
 using Il2CppSource.UI;
 using Il2CppTekly.DataModels.Binders;
 using Il2CppTekly.Localizations;
+using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
 using System.Collections;
@@ -22,6 +23,8 @@ public static class UIHelper
     private static readonly Dictionary<RectTransform, object> fadeCoroutines = new();
 
     public static MainMenuPanelView MainMenu { get; private set; }
+    public static PanelViewContainer GlobalPanels { get; private set; }
+    
     public static TMP_FontAsset Font1 { get; private set; }
     public static TMP_FontAsset Font2 { get; private set; }
 
@@ -31,9 +34,11 @@ public static class UIHelper
     private static GameObject dropdownTemplate;
     private static GameObject sliderTemplate;
 
-    internal static void Initialize(MainMenuPanelView mainMenu)
+    internal static void OnMainMenu(MainMenuPanelView mainMenu, PanelViewContainer globalPanels)
     {
         MainMenu = mainMenu;
+        GlobalPanels = globalPanels;
+
         Font1 = MainMenu.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
         Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
 

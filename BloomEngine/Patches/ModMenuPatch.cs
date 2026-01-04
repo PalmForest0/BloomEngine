@@ -10,7 +10,7 @@ namespace BloomEngine.Patches;
 internal static class ModMenuPatches
 {
     /// <summary>
-    /// When the achievements menu is initialized, create the mod menu
+    /// When the achievements menu is configPanelsCreated, create the mod menu
     /// </summary>
     [HarmonyPatch(typeof(AchievementsUI), nameof(AchievementsUI.Start))]
     [HarmonyPostfix]
