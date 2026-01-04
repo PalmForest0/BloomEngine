@@ -7,7 +7,7 @@ namespace BloomEngine;
 internal sealed class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
-    public const string Version = "0.2.0-beta";
+    public const string Version = "0.3.0-beta";
     public const string Author = "PalmForest";
 
     internal static MelonLogger.Instance Logger { get; private set; }

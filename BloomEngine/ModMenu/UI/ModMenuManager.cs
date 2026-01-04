@@ -1,5 +1,6 @@
 ﻿using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
+using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;

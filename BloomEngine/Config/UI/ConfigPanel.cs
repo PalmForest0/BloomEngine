@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
+using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
@@ -35,8 +36,10 @@ internal sealed class ConfigPanel
 
     private static Sprite resetButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButton.png");
     private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButtonSelected.png");
-    //private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png");
-    //private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png");
+    private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png");
+    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png");
+
+    private CustomPopup configPopup;
 
     internal ConfigPanel(PanelView panel, ModMenuEntry mod)
     {
@@ -45,7 +48,7 @@ internal sealed class ConfigPanel
 
         this.panel = panel.gameObject;
         panel.m_id = $"modConfig_{mod.Mod.Info.Name}";
-        panel.gameObject.name = $"P_ModConfig_{mod.DisplayName.Replace(" ", "")}";
+        panel.gameObject.name = $"P_ModConfig_{mod.DisplayName.Trim().Replace(" ", "")}";
         window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
 
         // Make panel size static if there are multiple pages
@@ -56,6 +59,10 @@ internal sealed class ConfigPanel
             window.anchoredPosition = new Vector2(0, -75);
         }
         else window.sizeDelta = new Vector2(2800, 0);
+
+        // Create popup that will be used to show input descriptions
+        configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
+        configPopup.SetFirstButton(true, "Close");
 
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
@@ -69,7 +76,6 @@ internal sealed class ConfigPanel
 
         var windowLayout = window.GetComponent<VerticalLayoutGroup>();
         windowLayout.childForceExpandHeight = false;
-
 
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
@@ -119,7 +125,6 @@ internal sealed class ConfigPanel
             var pageLayout = pageObj.AddComponent<VerticalLayoutGroup>();
             pageLayout.spacing = 10;
             pageLayout.childControlWidth = true;
-            pageLayout.childAlignment = TextAnchor.UpperLeft;
 
             var fitter = pageObj.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -145,7 +150,7 @@ internal sealed class ConfigPanel
         rowGroup.childControlHeight = false;
         rowGroup.childForceExpandWidth = false;
         rowGroup.childForceExpandHeight = false;
-        rowGroup.spacing = 20;
+        rowGroup.spacing = 25;
 
         // Create LayoutElement to fixate height
         var layout = rowObj.AddComponent<LayoutElement>();
@@ -156,8 +161,13 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
+        CreateSquareButton("InputInfoButton", rowRect, () =>
+        {
+            configPopup.SetHeader(input.Name);
+            configPopup.SetSubheader(input.Description);
+            configPopup.Show();
+        }, infoButtonSprite, infoButtonSpriteSelected);
         CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, resetButtonSprite, resetButtonSpriteSelected);
-        //CreateSquareButton("InputInfoButton", rowRect, () => ConfigService.ConfigLogger.Msg("Test"), infoButtonSprite, infoButtonSpriteSelected);
     }
 
     private void CreateLabel(BaseConfigInput input, RectTransform parent)
@@ -185,8 +195,8 @@ internal sealed class ConfigPanel
     {
         GameObject inputObj = input.CreateInputObject(parent);
         LayoutElement layout = inputObj.AddComponent<LayoutElement>();
-        layout.minWidth = 1100;
-        layout.preferredWidth = 1100;
+        layout.minWidth = 1200;
+        layout.preferredWidth = 1200;
         layout.flexibleWidth = 0;
 
         layout.minHeight = 134;
@@ -222,7 +232,7 @@ internal sealed class ConfigPanel
         buttonLayout.preferredHeight = 105;
 
         RectTransform rect = buttonObj.GetComponent<RectTransform>();
-        rect.anchoredPosition += new Vector2(0, 10);
+        rect.anchoredPosition += new Vector2(0, 12);
     }
 
     private void CreatePageControls(RectTransform parent)
