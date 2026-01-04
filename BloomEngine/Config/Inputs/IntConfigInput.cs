@@ -28,7 +28,7 @@ public sealed class IntConfigInput : TypedConfigInput<int>
     }
 
     internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
-    internal override void RefreshUI() => Textbox.SetTextWithoutNotify(Value.ToString());
+    protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());
     internal override void OnUIChanged()
     {
         // Perform basic sanitization on live input change

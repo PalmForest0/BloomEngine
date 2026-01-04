@@ -69,21 +69,31 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
         Name = name;
         Description = description;
 
-        Value = defaultValue;
-        DefaultValue = defaultValue;
-        ValueType = defaultValue.GetType();
-
         OnValueChanged = options.OnValueChanged;
         OnInputChanged = options.OnInputChanged;
         TransformValue = options.TransformValue;
         ValidateValue = options.ValidateValue;
+
+        Value = defaultValue;
+        DefaultValue = Value;
+        ValueType = defaultValue.GetType();
     }
 
-    internal override void CreateMelonEntry(MelonPreferences_Category melonCategory)
+    internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
         MelonEntry = melonCategory.CreateEntry(Name, DefaultValue, Name, Description);
         Value = MelonEntry.Value;
     }
 
     internal override void OnUIChanged() => OnInputChanged?.Invoke();
+
+    internal sealed override void ResetValueUI() => SetDisplayedValue(DefaultValue);
+
+    internal sealed override void RefreshUI() => SetDisplayedValue(Value);
+
+    /// <summary>
+    /// Sets the UI value using an implementation specific to the input type.
+    /// </summary>
+    /// <param name="value">The value to insert into the UI input.</param>
+    protected abstract void SetDisplayedValue(T value);
 }

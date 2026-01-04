@@ -8,6 +8,7 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace BloomEngine.Config.UI;
@@ -32,6 +33,10 @@ internal sealed class ConfigPanel
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
+    private static Sprite resetButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButton.png");
+    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButtonSelected.png");
+    //private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png");
+    //private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png");
 
     internal ConfigPanel(PanelView panel, ModMenuEntry mod)
     {
@@ -140,6 +145,7 @@ internal sealed class ConfigPanel
         rowGroup.childControlHeight = false;
         rowGroup.childForceExpandWidth = false;
         rowGroup.childForceExpandHeight = false;
+        rowGroup.spacing = 20;
 
         // Create LayoutElement to fixate height
         var layout = rowObj.AddComponent<LayoutElement>();
@@ -150,8 +156,8 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
-        CreateResetButton(input, rowRect);
-        CreateInfoButton(input, rowRect);
+        CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, resetButtonSprite, resetButtonSpriteSelected);
+        //CreateSquareButton("InputInfoButton", rowRect, () => ConfigService.ConfigLogger.Msg("Test"), infoButtonSprite, infoButtonSpriteSelected);
     }
 
     private void CreateLabel(BaseConfigInput input, RectTransform parent)
@@ -161,8 +167,8 @@ internal sealed class ConfigPanel
         labelObj.SetActive(true);
 
         LayoutElement layout = labelObj.AddComponent<LayoutElement>();
-        layout.minWidth = 1000;
-        layout.preferredWidth = 1000;
+        layout.minWidth = 900;
+        layout.preferredWidth = 900;
         layout.flexibleWidth = 0;
 
         RectTransform labelRect = labelObj.GetComponent<RectTransform>();
@@ -188,14 +194,35 @@ internal sealed class ConfigPanel
         layout.flexibleHeight = 0;
     }
 
-    private void CreateResetButton(BaseConfigInput input, RectTransform parent)
+    private static void CreateSquareButton(string name, RectTransform parent, Action onClick, Sprite normalSprite, Sprite hoverSprite = null)
     {
+        // Create the button using a wrapper and destroy the garbage
+        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
+        GameObject buttonObj = UIHelper.CreateButton("Button_Internal", wrapper, "", onClick!);
+        GameObject.Destroy(buttonObj.transform.Find("Label").gameObject);
+        GameObject.Destroy(buttonObj.transform.Find("Background/ImageSelected").gameObject);
 
-    }
+        UIHelper.SetParentAndStretch(buttonObj.GetComponent<RectTransform>(), wrapper);
 
-    private void CreateInfoButton(BaseConfigInput input, RectTransform parent)
-    {
+        // Modify and cleanup the image component
+        Image buttonImg = buttonObj.FindComponent<Image>("Background/Image");
+        buttonImg.type = Image.Type.Simple;
+        buttonImg.sprite = normalSprite;
+        buttonImg.preserveAspect = true;
 
+        // Make the sprite change on hover if needed
+        if(hoverSprite)
+        {
+            UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerEnter, _ => buttonImg.sprite = hoverSprite);
+            UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerExit, _ => buttonImg.sprite = normalSprite);
+        }
+        
+        LayoutElement buttonLayout = wrapper.gameObject.AddComponent<LayoutElement>();
+        buttonLayout.preferredWidth = 105;
+        buttonLayout.preferredHeight = 105;
+
+        RectTransform rect = buttonObj.GetComponent<RectTransform>();
+        rect.anchoredPosition += new Vector2(0, 10);
     }
 
     private void CreatePageControls(RectTransform parent)

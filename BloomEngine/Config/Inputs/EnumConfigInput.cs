@@ -26,16 +26,23 @@ public sealed class EnumConfigInput : TypedConfigInput<Enum>
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {
-        Dropdown = UIHelper.CreateDropdown(InputObjectName, parent, ValueType, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
         options = Enum.GetValues(ValueType).Cast<Enum>().ToList();
 
-        return Dropdown.gameObject;
+        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
+
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, ValueType, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
+        RectTransform dropdownRect = Dropdown.GetComponent<RectTransform>();
+        UIHelper.SetParentAndStretch(dropdownRect, wrapper);
+
+        dropdownRect.sizeDelta = new Vector2(0, 60);
+        dropdownRect.anchoredPosition += new Vector2(0, -15);
+        return wrapper.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = options[Dropdown.value];
-    internal override void RefreshUI()
+    protected override void SetDisplayedValue(Enum value)
     {
-        Dropdown.SetValueWithoutNotify(options.IndexOf(Value));
+        Dropdown.SetValueWithoutNotify(options.IndexOf(value));
         Dropdown.RefreshShownValue();
     }
 }

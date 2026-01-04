@@ -21,10 +21,17 @@ public sealed class BoolConfigInput : TypedConfigInput<bool>
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {
-        Toggle = UIHelper.CreateCheckbox(InputObjectName, parent, Value, onValueChanged: _ => OnUIChanged());
-        return Toggle.gameObject;
+        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
+
+        Toggle = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => OnUIChanged());
+        RectTransform toggleRect = Toggle.gameObject.GetComponent<RectTransform>();
+        UIHelper.SetParentAndStretch(toggleRect, wrapper);
+
+        toggleRect.anchoredPosition += new Vector2(0, -35);
+
+        return wrapper.gameObject;
     }
 
     internal override void UpdateFromUI() => Value = Toggle.isOn;
-    internal override void RefreshUI() => Toggle.SetIsOnWithoutNotify(Value);   
+    protected override void SetDisplayedValue(bool value) => Toggle.SetIsOnWithoutNotify(value);
 }

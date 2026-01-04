@@ -43,6 +43,11 @@ public abstract class BaseConfigInput
     internal abstract void CreateMelonEntry(MelonPreferences_Category melonCategory);
 
     /// <summary>
+    /// Sets the current value shown in the UI to the default value without updating the actual value.
+    /// </summary>
+    internal abstract void ResetValueUI();
+
+    /// <summary>
     /// Updates the value of this config input to the current value stored in the UI input.
     /// </summary>
     internal abstract void UpdateFromUI();

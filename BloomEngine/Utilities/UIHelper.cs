@@ -9,6 +9,7 @@ using Il2CppTMPro;
 using MelonLoader;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace BloomEngine.Utilities;
@@ -233,5 +234,51 @@ public static class UIHelper
         LayoutRebuilder.ForceRebuildLayoutImmediate(obj.GetComponent<RectTransform>());
 
         return slider;
+    }
+
+
+    /// <summary>
+    /// Creates a new <see cref="GameObject"/> with a <see cref="RectTransform"/> and returns it.
+    /// Useful for quickly creating a UI container object.
+    /// </summary>
+    /// <param name="parent">UI parent rect transform.</param>
+    /// <param name="name">The string to set as the name of the created object.</param>
+    /// <returns>The UI <see cref="RectTransform"/> component on the created wrapper object.</returns>
+    public static RectTransform CreateUIWrapper(RectTransform parent, string name)
+    {
+        RectTransform rect = new GameObject(name).AddComponent<RectTransform>();
+        rect.SetParent(parent);
+        return rect;
+    }
+
+    /// <summary>
+    /// Sets the parent RectTransform of another UI RectTransform, resetting anchors, offsets and pivot.
+    /// </summary>
+    /// <param name="parent">The parent UI rect.</param>
+    /// <param name="child">The UI rect to place under the parent and modify.</param>
+    public static void SetParentAndStretch(RectTransform child, RectTransform parent)
+    {
+        child.SetParent(parent);
+        child.anchorMin = Vector2.zero;
+        child.anchorMax = Vector2.one;
+        child.offsetMin = Vector2.zero;
+        child.offsetMax = Vector2.zero;
+        child.pivot = new Vector2(0.5f, 0.5f);
+    }
+
+    /// <summary>
+    /// Automatically adds an <see cref="EventTrigger"/> component to an object and adds an action of the provided type.
+    /// </summary>
+    /// <param name="obj">The <see cref="GameObject"/> to add an event trigger to.</param>
+    /// <param name="type">Type of event to add the action to.</param>
+    /// <param name="action">The code to execute on this event.</param>
+    public static void AddEventTrigger(GameObject obj, EventTriggerType type, Action<BaseEventData> action)
+    {
+        var entry = new EventTrigger.Entry() { eventID = type };
+        entry.callback.AddListener(action);
+
+        EventTrigger trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();
+        trigger.triggers ??= new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
+        trigger.triggers.Add(entry);
     }
 }

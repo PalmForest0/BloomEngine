@@ -40,5 +40,5 @@ public sealed class FloatConfigInput : TypedConfigInput<float>
     }
 
     internal override void UpdateFromUI() => Value = Slider.value;
-    internal override void RefreshUI() => Slider.SetValueWithoutNotify(Value);
+    protected override void SetDisplayedValue(float value) => Slider.SetValueWithoutNotify(value);
 }
