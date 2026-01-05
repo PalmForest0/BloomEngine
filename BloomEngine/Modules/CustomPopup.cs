@@ -16,6 +16,8 @@ public sealed class CustomPopup
     public Button FirstButton { get; private set; }
     public Button SecondButton { get; private set; }
 
+    public bool IsVisible { get; private set; }
+
     internal CustomPopup(string panelId, string panelName)
     {
         // Create the panel and rename it
@@ -46,12 +48,20 @@ public sealed class CustomPopup
     /// <summary>
     /// Makes this popup visible.
     /// </summary>
-    public void Show() => Panel.gameObject.SetActive(true);
+    public void Show()
+    {
+        Panel.gameObject.SetActive(true);
+        IsVisible = true;
+    }
 
     /// <summary>
     /// Hides this popup.
     /// </summary>
-    public void Hide() => Panel.gameObject.SetActive(false);
+    public void Hide()
+    {
+        Panel.gameObject.SetActive(false);
+        IsVisible = false;
+    }
 
 
     /// <summary>
@@ -104,5 +114,17 @@ public sealed class CustomPopup
             onClick?.Invoke();
             if (hidePopupOnClick) Hide();
         });
+    }
+
+    /// <summary>
+    /// Sets the header and subheader of this popup and shows it
+    /// </summary>
+    /// <param name="header">The string to set the header text to.</param>
+    /// <param name="subheader">The string to set the subheader text to.</param>
+    public void ShowWithText(string header, string subheader)
+    {
+        SetHeader(header);
+        SetSubheader(subheader);
+        Show();
     }
 }

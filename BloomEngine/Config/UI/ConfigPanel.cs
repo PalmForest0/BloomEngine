@@ -161,13 +161,9 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
-        CreateSquareButton("InputInfoButton", rowRect, () =>
-        {
-            configPopup.SetHeader(input.Name);
-            configPopup.SetSubheader(input.Description);
-            configPopup.Show();
-        }, infoButtonSprite, infoButtonSpriteSelected);
         CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, resetButtonSprite, resetButtonSpriteSelected);
+        if(!string.IsNullOrWhiteSpace(input.Description))
+            CreateSquareButton("InputInfoButton", rowRect, () => configPopup.ShowWithText(input.Name, input.Description), infoButtonSprite, infoButtonSpriteSelected);
     }
 
     private void CreateLabel(BaseConfigInput input, RectTransform parent)
@@ -298,7 +294,11 @@ internal sealed class ConfigPanel
     /// <summary>
     /// Hides this panel.
     /// </summary>
-    public void HidePanel() => panel.SetActive(false);
+    public void HidePanel()
+    {
+        configPopup.Hide();
+        panel.SetActive(false);
+    }
 
     /// <summary>
     /// Sets the current page index, updating the displayed page and related UI elements accordingly.
