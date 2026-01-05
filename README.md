@@ -84,5 +84,5 @@ ModMenuService.CreateEntry(this)
 ```
 
 # Screenshots
-<img width="1919" height="1079" alt="Screenshot_1" src="https://github.com/user-attachments/assets/73a0519e-0565-4cab-bf76-d2a7a2437d04" />
-<img width="1919" height="1079" alt="Screenshot_2" src="https://github.com/user-attachments/assets/480d3ee1-0afb-44f8-8cc1-a43ddcb397f9" />
+<img width="1919" height="1079" alt="ModMenu" src="https://github.com/user-attachments/assets/73a0519e-0565-4cab-bf76-d2a7a2437d04" />
+<img width="1919" height="1079" alt="ConfigPanel" src="https://github.com/user-attachments/assets/746f091a-72cf-47c0-9d64-f4649787c2fb" />
