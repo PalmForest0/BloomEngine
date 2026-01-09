@@ -35,10 +35,10 @@ internal sealed class ConfigPanel
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
-    private static Sprite resetButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButton.png", Assembly.GetExecutingAssembly());
-    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButtonSelected.png", Assembly.GetExecutingAssembly());
-    private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png", Assembly.GetExecutingAssembly());
-    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png", Assembly.GetExecutingAssembly());
+    private static Sprite resetButtonSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ResetButton.png");
+    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ResetButtonSelected.png");
+    private static Sprite infoButtonSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.InfoButton.png");
+    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.InfoButtonSelected.png");
 
     private static CustomPopup configPopup;
 

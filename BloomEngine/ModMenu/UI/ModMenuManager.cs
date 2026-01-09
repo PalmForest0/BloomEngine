@@ -24,9 +24,9 @@ internal sealed class ModMenuManager
 
     private GameObject bloomEngineLabel;
 
-    private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ConfigIcon.png", Assembly.GetExecutingAssembly());
-    private static Sprite defaultIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.DefaultModIcon.png", Assembly.GetExecutingAssembly());
-    private static Sprite modIconBorderSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ModIconBorder.png", Assembly.GetExecutingAssembly());
+    private static Sprite configIconSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ConfigIcon.png");
+    private static Sprite defaultIconSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.DefaultModIcon.png");
+    private static Sprite modIconBorderSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ModIconBorder.png");
 
     private const int ModIconSize = 225;
     private const int ModIconBorderSize = 275;

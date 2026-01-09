@@ -12,25 +12,29 @@ public static class AssetHelper
     /// <summary>
     /// Loads a sprite from an embedded resource using the specified asset path.
     /// </summary>
+    /// <typeparam name="TMarker">A type which will be used to get the assembly containing the embedded resource.</typeparam>
     /// <param name="assetPath">
     /// The path to the embedded resource image. This must be a valid resource path within the executing assembly 
     /// (eg. "BloomEngine.Resources.Icon.png"). Make sure that the resource's Build Action is set to <strong>Embedded Resource</strong>
     /// </param>
-    /// <param name="resourceAssembly">The assembly that contains your embedded resource.</param>
     /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
     /// <returns>
     /// A <see cref="Sprite"/> object created from the embedded resource. If the resource cannot be found, the created sprite will be a 2x2 placeholder image.
     /// </returns>
-    public static Sprite LoadSprite(string assetPath, Assembly resourceAssembly, float pixelsPerUnit = 100f)
+    public static Sprite LoadEmbeddedSprite<TMarker>(string assetPath, float pixelsPerUnit = 100f)
     {
-        using Stream stream = resourceAssembly.GetManifestResourceStream(assetPath);
+        Assembly assembly = typeof(TMarker).Assembly;
+        using Stream stream = assembly.GetManifestResourceStream(assetPath);
 
         if (stream is null)
-            throw new ArgumentException($"Embedded image resource \"{assetPath}\" could not be found in \"{resourceAssembly.GetName().Name}\"", nameof(assetPath));
+            throw new ArgumentException($"Embedded image resource \"{assetPath}\" could not be found in \"{assembly.GetName().Name}\"", nameof(assetPath));
 
         byte[] data = stream.ReadFully();
         return CreateSpriteFromData(data, pixelsPerUnit);
     }
+
+    internal static Sprite LoadEmbeddedSprite(string assetPath, float pixelsPerUnit = 100f)
+        => LoadEmbeddedSprite<BloomEngineMod>(assetPath, pixelsPerUnit);
 
     /// <summary>
     /// Retrieves the contents of an embedded resource and reads them to a byte array.
