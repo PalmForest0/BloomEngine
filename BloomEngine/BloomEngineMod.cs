@@ -15,14 +15,12 @@ internal sealed class BloomEngineMod : MelonMod
     public override void OnInitializeMelon()
     {
         Logger = LoggerInstance;
-
-        Il2CppHelper.RegisterAllMonoBehaviours(MelonAssembly.Assembly);
-        LoggerInstance.Msg($"Successfully loaded version {Version} of {Name}.");
+        Logger.Msg($"Successfully loaded version {Version} of {Name}.");
 
         ModMenuService.CreateEntry(this)
             .AddDisplayName(Name)
             .AddDescription($"Mod menu and config manager library for PvZ Replanted.")
-            .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.BloomEngineIcon.png"))
+            .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.BloomEngineIcon.png", MelonAssembly.Assembly))
             .Register();
     }
 }
