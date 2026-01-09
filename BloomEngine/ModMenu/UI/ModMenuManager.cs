@@ -1,6 +1,5 @@
 ﻿using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
-using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
@@ -12,17 +11,18 @@ using UnityEngine.UI;
 
 namespace BloomEngine.ModMenu.UI;
 
-internal sealed class ModMenuManager : MonoBehaviour
+internal sealed class ModMenuManager
 {
     public bool ModMenuOpen { get; private set; } = false;
 
-    private GameObject achievementsContainer;
+    private readonly GameObject achievementsContainer;
     private GameObject modsContainer;
-    private GameObject header;
+    private readonly GameObject header;
+
+    private readonly Transform achievements;
+    private readonly AchievementsUI achievementsUi;
 
     private GameObject bloomEngineLabel;
-
-    private AchievementsUI achievementsUi;
 
     private static Sprite configIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ConfigIcon.png", Assembly.GetExecutingAssembly());
     private static Sprite defaultIconSprite = AssetHelper.LoadSprite("BloomEngine.Resources.DefaultModIcon.png", Assembly.GetExecutingAssembly());
@@ -32,14 +32,16 @@ internal sealed class ModMenuManager : MonoBehaviour
     private const int ModIconBorderSize = 275;
 
 
-    public void Start()
+    public ModMenuManager(AchievementsUI achievementsUi)
     {
         // Find the achievements container and AchievementsUI component
-        achievementsContainer = transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
-        achievementsUi = transform.GetComponent<AchievementsUI>();
+        achievementsContainer = achievementsUi.transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
+        
+        this.achievementsUi = achievementsUi;
+        achievements = achievementsUi.transform;
 
         // Prevent header from blocking clicks on mod ModEntries
-        header = transform.Find("ScrollView/Viewport/Content/Header").gameObject;
+        header = achievements.Find("ScrollView/Viewport/Content/Header").gameObject;
         header.transform.Find("Shadow").GetComponent<Image>().raycastTarget = false;
         header.transform.Find("Left/Background_grass02").GetComponent<Image>().raycastTarget = false;
 
@@ -52,7 +54,7 @@ internal sealed class ModMenuManager : MonoBehaviour
 
     private void CreateModsContainer()
     {
-        modsContainer = Instantiate(achievementsContainer, achievementsContainer.transform.parent);
+        modsContainer = GameObject.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
         modsContainer.name = "ModEntries";
 
         RectTransform modsContainerRect = modsContainer.GetComponent<RectTransform>();
@@ -65,12 +67,12 @@ internal sealed class ModMenuManager : MonoBehaviour
         modsContainerGrid.spacing = new Vector2(150, 100);
 
         for (int i = 0; i < modsContainer.transform.childCount; i++)
-            Destroy(modsContainer.transform.GetChild(i).gameObject);
+            GameObject.Destroy(modsContainer.transform.GetChild(i).gameObject);
     }
 
     private void CreateButtons()
     {
-        GameObject obj = UIHelper.CreateButton("ModsButton", transform, "Mods", OpenModMenu);
+        GameObject obj = UIHelper.CreateButton("ModsButton", achievements, "Mods", OpenModMenu);
 
         // Position the modsButton in the bottom left corner
         RectTransform rect = obj.GetComponent<RectTransform>();
@@ -80,7 +82,7 @@ internal sealed class ModMenuManager : MonoBehaviour
         rect.anchoredPosition = new Vector2(25, rect.rect.height + 100);
 
         // Update the achievements button to reset the text and hide the mod ModEntries
-        Button achievementsButton = transform.parent.FindComponent<Button>("Main/BG_Tree/AchievementsButton");
+        Button achievementsButton = achievements.parent.FindComponent<Button>("Main/BG_Tree/AchievementsButton");
         achievementsButton.onClick.AddListener(() => SetCurrentMenu(showModMenu: false));
         achievementsUi.m_backButton.onClick.AddListener(() => ModMenuOpen = false);
     }
@@ -88,7 +90,7 @@ internal sealed class ModMenuManager : MonoBehaviour
     private void CreateBloomEngineLabel()
     {
         bloomEngineLabel = new GameObject("BloomEngineLabel");
-        bloomEngineLabel.transform.SetParent(transform, false);
+        bloomEngineLabel.transform.SetParent(achievements, false);
 
         TextMeshProUGUI label = bloomEngineLabel.AddComponent<TextMeshProUGUI>();
         label.fontSize = 52;
@@ -109,7 +111,7 @@ internal sealed class ModMenuManager : MonoBehaviour
         foreach (var mod in MelonMod.RegisteredMelons)
         {
             // Create a new mod achievement for this mod
-            GameObject modObj = Instantiate(transform.Find("AchievementItem").gameObject, modsContainer.transform);
+            GameObject modObj = GameObject.Instantiate(achievements.Find("AchievementItem").gameObject, modsContainer.transform);
             modObj.SetActive(true);
             modObj.name = $"ModEntry_{mod.Info.Name}";
 
@@ -133,8 +135,8 @@ internal sealed class ModMenuManager : MonoBehaviour
             modIconObj.GetComponent<Image>().sprite = entry is null ? defaultIconSprite : entry.Icon ?? defaultIconSprite;
 
             // Create an icon container to hold the icon and border ( + config icon)
-            GameObject iconContainer = Instantiate(modIconObj, modObj.transform);
-            Destroy(iconContainer.GetComponent<Image>());
+            GameObject iconContainer = GameObject.Instantiate(modIconObj, modObj.transform);
+            GameObject.Destroy(iconContainer.GetComponent<Image>());
             iconContainer.name = "IconContainer";
             modIconObj.transform.SetParent(iconContainer.transform);
 
@@ -168,7 +170,7 @@ internal sealed class ModMenuManager : MonoBehaviour
     private static RectTransform CreateModConfigIcon(GameObject modIcon, RectTransform iconContainer)
     {
         // Create a config icon that appears when you hover over the mod entry
-        GameObject configIcon = Instantiate(modIcon, iconContainer);
+        GameObject configIcon = GameObject.Instantiate(modIcon, iconContainer);
         configIcon.name = "ConfigIcon";
 
         RectTransform configIconRect = configIcon.GetComponent<RectTransform>();
@@ -215,7 +217,7 @@ internal sealed class ModMenuManager : MonoBehaviour
     private static void CreateModIconBorder(GameObject modIcon, RectTransform iconContainer)
     {
         // Create a border around the mod icon to indicate it has a config
-        GameObject iconBorder = Instantiate(modIcon, iconContainer);
+        GameObject iconBorder = GameObject.Instantiate(modIcon, iconContainer);
         iconBorder.name = "IconBorder";
 
         RectTransform borderRect = iconBorder.GetComponent<RectTransform>();
