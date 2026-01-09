@@ -46,7 +46,7 @@ internal static class ModMenuBootstrap
     {
         // Setup UI Helper and mod menu every time the main menu scene loads
         UIHelper.Initialize(MainMenu, GlobalPanels, AchievementsUI);
-        ModMenuService.ModMenuUI = new ModMenuManager(AchievementsUI);
+        ModMenuService.ModMenuUI = new ModMenuUI(AchievementsUI);
     }
 
     private static void CreateConfigPanels(MainMenuPanelView mainMenu, PanelViewContainer globalPanels)

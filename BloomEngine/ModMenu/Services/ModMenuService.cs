@@ -11,7 +11,7 @@ public static class ModMenuService
     internal static MelonLogger.Instance ModMenuLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(ModMenu)}");
     internal static Dictionary<MelonMod, ModMenuEntry> ModEntries { get; } = new();
 
-    internal static ModMenuManager ModMenuUI { get; set; }
+    internal static ModMenuUI ModMenuUI { get; set; }
 
     /// <summary>
     /// Event that is invoked when a mod is added to the mod menu using <see cref="ModMenuEntry.Register"/>."/>
