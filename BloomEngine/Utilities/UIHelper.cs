@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Modules;
+using BloomEngine.Extensions;
 using Il2CppReloaded;
 using Il2CppReloaded.Binders;
 using Il2CppReloaded.Input;

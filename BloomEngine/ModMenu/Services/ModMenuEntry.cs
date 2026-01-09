@@ -1,7 +1,10 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using BloomEngine.Attributes;
+using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.Services;
 using BloomEngine.Utilities;
+using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
+using System.Reflection;
 using UnityEngine;
 
 namespace BloomEngine.ModMenu.Services;
@@ -69,7 +72,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// </summary>
     /// <param name="iconSprite">
     /// The <see cref="Sprite"/> to replace the default icon with. To load a <see cref="Sprite"/>,
-    /// you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite(string, float)"/>.
+    /// you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadEmbeddedSprite{TMarker}(string, float)"/>.
     /// </param>
     /// <returns>This mod entry with the new icon.</returns>
     public ModMenuEntry AddIcon(Sprite iconSprite)
@@ -114,6 +117,14 @@ public sealed class ModMenuEntry(MelonMod mod)
     {
         ModMenuService.RegisterModEntry(this);
         Config?.Save(false);
+
+        // Register all classes with a custom attribute
+        foreach(var type in Mod.MelonAssembly.Assembly.GetTypes())
+        {
+            if(type.IsSubclassOf(typeof(UnityEngine.Object)) && type.GetCustomAttribute<RegisterInIl2CppAttribute>() is not null)
+                ClassInjector.RegisterTypeInIl2Cpp(type);
+        }
+
         return this;
     }
 

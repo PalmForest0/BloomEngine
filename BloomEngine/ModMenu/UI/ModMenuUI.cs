@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Utilities;
+using BloomEngine.Extensions;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;

@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Config.Services;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
+using BloomEngine.Extensions;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
