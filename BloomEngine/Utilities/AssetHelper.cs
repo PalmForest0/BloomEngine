@@ -10,16 +10,15 @@ namespace BloomEngine.Utilities;
 public static class AssetHelper
 {
     /// <summary>
-    /// Loads a sprite from an embedded resource stream using the specified asset path.
+    /// Loads a sprite from an embedded resource using the specified asset path.
     /// </summary>
     /// <param name="assetPath">
     /// The path to the embedded resource image. This must be a valid resource path within the executing assembly 
     /// (eg. "BloomEngine.Resources.Icon.png"). Make sure that the resource's Build Action is set to <strong>Embedded Resource</strong>
     /// </param>
-    /// <returns>
-    /// A <see cref="Sprite"/> object created from the embedded resource.
     /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
-    /// If the resource cannot be found, the created sprite will be a 2x2 placeholder image.
+    /// <returns>
+    /// A <see cref="Sprite"/> object created from the embedded resource. If the resource cannot be found, the created sprite will be a 2x2 placeholder image.
     /// </returns>
     public static Sprite LoadSprite(string assetPath, float pixelsPerUnit = 100f)
     {
