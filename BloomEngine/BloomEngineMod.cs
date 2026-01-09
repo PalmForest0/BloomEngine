@@ -17,6 +17,8 @@ internal sealed class BloomEngineMod : MelonMod
         Logger = LoggerInstance;
         Logger.Msg($"Successfully loaded version {Version} of {Name}.");
 
+        Il2CppHelper.RegisterAllMonoBehaviours(MelonAssembly.Assembly);
+
         ModMenuService.CreateEntry(this)
             .AddDisplayName(Name)
             .AddDescription($"Mod menu and config manager library for PvZ Replanted.")

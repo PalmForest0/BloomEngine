@@ -26,7 +26,7 @@ public static class AssetHelper
         using Stream stream = resourceAssembly.GetManifestResourceStream(assetPath);
 
         if (stream is null)
-            throw new ArgumentException($"Embedded image resource not found: {assetPath}", nameof(assetPath));
+            throw new ArgumentException($"Embedded image resource \"{assetPath}\" could not be found in \"{resourceAssembly.GetName().Name}\"", nameof(assetPath));
 
         byte[] data = stream.ReadFully();
         return CreateSpriteFromData(data, pixelsPerUnit);

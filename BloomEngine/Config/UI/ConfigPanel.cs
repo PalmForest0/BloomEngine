@@ -8,6 +8,7 @@ using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using MelonLoader;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -34,12 +35,12 @@ internal sealed class ConfigPanel
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
-    private static Sprite resetButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButton.png");
-    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButtonSelected.png");
-    private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png");
-    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png");
+    private static Sprite resetButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButton.png", Assembly.GetExecutingAssembly());
+    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.ResetButtonSelected.png", Assembly.GetExecutingAssembly());
+    private static Sprite infoButtonSprite = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButton.png", Assembly.GetExecutingAssembly());
+    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite("BloomEngine.Resources.InfoButtonSelected.png", Assembly.GetExecutingAssembly());
 
-    private CustomPopup configPopup;
+    private static CustomPopup configPopup;
 
     internal ConfigPanel(PanelView panel, ModMenuEntry mod)
     {
