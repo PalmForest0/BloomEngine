@@ -1,5 +1,7 @@
-﻿using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Extensions;
+using BloomEngine.ModMenu.Services;
 using BloomEngine.Utilities;
+using Il2CppUI.Scripts;
 using MelonLoader;
 
 namespace BloomEngine;
