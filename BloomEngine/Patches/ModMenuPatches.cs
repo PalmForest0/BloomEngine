@@ -16,8 +16,8 @@ internal static class ModMenuPatches
     [HarmonyPostfix]
     private static void AchievementsUI_Start_Postfix(AchievementsUI __instance)
     {
-        ModMenuBootstrap.AchievementsUI = __instance;
-        ModMenuBootstrap.TryInitialize();
+        BloomEngineBootstrap.AchievementsUI = __instance;
+        BloomEngineBootstrap.TryInitialize();
     }
 
     /// <summary>
@@ -29,8 +29,8 @@ internal static class ModMenuPatches
     {
         if (__instance.name == "GlobalPanels(Clone)")
         {
-            ModMenuBootstrap.GlobalPanels = __instance;
-            ModMenuBootstrap.TryInitialize();
+            BloomEngineBootstrap.GlobalPanels = __instance;
+            BloomEngineBootstrap.TryInitialize();
         }
     }
 
@@ -41,8 +41,8 @@ internal static class ModMenuPatches
     [HarmonyPostfix]
     private static void MainMenuPanelView_Start_Postfix(MainMenuPanelView __instance)
     {
-        ModMenuBootstrap.MainMenu = __instance;
-        ModMenuBootstrap.TryInitialize();
+        BloomEngineBootstrap.MainMenu = __instance;
+        BloomEngineBootstrap.TryInitialize();
     }
 
     /// <summary>

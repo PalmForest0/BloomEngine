@@ -3,6 +3,7 @@ using BloomEngine.Config.UI;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.ModMenu.UI;
 using BloomEngine.Utilities;
+using BloomEngine.Extensions;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
@@ -10,13 +11,13 @@ using UnityEngine;
 
 namespace BloomEngine;
 
-internal static class ModMenuBootstrap
+internal static class BloomEngineBootstrap
 {
     public static AchievementsUI AchievementsUI { get; set; }
     public static MainMenuPanelView MainMenu { get; set; }
     public static PanelViewContainer GlobalPanels { get; set; }
 
-    private static bool _initialized;
+    private static int initIndex = 0;
 
     public static void TryInitialize()
     {
@@ -27,26 +28,23 @@ internal static class ModMenuBootstrap
         if (!GlobalPanels)
             return;
 
-        InitOnSceneLoad();
-
-        if (!_initialized)
-        {
-            InitOnce();
-            _initialized = true;
-        }
-    }
-
-    private static void InitOnce()
-    {
-        // Create config panels globally only once
-        CreateConfigPanels(MainMenu, GlobalPanels);
-    }
-
-    private static void InitOnSceneLoad()
-    {
         // Setup UI Helper and mod menu every time the main menu scene loads
-        UIHelper.Initialize(MainMenu, GlobalPanels, AchievementsUI);
+        UIHelper.OnMainMenuLoaded(MainMenu, GlobalPanels, AchievementsUI);
+
+        // Create UI templates only on the first load
+        if (initIndex == 0)
+        {
+            // Create all UI templates only once
+            UIHelper.CreateTemplates();
+
+            // Create config panels globally only once
+            CreateConfigPanels(MainMenu, GlobalPanels);
+        }
+
+        // Recreate the mod menu every time the main menu loads
         ModMenuService.ModMenuUI = new ModMenuUI(AchievementsUI);
+
+        initIndex++;
     }
 
     private static void CreateConfigPanels(MainMenuPanelView mainMenu, PanelViewContainer globalPanels)
