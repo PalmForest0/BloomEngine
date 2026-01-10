@@ -46,7 +46,7 @@ public sealed class IntConfigInput : TypedConfigInput<int>
     /// </summary>
     private static object ValidateNumericInput(string input, Type type)
     {
-        if (!TypeHelper.IsNumericType(type))
+        if (!IsNumericType(type))
         {
             Melon<BloomEngineMod>.Logger.Error($"{type} is not a numeric type. This should never occur.");
             return input;
@@ -101,4 +101,25 @@ public sealed class IntConfigInput : TypedConfigInput<int>
 
         return sb.ToString();
     }
+
+    /// <summary>
+    /// Determines whether the specified type is one of the most common numeric types.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <returns>True if the provided type is numeric.</returns>
+    private static bool IsNumericType(Type type) => Type.GetTypeCode(type) switch
+    {
+        TypeCode.Byte => true,
+        TypeCode.SByte => true,
+        TypeCode.UInt16 => true,
+        TypeCode.UInt32 => true,
+        TypeCode.UInt64 => true,
+        TypeCode.Int16 => true,
+        TypeCode.Int32 => true,
+        TypeCode.Int64 => true,
+        TypeCode.Decimal => true,
+        TypeCode.Double => true,
+        TypeCode.Single => true,
+        _ => false
+    };
 }

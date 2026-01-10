@@ -15,9 +15,9 @@ internal sealed class ModMenuItemUI
     private const int IconSize = 225;
     private const int IconBorderSize = 275;
 
-    private static Sprite configIconSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ConfigIcon.png");
-    private static Sprite defaultIconSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.DefaultModIcon.png");
-    private static Sprite modIconBorderSprite = AssetHelper.LoadEmbeddedSprite("BloomEngine.Resources.ModIconBorder.png");
+    private static Sprite configIconSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ConfigIcon.png");
+    private static Sprite defaultIconSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.DefaultModIcon.png");
+    private static Sprite modIconBorderSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModIconBorder.png");
 
     private readonly GameObject itemObject;
     private RectTransform iconContainerRect;
