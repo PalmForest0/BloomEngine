@@ -72,7 +72,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// </summary>
     /// <param name="iconSprite">
     /// The <see cref="Sprite"/> to replace the default icon with. To load a <see cref="Sprite"/>,
-    /// you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadEmbeddedSprite{TMarker}(string, float)"/>.
+    /// you can add it to your mod as an embedded resource and load it with <see cref="AssetHelper.LoadSprite{TMarker}(string, float)"/>.
     /// </param>
     /// <returns>This mod entry with the new icon.</returns>
     public ModMenuEntry AddIcon(Sprite iconSprite)

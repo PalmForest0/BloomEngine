@@ -13,7 +13,7 @@ public static class AssetHelper
     /// Loads a sprite from an embedded resource using the specified asset path.
     /// </summary>
     /// <typeparam name="TMarker">A type which will be used to get the assembly containing the embedded resource.</typeparam>
-    /// <param name="assetPath">
+    /// <param name="resourcePath">
     /// The path to the embedded resource image. This must be a valid resource path within the executing assembly 
     /// (eg. "BloomEngine.Resources.Icon.png"). Make sure that the resource's Build Action is set to <strong>Embedded Resource</strong>
     /// </param>
@@ -21,34 +21,35 @@ public static class AssetHelper
     /// <returns>
     /// A <see cref="Sprite"/> object created from the embedded resource. If the resource cannot be found, the created sprite will be a 2x2 placeholder image.
     /// </returns>
-    public static Sprite LoadEmbeddedSprite<TMarker>(string assetPath, float pixelsPerUnit = 100f)
+    public static Sprite LoadSprite<TMarker>(string resourcePath, float pixelsPerUnit = 100f)
     {
-        Assembly assembly = typeof(TMarker).Assembly;
-        using Stream stream = assembly.GetManifestResourceStream(assetPath);
-
-        if (stream is null)
-            throw new ArgumentException($"Embedded image resource \"{assetPath}\" could not be found in \"{assembly.GetName().Name}\"", nameof(assetPath));
-
-        byte[] data = stream.ReadFully();
+        byte[] data = LoadResourceData<TMarker>(resourcePath);
         return CreateSpriteFromData(data, pixelsPerUnit);
     }
 
-    internal static Sprite LoadEmbeddedSprite(string assetPath, float pixelsPerUnit = 100f)
-        => LoadEmbeddedSprite<BloomEngineMod>(assetPath, pixelsPerUnit);
+    /// <summary>
+    /// Loads an AssetBundle from an embedded resource.
+    /// </summary>
+    /// <typeparam name="TMarker">A type which will be used to get the assembly containing the embedded resource.</typeparam>
+    /// <param name="resourcePath">Filename of the AssetBundle</param>
+    /// <returns>The loaded AssetBundle.</returns>
+    public static AssetBundle LoadAssetBundle<TMarker>(string resourcePath)
+    {
+        byte[] data = LoadResourceData<TMarker>(resourcePath);
+        return AssetBundle.LoadFromMemory(data);
+    }
 
     /// <summary>
     /// Retrieves the contents of an embedded resource and reads them to a byte array.
     /// </summary>
+    /// <typeparam name="TMarker">A type which will be used to get the assembly containing the embedded resource.</typeparam>
     /// <param name="resourcePath">The fully qualifiedthe embedded resource to retrieve. (eg. "BloomEngine.Assets.Icon.png")</param>
     /// <returns>A byte array containing the contents of the specified embedded resource, or an empty array if the resource is not found.</returns>
-    public static byte[] GetDataFromResource(string resourcePath)
+    public static byte[] LoadResourceData<TMarker>(string resourcePath)
     {
-        Assembly assembly = Assembly.GetExecutingAssembly();
+        Assembly assembly = typeof(TMarker).Assembly;
         using Stream stream = assembly.GetManifestResourceStream(resourcePath);
-
-        if (stream is null)
-            return [];
-        else return stream.ReadFully();
+        return stream is null ? [] : stream.ReadFully();
     }
 
     /// <summary>
@@ -62,7 +63,7 @@ public static class AssetHelper
         Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
 
         if (!ImageConversion.LoadImage(texture, imageData, false))
-           MelonLogger.Error("ImageConversion.LoadImage call failed when creating sprite from data.");
+            MelonLogger.Error("ImageConversion.LoadImage call failed when creating sprite from data.");
 
         texture.Apply(false, false);
 
@@ -70,22 +71,6 @@ public static class AssetHelper
         sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
 
         return sprite;
-    }
-
-    /// <summary>
-    /// Loads an AssetBundle from an embedded resource.
-    /// </summary>
-    /// <param name="bundlePath">Filename of the AssetBundle</param>
-    /// <returns>Loaded AssetBundle</returns>
-    public static AssetBundle LoadAssetBundle(string bundlePath)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        using Stream stream = assembly.GetManifestResourceStream(bundlePath);
-
-        if (stream is null)
-            throw new ArgumentException($"Embedded resource at 'Assets/{bundlePath}' not found.", nameof(bundlePath));
-
-        return AssetBundle.LoadFromMemory(stream.ReadFully());
     }
 
     /// <summary>
