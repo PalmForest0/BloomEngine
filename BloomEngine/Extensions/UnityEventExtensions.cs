@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 namespace BloomEngine.Extensions;
 
+/// <summary>
+/// Extension methods that replace <see cref="UnityAction"/> uses with <see cref="Action"/>.
+/// </summary>
 public static class UnityEventExtensions
 {
     // Listener extension methods for UnityEvents

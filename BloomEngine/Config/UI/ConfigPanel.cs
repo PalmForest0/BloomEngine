@@ -36,10 +36,10 @@ internal sealed class ConfigPanel
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
-    private static Sprite resetButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
-    private static Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
-    private static Sprite infoButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
-    private static Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
+    private static readonly Sprite resetButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
+    private static readonly Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
+    private static readonly Sprite infoButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
+    private static readonly Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
 
     private static CustomPopup configPopup;
 
@@ -206,7 +206,7 @@ internal sealed class ConfigPanel
     {
         // Create the button using a wrapper and destroy the garbage
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
-        GameObject buttonObj = UIHelper.CreateButton("Button_Internal", wrapper, "", onClick!);
+        GameObject buttonObj = UIHelper.CreateButton("Button_Internal", wrapper, "", onClick);
         GameObject.Destroy(buttonObj.transform.Find("Label").gameObject);
         GameObject.Destroy(buttonObj.transform.Find("Background/ImageSelected").gameObject);
 

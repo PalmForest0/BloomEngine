@@ -17,7 +17,7 @@ internal sealed class ModMenuUI
     private GameObject modsContainer;
     private readonly GameObject header;
 
-    private readonly Transform achievements;
+    private readonly RectTransform achievements;
     private readonly AchievementsUI achievementsUi;
 
     private GameObject bloomEngineLabel;
@@ -28,7 +28,7 @@ internal sealed class ModMenuUI
         achievementsContainer = achievementsUi.transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
         
         this.achievementsUi = achievementsUi;
-        achievements = achievementsUi.transform;
+        achievements = achievementsUi.GetComponent<RectTransform>();
 
         // Prevent header from blocking clicks on mod ModEntries
         header = achievements.Find("ScrollView/Viewport/Content/Header").gameObject;

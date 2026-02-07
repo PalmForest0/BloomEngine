@@ -24,24 +24,39 @@ namespace BloomEngine.Helpers;
 /// </summary>
 public static class UIHelper
 {
+    /// <summary>
+    /// Gets a bool value that specifies whether the Main Menu is currently active.
+    /// </summary>
     public static bool InMainMenu { get; private set; }
 
+    /// <summary>
+    /// Gets the Main Menu panel view, or null if the Main Menu is currently inactive.
+    /// </summary>
     public static MainMenuPanelView MainMenu { get; private set; }
+
+    /// <summary>
+    /// Gets the global panel container.
+    /// </summary>
     public static PanelViewContainer GlobalPanels { get; private set; }
+
+    /// <summary>
+    /// Gets the Main Menu's achievements UI, if the Main Menu is currently active.
+    /// </summary>
     public static AchievementsUI Achievements { get; private set; }
 
     public static TMP_FontAsset Font1 { get; private set; }
     public static TMP_FontAsset Font2 { get; private set; }
 
-
-    private static readonly Dictionary<RectTransform, object> fadeCoroutines = new();
-
+    // UI element templates which have been cloned and saved
     private static GameObject textboxTemplate;
     private static GameObject buttonTemplate;
     private static GameObject checkboxTemplate;
     private static GameObject dropdownTemplate;
     private static GameObject sliderTemplate;
 
+    /// <summary>
+    /// Called by the Bootstrap when the Main Menu is loaded.
+    /// </summary>
     internal static void OnMainMenuLoaded(MainMenuPanelView mainMenu, PanelViewContainer globalPanels, AchievementsUI achievements)
     {
         MainMenu = mainMenu;
@@ -52,6 +67,9 @@ public static class UIHelper
         Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
     }
 
+    /// <summary>
+    /// Called by the bootstrap when the UI templates are ready to be created.
+    /// </summary>
     internal static void CreateTemplates()
     {
         Transform optionsPanelContent = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
@@ -78,66 +96,15 @@ public static class UIHelper
         SceneManager.add_sceneLoaded((scene, mode) => InMainMenu = scene.name == "Frontend");
     }
 
-    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
-    {
-        // Update name and text
-        buttonObj.name = newName;
-        buttonObj.GetComponentInChildren<TextMeshProUGUI>().SetText(newText);
-
-        // Remove garbage components
-        if (buttonObj.TryGetComponent<ExitGame>(out var exit))
-            GameObject.Destroy(exit);
-        if (buttonObj.TryGetComponent<TextLocalizer>(out var localiser))
-            GameObject.Destroy(localiser);
-        foreach (var local in buttonObj.GetComponentsInChildren<TextLocalizer>())
-            GameObject.Destroy(local);
-        if (buttonObj.TryGetComponent<UnityButtonBinder>(out var binder))
-            GameObject.Destroy(binder);
-
-        // Add onClick event
-        var button = buttonObj.GetComponent<Button>();
-        button.onClick = new();
-        button.onClick.AddListener(onClick);
-
-        return buttonObj;
-    }
-
     /// <summary>
-    /// Starts a coroutine to fade the alpha of a UI element over time.
-    /// Calling this method again on the same UI element will stop previous fade coroutines.
+    /// Creates a new Button UI element with the specified name, parent, display text, and click action.
     /// </summary>
-    /// <param name="uiRect">The UI element to apply the fade to.</param>
-    /// <param name="target">Target alpha value by the end of the fade.</param>
-    /// <param name="duration">The duration of the fade in seconds.</param>
-    public static void FadeUIAlpha(RectTransform uiRect, float target, float duration)
-    {
-        if (!uiRect) return;
-
-        if (fadeCoroutines.TryGetValue(uiRect, out object fadeCoToken))
-            MelonCoroutines.Stop(fadeCoToken);
-
-        fadeCoroutines[uiRect] = MelonCoroutines.Start(CoFadeAlphaTo(uiRect, target, duration));
-    }
-
-    private static IEnumerator CoFadeAlphaTo(RectTransform uiRect, float target, float duration)
-    {
-        CanvasGroup group = uiRect.GetComponent<CanvasGroup>() ?? uiRect.gameObject.AddComponent<CanvasGroup>();
-
-        float start = group.alpha;
-        float time = 0f;
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            group.alpha = Mathf.Lerp(start, target, time / duration);
-            yield return null;
-        }
-
-        group.alpha = target;
-        fadeCoroutines.Remove(uiRect, out _);
-    }
-
-    public static GameObject CreateButton(string name, Transform parent, string text, Action onClick)
+    /// <param name="name">The name to assign to the button GameObject.</param>
+    /// <param name="parent">The parent RectTransform under which the button will be instantiated.</param>
+    /// <param name="text">The text to set the button label to.</param>
+    /// <param name="onClick">The action to invoke when the button is clicked.</param>
+    /// <returns>A GameObject representing the newly created button, configured with the specified properties.</returns>
+    public static GameObject CreateButton(string name, RectTransform parent, string text, Action onClick)
     {
         GameObject button = GameObject.Instantiate(buttonTemplate, parent);
         UIHelper.ModifyButton(button, name, text, onClick);
@@ -148,7 +115,15 @@ public static class UIHelper
         return button;
     }
 
-
+    /// <summary>
+    /// Creates a new text input field as a child of the specified parent, with optional placeholder text.
+    /// </summary>
+    /// <param name="name">The name to assign to the created input field GameObject.</param>
+    /// <param name="parent">The parent RectTransform under which the input field will be instantiated.</param>
+    /// <param name="placeholder">The placeholder text to display when the input field is empty. If null, the placeholder will be hidden.</param>
+    /// <param name="onTextChanged">An optional callback invoked whenever the text in the input field changes.</param>
+    /// <param name="onDeselect">An optional callback invoked when the input field is deselected or submitted.</param>
+    /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
     public static ReloadedInputField CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
         GameObject obj = GameObject.Instantiate(textboxTemplate, parent);
@@ -170,6 +145,14 @@ public static class UIHelper
         return field;
     }
 
+    /// <summary>
+    /// Creates a new Checkbox UI element as a Toggle under the specified parent.
+    /// </summary>
+    /// <param name="name">The name to assign to the created checkbox GameObject.</param>
+    /// <param name="parent">The RectTransform that will serve as the parent for the checkbox.</param>
+    /// <param name="value">The initial checked state of the checkbox, which is <see langword="true"/> by default.</param>
+    /// <param name="onValueChanged">An optional callback that is invoked whenever the checkbox value changes.</param>
+    /// <returns>A Toggle component representing the created checkbox with the provided default value.</returns>
     public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(checkboxTemplate, parent);
@@ -184,6 +167,15 @@ public static class UIHelper
         return toggle;
     }
 
+    /// <summary>
+    /// Creates a PvZ-style Dropdown UI element as a child of the specified parent, and sets its options to the values of an enum.
+    /// </summary>
+    /// <param name="name">The name to assign to the newly created Dropdown GameObject.</param>
+    /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
+    /// <param name="enumType">The type of enum to get all values from and add as options to the Dropdown.</param>
+    /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
+    /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
+    /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>
     public static ReloadedDropdown CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChanged = null)
     {
         if (!enumType.IsEnum)
@@ -211,6 +203,17 @@ public static class UIHelper
         return dropdown;
     }
 
+    /// <summary>
+    /// Creates a new PvZ-style Slider UI element as a child of the specified parent, with the given name, value range, and
+    /// default value. Optionally attaches a callback to handle value changes.
+    /// </summary>
+    /// <param name="name">The name to assign to the newly created Slider GameObject.</param>
+    /// <param name="parent">The RectTransform that will serve as the parent for the Slider.</param>
+    /// <param name="defaultValue">The initial value to set for the Slider. Must be within the defined range.</param>
+    /// <param name="minValue">The minimum value allowed for the Slider.</param>
+    /// <param name="maxValue">The maximum value allowed for the Slider.</param>
+    /// <param name="onValueChanged">An optional callback that is invoked whenever the Slider's value changes.</param>
+    /// <returns>A Slider component configured with the specified range and value.</returns>
     public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null)
     {
         GameObject obj = GameObject.Instantiate(sliderTemplate, parent);
@@ -219,7 +222,7 @@ public static class UIHelper
         Slider slider = obj.GetComponent<Slider>();
         slider.minValue = minValue;
         slider.maxValue = maxValue;
-        slider.SetValueWithoutNotify(defaultValue);
+        slider.SetValueWithoutNotify(Math.Clamp(defaultValue, minValue, maxValue));
 
         slider.onValueChanged = new();
         slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
@@ -250,7 +253,6 @@ public static class UIHelper
 
         return slider;
     }
-
 
 
     /// <summary>
@@ -333,5 +335,73 @@ public static class UIHelper
             GameObject.Destroy(localizer);
         foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
             GameObject.Destroy(binder);
+    }
+
+    /// <summary>
+    /// Starts a coroutine to fade the alpha of a UI element over time.
+    /// Calling this method again on the same UI element will stop previous fade coroutines.
+    /// </summary>
+    /// <param name="uiRect">The UI element to apply the fade to.</param>
+    /// <param name="target">Target alpha value by the end of the fade.</param>
+    /// <param name="duration">The duration of the fade in seconds.</param>
+    public static void FadeUIAlpha(RectTransform uiRect, float target, float duration)
+    {
+        if (!uiRect) return;
+
+        if (fadeCoroutines.TryGetValue(uiRect, out object fadeCoToken))
+            MelonCoroutines.Stop(fadeCoToken);
+
+        fadeCoroutines[uiRect] = MelonCoroutines.Start(CoFadeAlphaTo(uiRect, target, duration));
+    }
+
+    private static IEnumerator CoFadeAlphaTo(RectTransform uiRect, float target, float duration)
+    {
+        CanvasGroup group = uiRect.GetComponent<CanvasGroup>() ?? uiRect.gameObject.AddComponent<CanvasGroup>();
+
+        float start = group.alpha;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            group.alpha = Mathf.Lerp(start, target, time / duration);
+            yield return null;
+        }
+
+        group.alpha = target;
+        fadeCoroutines.Remove(uiRect, out _);
+    }
+
+    private static readonly Dictionary<RectTransform, object> fadeCoroutines = new();
+
+
+    /// <summary>
+    /// Cleans up a PvZ Button and updates it with custom values.
+    /// </summary>
+    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
+    {
+        // Update name and text
+        buttonObj.name = newName;
+        buttonObj.GetComponentInChildren<TextMeshProUGUI>().SetText(newText);
+
+        // Remove garbage components
+        if (buttonObj.TryGetComponent<ExitGame>(out var exit))
+            GameObject.Destroy(exit);
+        if (buttonObj.TryGetComponent<TextLocalizer>(out var localiser))
+            GameObject.Destroy(localiser);
+        foreach (var local in buttonObj.GetComponentsInChildren<TextLocalizer>())
+            GameObject.Destroy(local);
+        if (buttonObj.TryGetComponent<UnityButtonBinder>(out var binder))
+            GameObject.Destroy(binder);
+
+        // Add onClick event
+        if (onClick is not null)
+        {
+            var button = buttonObj.GetComponent<Button>();
+            button.onClick = new();
+            button.onClick.AddListener(onClick);
+        }
+
+        return buttonObj;
     }
 }

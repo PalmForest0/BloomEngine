@@ -64,7 +64,7 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     /// <remarks>The validation check occurs after the new value has been transformed by <see cref="TransformValue"/></remarks>
     public Func<T, bool> ValidateValue { get; set; }
 
-    protected TypedConfigInput(string name, string description, T defaultValue, ConfigInputOptions<T> options = null)
+    private protected TypedConfigInput(string name, string description, T defaultValue, ConfigInputOptions<T> options = null)
     {
         Name = name;
         Description = description;
