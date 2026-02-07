@@ -53,3 +53,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# DocFx
+_site/
+api/
