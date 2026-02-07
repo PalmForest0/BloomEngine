@@ -1,5 +1,6 @@
-﻿using BloomEngine.Modules;
-using BloomEngine.Extensions;
+﻿using BloomEngine.Extensions;
+using BloomEngine.Modules;
+using BloomEngine.Utilities;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
@@ -13,9 +14,8 @@ using MelonLoader;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using BloomEngine.Utilities;
+using UnityEngine.UI;
 
 namespace BloomEngine.Helpers;
 
@@ -75,7 +75,7 @@ public static class UIHelper
         GameObject.Destroy(buttonTemplate.GetComponent<ExitGame>());
 
         // Hook scene loaded event to determine if the current scene is the main menu
-        SceneManager.add_sceneLoaded((Scene scene, LoadSceneMode mode) => InMainMenu = scene.name == "Frontend");
+        SceneManager.add_sceneLoaded((scene, mode) => InMainMenu = scene.name == "Frontend");
     }
 
     internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
@@ -161,7 +161,7 @@ public static class UIHelper
         ReloadedInputField field = obj.GetComponent<ReloadedInputField>();
         field.onValueChanged = new();
         field.onValueChanged.AddListener(text => onTextChanged?.Invoke(field));
-        
+
         field.onDeselect = new();
         field.onDeselect.AddListener(text => onDeselect?.Invoke(field));
         field.onSubmit = new();
@@ -197,7 +197,7 @@ public static class UIHelper
 
         var values = Enum.GetValues(enumType).Cast<object>().ToArray();
 
-        if (selectedIndex > values.Length -1 || selectedIndex < 0)
+        if (selectedIndex > values.Length - 1 || selectedIndex < 0)
             selectedIndex = 0;
 
         dropdown.AddOptions(values.Select(value => value.ToString()).ToIl2CppList());
@@ -252,13 +252,31 @@ public static class UIHelper
     }
 
 
+
     /// <summary>
     /// Creates a custom popup that can be modified to display any message.
     /// </summary>
     /// <param name="panelId">The internal id of the new panel.</param>
     /// <param name="panelName">The object name of the new panel.</param>
+    /// <param name="header">The text to set as the header of the new panel.</param>
+    /// <param name="subheader">The text to show in the main body of the new panel.</param>
     /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
-    public static CustomPopup CreatePopup(string panelId, string panelName) => new CustomPopup(panelId, panelName);
+    public static CustomPopup CreatePopup(string panelId, string panelName, string header = null, string subheader = null)
+    {
+        if(string.IsNullOrWhiteSpace(panelId))
+            throw new ArgumentNullException(nameof(panelId));
+        if(string.IsNullOrWhiteSpace(panelName))
+            throw new ArgumentNullException(nameof(panelName));
+
+        var popup = new CustomPopup(panelId, panelName);
+
+        if(!string.IsNullOrWhiteSpace(header))
+            popup.SetHeader(header);
+        if(!string.IsNullOrWhiteSpace(subheader))
+            popup.SetSubheader(subheader);
+
+        return popup;
+    }
 
     /// <summary>
     /// Creates a new <see cref="GameObject"/> with a <see cref="RectTransform"/> and returns it.
@@ -311,7 +329,7 @@ public static class UIHelper
     /// <param name="obj">The <see cref="GameObject"/> to remove these components from.</param>
     public static void RemoveBindersAndLocalizers(GameObject obj)
     {
-        foreach(var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
+        foreach (var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
             GameObject.Destroy(localizer);
         foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
             GameObject.Destroy(binder);

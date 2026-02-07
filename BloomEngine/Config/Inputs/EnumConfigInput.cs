@@ -40,6 +40,8 @@ public sealed class EnumConfigInput : TypedConfigInput<Enum>
     }
 
     internal override void UpdateFromUI() => Value = options[Dropdown.value];
+
+    /// <inheritdoc/>
     protected override void SetDisplayedValue(Enum value)
     {
         Dropdown.SetValueWithoutNotify(options.IndexOf(value));

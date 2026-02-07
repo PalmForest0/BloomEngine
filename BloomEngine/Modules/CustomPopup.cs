@@ -7,16 +7,40 @@ using BloomEngine.Helpers;
 
 namespace BloomEngine.Modules;
 
+/// <summary>
+/// Wrapper for a PvZ Replanted popup with a customizable header, subheader, and up to two buttons.
+/// To create a new <see cref="CustomPopup"/>, use <see cref="UIHelper.CreatePopup(string, string, string, string)"/>.
+/// </summary>
 public sealed class CustomPopup
 {
+    /// <summary>
+    /// The in-game <see cref="PanelView"/> that is wrapped by this <see cref="CustomPopup"/> instance.
+    /// </summary>
     public PanelView Panel { get; private set; }
 
+    /// <summary>
+    /// Header label of the popup panel.
+    /// </summary>
     public TextMeshProUGUI Header { get; private set; }
+
+    /// <summary>
+    /// Subheader (popup body) label of the popup panel.
+    /// </summary>
     public TextMeshProUGUI Subheader { get; private set; }
 
+    /// <summary>
+    /// Gets the first button in the panel footer, which can be updated with <see cref="SetFirstButton(bool, string, Action, bool)"/>.
+    /// </summary>
     public Button FirstButton { get; private set; }
+
+    /// <summary>
+    /// Gets the second button in the panel footer, which can be updated with <see cref="SetSecondButton(bool, string, Action, bool)"/>.
+    /// </summary>
     public Button SecondButton { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the popup is currently visible.
+    /// </summary>
     public bool IsVisible { get; private set; }
 
     internal CustomPopup(string panelId, string panelName)

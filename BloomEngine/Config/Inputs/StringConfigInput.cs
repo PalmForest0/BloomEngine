@@ -26,5 +26,7 @@ public sealed class StringConfigInput : TypedConfigInput<string>
     }
 
     internal override void UpdateFromUI() => Value = Textbox.text;
+
+    /// <inheritdoc/>
     protected override void SetDisplayedValue(string value) => Textbox.SetTextWithoutNotify(value);
 }

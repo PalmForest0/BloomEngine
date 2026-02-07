@@ -33,5 +33,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool>
     }
 
     internal override void UpdateFromUI() => Value = Toggle.isOn;
+
+    /// <inheritdoc/>
     protected override void SetDisplayedValue(bool value) => Toggle.SetIsOnWithoutNotify(value);
 }
