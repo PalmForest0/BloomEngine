@@ -2,12 +2,12 @@
 using BloomEngine.Config.UI;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.ModMenu.UI;
-using BloomEngine.Utilities;
 using BloomEngine.Extensions;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
 using UnityEngine;
+using BloomEngine.Helpers;
 
 namespace BloomEngine;
 

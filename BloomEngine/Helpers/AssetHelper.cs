@@ -2,7 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace BloomEngine.Utilities;
+namespace BloomEngine.Helpers;
 
 /// <summary>
 /// Static helper class for loading assets from embedded resources.

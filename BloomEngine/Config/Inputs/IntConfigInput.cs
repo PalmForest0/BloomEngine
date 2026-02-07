@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.Services;
-using BloomEngine.Utilities;
+using BloomEngine.Helpers;
 using Il2CppReloaded.Input;
 using MelonLoader;
 using System.Text;

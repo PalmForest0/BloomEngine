@@ -15,8 +15,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using BloomEngine.Utilities;
 
-namespace BloomEngine.Utilities;
+namespace BloomEngine.Helpers;
 
 /// <summary>
 /// Static helper class that provides methods for creating UI elements.

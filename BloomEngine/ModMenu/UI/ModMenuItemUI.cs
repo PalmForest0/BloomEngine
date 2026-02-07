@@ -7,6 +7,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using BloomEngine.Helpers;
 
 namespace BloomEngine.ModMenu.UI;
 
