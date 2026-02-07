@@ -42,7 +42,7 @@ public sealed class IntConfigInput : TypedConfigInput<int>
     /// <summary>
     /// Performs basic sanitisation of numeric input strings to be used for live input fields. Does not perform clamping, parsing or type conversion.
     /// </summary>
-    private static string SanitizeNumericInput(string input) => new string(input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.').ToArray());
+    private static string SanitizeNumericInput(string input) => new string([.. input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.')]);
 
     /// <summary>
     /// Performs full validation of a string input for a numeric type, including sanitisation, parsing and clamping to the type's min/max values.

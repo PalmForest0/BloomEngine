@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using BloomEngine.Extensions;
+using MelonLoader;
 using System.Reflection;
 using UnityEngine;
 
@@ -23,8 +24,8 @@ public static class AssetHelper
     /// </returns>
     public static Sprite LoadSprite<TMarker>(string resourcePath, float pixelsPerUnit = 100f)
     {
-        byte[] data = LoadResourceData<TMarker>(resourcePath);
-        return CreateSpriteFromData(data, pixelsPerUnit);
+        byte[] data = LoadBytes<TMarker>(resourcePath);
+        return CreateSprite(data, pixelsPerUnit);
     }
 
     /// <summary>
@@ -35,7 +36,7 @@ public static class AssetHelper
     /// <returns>The loaded AssetBundle.</returns>
     public static AssetBundle LoadAssetBundle<TMarker>(string resourcePath)
     {
-        byte[] data = LoadResourceData<TMarker>(resourcePath);
+        byte[] data = LoadBytes<TMarker>(resourcePath);
         return AssetBundle.LoadFromMemory(data);
     }
 
@@ -45,11 +46,39 @@ public static class AssetHelper
     /// <typeparam name="TMarker">A type which will be used to get the assembly containing the embedded resource.</typeparam>
     /// <param name="resourcePath">The fully qualifiedthe embedded resource to retrieve. (eg. "BloomEngine.Assets.Icon.png")</param>
     /// <returns>A byte array containing the contents of the specified embedded resource, or an empty array if the resource is not found.</returns>
-    public static byte[] LoadResourceData<TMarker>(string resourcePath)
+    public static byte[] LoadBytes<TMarker>(string resourcePath)
     {
         Assembly assembly = typeof(TMarker).Assembly;
         using Stream stream = assembly.GetManifestResourceStream(resourcePath);
         return stream is null ? [] : stream.ReadFully();
+    }
+
+    /// <summary>
+    /// Retrieves the data of a file on the disk as an array of bytes.
+    /// </summary>
+    /// <param name="filePath">The path to a file on the disk of the executing machine.</param>
+    /// <returns>A byte array containing the contents of the specified file, or an empty array if the file doesn't exist.</returns>
+    public static byte[] LoadBytes(string filePath)
+    {
+        if(!File.Exists(filePath))
+            return [];
+
+        using FileStream stream = File.OpenRead(filePath);
+        return stream is null ? [] : stream.ReadFully();
+    }
+
+    /// <summary>
+    /// Creates a sprite using the provided texture.
+    /// </summary>
+    /// <param name="texture">The texture to use for sprite creation.</param>
+    /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
+    /// <returns>A sprite created from the provided texture.</returns>
+    public static Sprite CreateSprite(Texture2D texture, float pixelsPerUnit = 100f)
+    {
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+        sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
+
+        return sprite;
     }
 
     /// <summary>
@@ -58,30 +87,14 @@ public static class AssetHelper
     /// <param name="imageData">A byte array containing image data in a supported format, such as PNG or JPEG.</param>
     /// <param name="pixelsPerUnit">The number of pixels in the image that correspond to one unit in the world. Defaults to 100.</param>
     /// <returns>A Sprite object created from the provided image data.</returns>
-    public static Sprite CreateSpriteFromData(byte[] imageData, float pixelsPerUnit = 100f)
+    public static Sprite CreateSprite(byte[] imageData, float pixelsPerUnit = 100f)
     {
         Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
 
         if (!ImageConversion.LoadImage(texture, imageData, false))
-            MelonLogger.Error("ImageConversion.LoadImage call failed when creating sprite from data.");
+            MelonLogger.Error("ImageConversion.LoadImage call failed when creating sprite from bytes.");
 
         texture.Apply(false, false);
-
-        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
-        sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontSaveInEditor;
-
-        return sprite;
-    }
-
-    /// <summary>
-    /// Fully reads a stream into a byte array.
-    /// </summary>
-    /// <param name="input">Input stream</param>
-    /// <returns>Output byte array</returns>
-    public static byte[] ReadFully(this Stream input)
-    {
-        using MemoryStream stream = new MemoryStream();
-        input.CopyTo(stream);
-        return stream.ToArray();
+        return CreateSprite(texture, pixelsPerUnit);
     }
 }

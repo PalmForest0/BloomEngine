@@ -1,4 +1,6 @@
-﻿using UnityEngine.Events;
+﻿#pragma warning disable IDE1006
+
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace BloomEngine.Extensions;

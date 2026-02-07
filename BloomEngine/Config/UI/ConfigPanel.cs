@@ -1,9 +1,10 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.Services;
+using BloomEngine.Extensions;
+using BloomEngine.Helpers;
 using BloomEngine.ModMenu.Services;
 using BloomEngine.Modules;
 using BloomEngine.Utilities;
-using BloomEngine.Extensions;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
@@ -12,7 +13,6 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using BloomEngine.Helpers;
 
 namespace BloomEngine.Config.UI;
 
@@ -20,7 +20,7 @@ internal sealed class ConfigPanel
 {
     public ModMenuEntry Mod { get; set; }
 
-    private readonly List<RectTransform> pageObjects = new List<RectTransform>();
+    private readonly List<RectTransform> pageObjects = new();
 
     private readonly RectTransform window;
     private readonly GameObject panel;
@@ -83,7 +83,7 @@ internal sealed class ConfigPanel
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
         header.text = $"{mod.DisplayName} Config";
         header.enableAutoSizing = false;
-        
+
         var headerLayout = header.gameObject.GetComponent<LayoutElement>();
         headerLayout.minHeight = 130f;
         headerLayout.preferredHeight = 130f;
@@ -164,7 +164,7 @@ internal sealed class ConfigPanel
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
         CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, resetButtonSprite, resetButtonSpriteSelected);
-        if(!string.IsNullOrWhiteSpace(input.Description))
+        if (!string.IsNullOrWhiteSpace(input.Description))
             CreateSquareButton("InputInfoButton", rowRect, () => configPopup.ShowWithText(input.Name, input.Description), infoButtonSprite, infoButtonSpriteSelected);
     }
 
@@ -219,12 +219,12 @@ internal sealed class ConfigPanel
         buttonImg.preserveAspect = true;
 
         // Make the sprite change on hover if needed
-        if(hoverSprite)
+        if (hoverSprite)
         {
             UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerEnter, _ => buttonImg.sprite = hoverSprite);
             UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerExit, _ => buttonImg.sprite = normalSprite);
         }
-        
+
         LayoutElement buttonLayout = wrapper.gameObject.AddComponent<LayoutElement>();
         buttonLayout.preferredWidth = 105;
         buttonLayout.preferredHeight = 105;
@@ -286,7 +286,7 @@ internal sealed class ConfigPanel
         SetPageIndex(0);
         panel.SetActive(true);
 
-        if(PageCount > 1)
+        if (PageCount > 1)
         {
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(pageControlsRect);

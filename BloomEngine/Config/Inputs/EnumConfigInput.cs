@@ -26,7 +26,7 @@ public sealed class EnumConfigInput : TypedConfigInput<Enum>
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {
-        options = Enum.GetValues(ValueType).Cast<Enum>().ToList();
+        options = [.. Enum.GetValues(ValueType).Cast<Enum>()];
 
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
