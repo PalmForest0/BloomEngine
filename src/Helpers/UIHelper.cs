@@ -176,18 +176,15 @@ public static class UIHelper
     /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
     /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>
-    public static ReloadedDropdown CreateDropdown(string name, RectTransform parent, Type enumType, int selectedIndex = 0, Action<Enum> onValueChanged = null)
+    public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum> onValueChanged = null) where TEnum : Enum
     {
-        if (!enumType.IsEnum)
-            return null;
-
         GameObject obj = GameObject.Instantiate(dropdownTemplate, parent);
         obj.name = name;
 
         ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
         dropdown.ClearOptions();
 
-        var values = Enum.GetValues(enumType).Cast<object>().ToArray();
+        TEnum[] values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
 
         if (selectedIndex > values.Length - 1 || selectedIndex < 0)
             selectedIndex = 0;
@@ -198,7 +195,11 @@ public static class UIHelper
 
         // On value changed events
         dropdown.onValueChanged = new();
-        dropdown.onValueChanged?.AddListener(selection => onValueChanged?.Invoke((Enum)values[selection]));
+        dropdown.onValueChanged?.AddListener(selection =>
+        {
+            onValueChanged?.Invoke(values[selection]);
+            dropdown.Hide(); // Force hide dropdown after selection
+        });
 
         return dropdown;
     }
