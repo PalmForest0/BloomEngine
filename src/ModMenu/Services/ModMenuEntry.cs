@@ -119,7 +119,7 @@ public sealed class ModMenuEntry(MelonMod mod)
         Config?.Save(false);
 
         // Register all classes with a custom attribute
-        foreach(var type in Mod.MelonAssembly.Assembly.GetTypes())
+        foreach (var type in Mod.MelonAssembly.Assembly.GetTypes())
         {
             if(type.IsSubclassOf(typeof(UnityEngine.Object)) && type.GetCustomAttribute<RegisterInIl2CppAttribute>() is not null)
                 ClassInjector.RegisterTypeInIl2Cpp(type);

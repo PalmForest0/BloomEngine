@@ -172,7 +172,6 @@ public static class UIHelper
     /// </summary>
     /// <param name="name">The name to assign to the newly created Dropdown GameObject.</param>
     /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
-    /// <param name="enumType">The type of enum to get all values from and add as options to the Dropdown.</param>
     /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
     /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>

@@ -116,7 +116,7 @@ public sealed class ModConfig
         List<BaseConfigInput> inputs = new();
 
         // Use reflection to find all fields and properties that define input fields
-        var fields = configType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        var fields = configType.GetFields(BindingFlags.Static | BindingFlags.Public);
         foreach (var field in fields)
         {
             // Null instance for static class
