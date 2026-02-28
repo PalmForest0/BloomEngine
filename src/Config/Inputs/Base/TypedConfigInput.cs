@@ -74,15 +74,14 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
         TransformValue = options.TransformValue;
         ValidateValue = options.ValidateValue;
 
-        Value = defaultValue;
-        DefaultValue = Value;
+        DefaultValue = defaultValue;
         ValueType = defaultValue.GetType();
     }
 
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
         MelonEntry = melonCategory.CreateEntry(Name, DefaultValue, Name, Description);
-        Value = MelonEntry.Value;
+        Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
     }
 
     internal override void OnUIChanged() => OnInputChanged?.Invoke();

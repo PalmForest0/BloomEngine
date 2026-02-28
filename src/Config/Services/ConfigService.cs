@@ -83,18 +83,18 @@ public static class ConfigService
         => new BoolConfigInput(name, description, defaultValue, options);
 
     /// <summary>
-    /// Creates an <see cref="EnumConfigInput"/> instance which represents a dropdown. To add this input to your config,
+    /// Creates an <see cref="EnumConfigInput{TEnum}"/> instance which represents a dropdown. To add this input to your config,
     /// pass it to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModMenuEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="Enum"/> value of this config input.</param>
+    /// <param name="defaultValue">The default enum value of this config input.</param>
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
-    /// <returns>An <see cref="EnumConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
+    /// <returns>An <see cref="EnumConfigInput{TEnum}"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static EnumConfigInput CreateEnum(string name, string description, Enum defaultValue, ConfigInputOptions<Enum> options = null)
-        => new EnumConfigInput(name, description, defaultValue, options);
+    public static EnumConfigInput<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue, ConfigInputOptions<TEnum> options = null) where TEnum : Enum
+        => new EnumConfigInput<TEnum>(name, description, defaultValue, options);
 
     /// <summary>
     /// Displays the config config for the specified mod if it is registered and no other configuration config is currently open.
