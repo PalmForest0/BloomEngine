@@ -45,6 +45,11 @@ public sealed class ModMenuEntry(MelonMod mod)
     public ModConfig Config { get; private set; }
 
     /// <summary>
+    /// Gets a value indicating whether this mod entry has a non-empty config.
+    /// </summary>
+    public bool HasConfigInputs => Config is not null && !Config.IsEmpty;
+
+    /// <summary>
     /// Adds a custom display name that will replace this entry's mod name in the mod menu.
     /// </summary>
     /// <param name="displayName">The string containing the custom display name.</param>

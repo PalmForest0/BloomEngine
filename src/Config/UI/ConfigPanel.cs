@@ -1,7 +1,6 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Extensions;
 using BloomEngine.Helpers;
-using BloomEngine.ModMenu;
 using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;
@@ -17,9 +16,7 @@ namespace BloomEngine.Config.UI;
 
 internal sealed class ConfigPanel
 {
-    public ModMenuEntry Mod { get; set; }
-
-    private readonly List<RectTransform> pageObjects = new();
+    private readonly ModConfig config;
 
     private readonly RectTransform window;
     private readonly GameObject panel;
@@ -29,28 +26,57 @@ internal sealed class ConfigPanel
     public int PageIndex { get; private set; } = 0;
 
     const int InputFieldsPerPage = 7;
+    private readonly List<RectTransform> pageObjects = new();
 
     private RectTransform pageControlsRect;
     private GameObject pageCountLabel;
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
+    private static CustomPopup configPopup;
+
     private static readonly Sprite resetButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
     private static readonly Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
     private static readonly Sprite infoButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
     private static readonly Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
 
-    private static CustomPopup configPopup;
-
-    internal ConfigPanel(PanelView panel, ModMenuEntry mod)
+    internal ConfigPanel(PanelView panel, ModConfig config)
     {
-        Mod = mod;
-        PageCount = (int)Math.Ceiling((double)mod.Config.InputCount / InputFieldsPerPage);
+        this.config = config;
+        PageCount = (int)Math.Ceiling((double)config.InputCount / InputFieldsPerPage);
 
         this.panel = panel.gameObject;
-        panel.m_id = $"modConfig_{mod.Mod.Info.Name}";
-        panel.gameObject.name = $"P_ModConfig_{mod.DisplayName.Trim().Replace(" ", "")}";
-        window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
+        window = InitializePanel(panel);
+
+        // Create popup that will be used to show input descriptions
+        configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
+        configPopup.SetFirstButton(true, "Close");
+
+        SetupHeader();
+        SetupButtons();
+        SetupPages();
+        
+
+        // Create page controls if there are multiple pages
+        if (PageCount > 1)
+            CreatePageControls(window.parent.GetComponent<RectTransform>());
+
+        // Add click blocker background
+        UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
+
+        // Destroy all localizers
+        foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
+            UnityEngine.Object.Destroy(localiser);
+
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.InputCount} fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
+    }
+
+    private RectTransform InitializePanel(PanelView panel)
+    {
+        panel.m_id = $"modConfig_{config.Identifier}";
+        panel.gameObject.name = $"P_ModConfig_{config.Identifier}";
+
+        var window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
 
         // Make panel size static if there are multiple pages
         if (PageCount > 1)
@@ -61,26 +87,29 @@ internal sealed class ConfigPanel
         }
         else window.sizeDelta = new Vector2(2800, 0);
 
-        // Create popup that will be used to show input descriptions
-        configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
-        configPopup.SetFirstButton(true, "Close");
+        window.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
 
+        return window;
+    }
+
+    private void SetupButtons()
+    {
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            Mod.Config.UpdateAllFromUI();
-            Mod.Config.Save(true);
+            config.UpdateAllFromUI();
+            config.Save(true);
             ConfigService.HideConfigPanel();
         });
 
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(1).gameObject, "P_ConfigButton_Cancel", "Cancel", ConfigService.HideConfigPanel);
+    }
 
-        var windowLayout = window.GetComponent<VerticalLayoutGroup>();
-        windowLayout.childForceExpandHeight = false;
-
+    private void SetupHeader()
+    {
         // Change header text and sizing options
         var header = window.Find("HeaderText").GetComponent<TextMeshProUGUI>();
-        header.text = $"{mod.DisplayName} Config";
+        header.text = $"{config.DisplayName} Config";
         header.enableAutoSizing = false;
 
         var headerLayout = header.gameObject.GetComponent<LayoutElement>();
@@ -88,28 +117,11 @@ internal sealed class ConfigPanel
         headerLayout.preferredHeight = 130f;
         headerLayout.flexibleHeight = 0;
         header.GetComponent<RectTransform>().sizeDelta = new Vector2(header.GetComponent<RectTransform>().sizeDelta.x, 130f);
-
-        // Create inputs for each input on each page
-        CreatePages();
-        UnityEngine.Object.Destroy(window.Find("SubheadingText").gameObject);
-
-        // Create page controls if there are multiple pages
-        if (PageCount > 1)
-            CreatePageControls(window.parent.GetComponent<RectTransform>());
-
-        // Add click blocker background
-        UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
-
-        // Destroy all localisers
-        foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
-            UnityEngine.Object.Destroy(localiser);
-
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created config panel for {mod.DisplayName} with {mod.Config.InputCount} input fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
     }
 
-    private void CreatePages()
+    private void SetupPages()
     {
-        var pages = Mod.Config.ConfigInputs.Chunk(InputFieldsPerPage).ToList();
+        var pages = config.ConfigInputs.Chunk(InputFieldsPerPage).ToList();
 
         for (int i = 0; i < pages.Count; i++)
         {
@@ -135,6 +147,9 @@ internal sealed class ConfigPanel
 
             pageObjects.Add(pageRect);
         }
+
+        // Destroy the label used as a template
+        UnityEngine.Object.Destroy(window.Find("SubheadingText").gameObject);
     }
 
     private void CreateRow(BaseConfigInput input, RectTransform parent)
@@ -280,7 +295,7 @@ internal sealed class ConfigPanel
     public void ShowPanel()
     {
         // Populate inputs with currently stored values
-        Mod.Config.RefreshAllUI();
+        config.RefreshAllUI();
 
         SetPageIndex(0);
         panel.SetActive(true);

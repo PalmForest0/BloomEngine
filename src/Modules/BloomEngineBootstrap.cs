@@ -51,16 +51,11 @@ internal static class BloomEngineBootstrap
     {
         var template = mainMenu.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == "quit");
 
-        // Create a modEntry panel for each mod with a registered (and not empty) modEntry
-        foreach (ModMenuEntry modEntry in ModMenuService.ModEntries.Values)
+        // Create a config panel for each mod entry with a registered config
+        foreach (var config in ModMenuService.RegisteredEntries.Where(e => e.HasConfigInputs).Select(e => e.Config))
         {
-            ModConfig config = modEntry.Config;
-
-            if (config is null || config.IsEmpty)
-                continue;
-
             var panelObj = GameObject.Instantiate(template.gameObject, globalPanels.transform);
-            config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), modEntry);
+            config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
         }
     }
 }

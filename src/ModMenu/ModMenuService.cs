@@ -10,6 +10,7 @@ public static class ModMenuService
 {
     internal static MelonLogger.Instance ModMenuLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(ModMenu)}");
     internal static Dictionary<MelonMod, ModMenuEntry> ModEntries { get; } = new();
+    internal static IEnumerable<ModMenuEntry> RegisteredEntries => ModEntries.Values;
 
     internal static ModMenuUI ModMenuUI { get; set; }
 
