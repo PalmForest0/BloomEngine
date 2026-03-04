@@ -9,7 +9,7 @@ namespace BloomEngine.Config.Inputs;
 /// A config input type which contains UI implementation for handling <see cref="float"/> input.<br/>
 /// To create a <see cref="FloatConfigInput"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
-public sealed class FloatConfigInput : TypedConfigInput<float>
+public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
 {
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider.

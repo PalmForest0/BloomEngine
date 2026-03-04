@@ -9,7 +9,7 @@ namespace BloomEngine.Config.Inputs;
 /// A config input type which contains UI implementation for handling <see cref="string"/> input.<br/>
 /// To create a <see cref="StringConfigInput"/>, use <see cref="ConfigService.CreateString(string, string, string)"/>
 /// </summary>
-public sealed class StringConfigInput : TypedConfigInput<string>
+public sealed class StringConfigInput : TypedConfigInput<string, StringConfigInput>
 {
     /// <summary>
     /// The UI textbox which corresponds to this config input in the config panel.

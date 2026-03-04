@@ -6,10 +6,11 @@ namespace BloomEngine.Config.Inputs.Base;
 /// Represents a generic config input with a specificly typed <see cref="Value"/>.
 /// </summary>
 /// <typeparam name="T">The type of value stored within this config input.</typeparam>
-public abstract class TypedConfigInput<T> : BaseConfigInput
+/// <typeparam name="TSelf">The type of this config input.</typeparam>
+public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput where TSelf : TypedConfigInput<T, TSelf>
 {
     /// <summary>
-    /// Gets or sets the value stored in this config input, invoking <see cref="TransformValue"/>.
+    /// Gets or sets the value stored in this config input, invoking <see cref="TransformFunc"/>.
     /// If the new value is different to the old value,<br/> <see cref="OnValueChanged"/> is invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
     public T Value
@@ -96,30 +97,30 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     /// Subscribes to the <see cref="OnValueChanged"/> event, which is invoked when <see cref="Value"/> is modified.
     /// </summary>
     /// <param name="onValueChanged">The action to invoke when the value changes, receiving the new value as a parameter.</param>
-    public TypedConfigInput<T> WithOnValueChanged(Action<T> onValueChanged)
+    public TSelf WithOnValueChanged(Action<T> onValueChanged)
     {
         OnValueChanged += onValueChanged;
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
     /// Subscribes to the <see cref="OnInputChanged"/> event, which is invoked when the UI input is modified by the user.
     /// </summary>
     /// <param name="onInputChanged">The action to invoke when the UI input changes.</param>
-    public TypedConfigInput<T> WithOnInputChanged(Action onInputChanged)
+    public TSelf WithOnInputChanged(Action onInputChanged)
     {
         OnInputChanged += onInputChanged;
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
     /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.
     /// </summary>
     /// <param name="transformFunc">A function that takes the incoming value and returns the transformed value.</param>
-    public TypedConfigInput<T> WithTransformFunc(Func<T, T> transformFunc)
+    public TSelf WithTransformFunc(Func<T, T> transformFunc)
     {
         TransformFunc = transformFunc;
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -127,9 +128,9 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     /// The validation check occurs after any transformation applied by <see cref="TransformFunc"/>.
     /// </summary>
     /// <param name="validateFunc">A function that returns true if the value should be assigned, or false to reject it.</param>
-    public TypedConfigInput<T> WithValidateFunc(Func<T, bool> validateFunc)
+    public TSelf WithValidateFunc(Func<T, bool> validateFunc)
     {
         ValidateFunc = validateFunc;
-        return this;
+        return (TSelf)this;
     }
 }

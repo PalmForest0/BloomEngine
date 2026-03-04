@@ -9,7 +9,7 @@ namespace BloomEngine.Config.Inputs;
 /// A config input type which contains UI implementation for handling <see cref="Enum"/> input.<br/>
 /// To create an <see cref="EnumConfigInput{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, string, TEnum)"/>
 /// </summary>
-public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum> where TEnum : Enum
+public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigInput<TEnum>> where TEnum : Enum
 {
     /// <summary>
     /// The UI dropdown which corresponds to this config input in the config panel.

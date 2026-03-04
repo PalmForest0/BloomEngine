@@ -11,7 +11,7 @@ namespace BloomEngine.Config.Inputs;
 /// A config input type which contains UI implementation for handling <see cref="int"/> input.<br/>
 /// To create an <see cref="IntConfigInput"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
-public sealed class IntConfigInput : TypedConfigInput<int>
+public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
 {
     /// <summary>
     /// The UI textbox which corresponds to this config input in the config panel.

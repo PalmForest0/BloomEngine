@@ -9,7 +9,7 @@ namespace BloomEngine.Config.Inputs;
 /// A config input type which contains UI implementation for handling <see cref="bool"/> input.<br/>
 /// To create a <see cref="BoolConfigInput"/>, use <see cref="ConfigService.CreateBool(string, string, bool)"/>
 /// </summary>
-public sealed class BoolConfigInput : TypedConfigInput<bool>
+public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
 {
     /// <summary>
     /// The UI checkbox which corresponds to this config input in the config panel.
