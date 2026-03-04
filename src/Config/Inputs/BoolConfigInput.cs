@@ -7,7 +7,7 @@ namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// A config input type which contains UI implementation for handling <see cref="bool"/> input.<br/>
-/// To create a <see cref="BoolConfigInput"/>, use <see cref="ConfigService.CreateBool(string, string, bool, ConfigInputOptions{bool})"/>
+/// To create a <see cref="BoolConfigInput"/>, use <see cref="ConfigService.CreateBool(string, string, bool)"/>
 /// </summary>
 public sealed class BoolConfigInput : TypedConfigInput<bool>
 {
@@ -16,7 +16,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool>
     /// </summary>
     public Toggle Toggle { get; private set; }
 
-    internal BoolConfigInput(string name, string description, bool defaultValue, ConfigInputOptions<bool> options) : base(name, description, defaultValue, options) { }
+    internal BoolConfigInput(string name, string description, bool defaultValue) : base(name, description, defaultValue) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

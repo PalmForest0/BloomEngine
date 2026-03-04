@@ -9,7 +9,7 @@ namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// A config input type which contains UI implementation for handling <see cref="int"/> input.<br/>
-/// To create an <see cref="IntConfigInput"/>, use <see cref="ConfigService.CreateInt(string, string, int, ConfigInputOptions{int})"/>
+/// To create an <see cref="IntConfigInput"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
 public sealed class IntConfigInput : TypedConfigInput<int>
 {
@@ -18,7 +18,7 @@ public sealed class IntConfigInput : TypedConfigInput<int>
     /// </summary>
     public ReloadedInputField Textbox { get; private set; }
 
-    internal IntConfigInput(string name, string description, int defaultValue, ConfigInputOptions<int> options) : base(name, description, defaultValue, options) { }
+    internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

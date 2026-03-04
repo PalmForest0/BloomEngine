@@ -17,10 +17,10 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
         get => field;
         set
         {
-            T newValue = TransformValue is not null ? TransformValue.Invoke(value) : value;
+            T newValue = TransformFunc is not null ? TransformFunc.Invoke(value) : value;
 
             // Do not assign new value if validation fails
-            if (ValidateValue is not null && !ValidateValue.Invoke(newValue))
+            if (ValidateFunc is not null && !ValidateFunc.Invoke(newValue))
                 return;
 
             // Don't call event or update MelonEntry value if there is no difference
@@ -44,35 +44,30 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     public MelonPreferences_Entry<T> MelonEntry { get; private set; }
 
     /// <summary>
-    /// An action that is invoked when <see cref="Value"/> is modified.
+    /// An event that is invoked when <see cref="Value"/> is modified.
     /// </summary>
-    public Action<T> OnValueChanged { get; set; }
+    public event Action<T> OnValueChanged;
 
     /// <summary>
-    /// An action that is invoked when the UI input is modified by the user.
+    /// An event that is invoked when the UI input is modified by the user.
     /// </summary>
-    public Action OnInputChanged { get; set; }
+    public event Action OnInputChanged;
 
     /// <summary>
     /// A function that processes an incoming new value and returns a transformed value.
     /// </summary>
-    public Func<T, T> TransformValue { get; set; }
+    public Func<T, T> TransformFunc { get; private set; }
 
     /// <summary>
     /// A function that validated an incoming new value and returns true if it should be assigned to <see cref="Value"/>.
     /// </summary>
-    /// <remarks>The validation check occurs after the new value has been transformed by <see cref="TransformValue"/></remarks>
-    public Func<T, bool> ValidateValue { get; set; }
+    /// <remarks>The validation check occurs after the new value has been transformed by <see cref="TransformFunc"/></remarks>
+    public Func<T, bool> ValidateFunc { get; private set; }
 
-    private protected TypedConfigInput(string name, string description, T defaultValue, ConfigInputOptions<T> options = null)
+    private protected TypedConfigInput(string name, string description, T defaultValue)
     {
         Name = name;
         Description = description;
-
-        OnValueChanged = options.OnValueChanged;
-        OnInputChanged = options.OnInputChanged;
-        TransformValue = options.TransformValue;
-        ValidateValue = options.ValidateValue;
 
         DefaultValue = defaultValue;
         ValueType = defaultValue.GetType();
@@ -95,4 +90,46 @@ public abstract class TypedConfigInput<T> : BaseConfigInput
     /// </summary>
     /// <param name="value">The value to insert into the UI input.</param>
     protected abstract void SetDisplayedValue(T value);
+
+
+    /// <summary>
+    /// Subscribes to the <see cref="OnValueChanged"/> event, which is invoked when <see cref="Value"/> is modified.
+    /// </summary>
+    /// <param name="onValueChanged">The action to invoke when the value changes, receiving the new value as a parameter.</param>
+    public TypedConfigInput<T> WithOnValueChanged(Action<T> onValueChanged)
+    {
+        OnValueChanged += onValueChanged;
+        return this;
+    }
+
+    /// <summary>
+    /// Subscribes to the <see cref="OnInputChanged"/> event, which is invoked when the UI input is modified by the user.
+    /// </summary>
+    /// <param name="onInputChanged">The action to invoke when the UI input changes.</param>
+    public TypedConfigInput<T> WithOnInputChanged(Action onInputChanged)
+    {
+        OnInputChanged += onInputChanged;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.
+    /// </summary>
+    /// <param name="transformFunc">A function that takes the incoming value and returns the transformed value.</param>
+    public TypedConfigInput<T> WithTransformFunc(Func<T, T> transformFunc)
+    {
+        TransformFunc = transformFunc;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a function that validates an incoming value before it is assigned to <see cref="Value"/>.
+    /// The validation check occurs after any transformation applied by <see cref="TransformFunc"/>.
+    /// </summary>
+    /// <param name="validateFunc">A function that returns true if the value should be assigned, or false to reject it.</param>
+    public TypedConfigInput<T> WithValidateFunc(Func<T, bool> validateFunc)
+    {
+        ValidateFunc = validateFunc;
+        return this;
+    }
 }
