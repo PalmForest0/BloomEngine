@@ -1,10 +1,10 @@
 ﻿using BloomEngine.Config.Inputs;
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
-using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu;
 using MelonLoader;
 
-namespace BloomEngine.Config.Services;
+namespace BloomEngine.Config;
 
 /// <summary>
 /// A static class which provides methods for creating config inputs.

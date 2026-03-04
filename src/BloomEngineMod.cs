@@ -1,5 +1,5 @@
 ﻿using BloomEngine.Helpers;
-using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu;
 using MelonLoader;
 
 namespace BloomEngine;

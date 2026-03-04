@@ -1,8 +1,7 @@
 ﻿using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Config.Services;
 using BloomEngine.Extensions;
 using BloomEngine.Helpers;
-using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu;
 using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppReloaded.Input;

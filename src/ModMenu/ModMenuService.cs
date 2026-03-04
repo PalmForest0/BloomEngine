@@ -1,7 +1,7 @@
 ﻿using BloomEngine.ModMenu.UI;
 using MelonLoader;
 
-namespace BloomEngine.ModMenu.Services;
+namespace BloomEngine.ModMenu;
 
 /// <summary>
 /// A static class responsible for registering mod entries and adding them to the mod menu.

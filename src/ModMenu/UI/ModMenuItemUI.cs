@@ -1,6 +1,4 @@
-﻿using BloomEngine.Config.Services;
-using BloomEngine.ModMenu.Services;
-using BloomEngine.Utilities;
+﻿using BloomEngine.Utilities;
 using BloomEngine.Extensions;
 using Il2CppTMPro;
 using MelonLoader;
@@ -8,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using BloomEngine.Helpers;
+using BloomEngine.Config;
 
 namespace BloomEngine.ModMenu.UI;
 

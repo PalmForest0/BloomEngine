@@ -1,10 +1,10 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
-using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu;
 using MelonLoader;
 using System.Reflection;
 
-namespace BloomEngine.Config.Services;
+namespace BloomEngine.Config;
 
 /// <summary>
 /// Represents the mod config of a BloomEngine <see cref="ModMenuEntry"/>. When a config is registered,
@@ -13,9 +13,16 @@ namespace BloomEngine.Config.Services;
 public sealed class ModConfig
 {
     /// <summary>
-    /// The BloomEngine <see cref="ModMenuEntry"/> to which this config instance belongs.
+    /// The identifier string of this config, which is used for saving it in MelonPreferences.
+    /// This will usually match the identifier of the <see cref="ModMenuEntry"/> this config belongs to.
     /// </summary>
-    public ModMenuEntry ModEntry { get; private init; }
+    public string Identifier { get; private init; }
+
+    /// <summary>
+    /// The display name of this config, which will be saved in MelonPreferences and shown in the config menu.
+    /// This will usually match the display name of the <see cref="ModMenuEntry"/> this config belongs to.
+    /// </summary>
+    public string DisplayName { get; private init; }
 
     /// <summary>
     /// A list of all the config inputs contained in this config instance.
@@ -46,21 +53,11 @@ public sealed class ModConfig
     /// <summary>
     /// Creates a mod config from an array of inputs (used by <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>).
     /// </summary>
-    internal ModConfig(ModMenuEntry modEntry, BaseConfigInput[] inputs)
+    internal ModConfig(string identifier, string displayName, BaseConfigInput[] inputs)
     {
-        ModEntry = modEntry;
+        Identifier = identifier;
+        DisplayName = displayName;
         ConfigInputs = inputs.ToList();
-
-        SetupMelonPreferences();
-    }
-
-    /// <summary>
-    /// Creates a mod config from a static config class (used by <see cref="ModMenuEntry.AddConfigClass(Type)"/>).
-    /// </summary>
-    internal ModConfig(ModMenuEntry modEntry, Type staticConfig)
-    {
-        ModEntry = modEntry;
-        ConfigInputs = GetInputsFromStaticClass(staticConfig);
 
         SetupMelonPreferences();
     }
@@ -70,7 +67,7 @@ public sealed class ModConfig
     /// </summary>
     private void SetupMelonPreferences()
     {
-        MelonCategory = MelonPreferences.CreateCategory(ModEntry.Identifier, ModEntry.DisplayName);
+        MelonCategory = MelonPreferences.CreateCategory(Identifier, DisplayName);
 
         foreach (var input in ConfigInputs)
             input.CreateMelonEntry(MelonCategory);
@@ -103,27 +100,6 @@ public sealed class ModConfig
         MelonCategory.SaveToFile(false);
 
         if (printMessage)
-            ConfigService.ConfigLogger.Msg($"Updated mod config for {ModEntry.DisplayName} and saved preferences.");
-    }
-
-    /// <summary>
-    /// Retrieves all static fields which contain instances of <see cref="BaseConfigInput"/> from a static config class.
-    /// </summary>
-    /// <param name="configType">The type representing the static config class.</param>
-    /// <returns>A list of BaseConfigInput instances found in the static fields of the specified type.</returns>
-    private static List<BaseConfigInput> GetInputsFromStaticClass(Type configType)
-    {
-        List<BaseConfigInput> inputs = new();
-
-        // Use reflection to find all fields and properties that define input fields
-        var fields = configType.GetFields(BindingFlags.Static | BindingFlags.Public);
-        foreach (var field in fields)
-        {
-            // Null instance for static class
-            if (field.GetValue(null) is BaseConfigInput inputField)
-                inputs.Add(inputField);
-        }
-
-        return inputs;
+            ConfigService.ConfigLogger.Msg($"Updated mod config for {DisplayName} and saved MelonPreferences.");
     }
 }

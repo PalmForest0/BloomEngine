@@ -1,6 +1,4 @@
-﻿using BloomEngine.Config.Services;
-using BloomEngine.Config.UI;
-using BloomEngine.ModMenu.Services;
+﻿using BloomEngine.Config.UI;
 using BloomEngine.ModMenu.UI;
 using BloomEngine.Extensions;
 using Il2CppReloaded.UI;
@@ -8,6 +6,8 @@ using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
 using UnityEngine;
 using BloomEngine.Helpers;
+using BloomEngine.ModMenu;
+using BloomEngine.Config;
 
 namespace BloomEngine;
 

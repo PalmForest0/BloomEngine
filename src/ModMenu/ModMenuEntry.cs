@@ -1,13 +1,13 @@
 ﻿using BloomEngine.Attributes;
+using BloomEngine.Config;
 using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Config.Services;
 using BloomEngine.Helpers;
 using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
 using System.Reflection;
 using UnityEngine;
 
-namespace BloomEngine.ModMenu.Services;
+namespace BloomEngine.ModMenu;
 
 /// <summary>
 /// A mod entry that shows up in the mod menu if <see cref="Register"/> is called.
@@ -90,7 +90,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     public ModMenuEntry AddConfigInputs(params BaseConfigInput[] inputs)
     {
         if (Config is null)
-            Config = new ModConfig(this, inputs);
+            Config = new ModConfig(Identifier, DisplayName, inputs);
         else Config.ConfigInputs.AddRange(inputs);
 
         return this;
@@ -100,11 +100,22 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// Adds a config to this mod using a static config class. To add input fields,
     /// use the static methods provided by <see cref="ConfigService"/> and make the config inputs publicly accessible.
     /// </summary>
-    /// <param name="staticConfig">The static class type containing public input fields to be registered in the config menu.</param>
+    /// <param name="configType">The static class type containing public input fields to be registered in the config menu.</param>
     /// <returns>This mod entry with the config added.</returns>
-    public ModMenuEntry AddConfigClass(Type staticConfig)
+    public ModMenuEntry AddConfigClass(Type configType)
     {
-        Config = new ModConfig(this, staticConfig);
+        List<BaseConfigInput> inputs = new();
+
+        // Use reflection to find all fields and properties that define input fields
+        foreach (var field in configType.GetFields(BindingFlags.Static | BindingFlags.Public))
+            if (field.GetValue(null) is BaseConfigInput input)
+                inputs.Add(input);
+
+        foreach (var prop in configType.GetProperties(BindingFlags.Static | BindingFlags.Public))
+            if (prop.GetValue(null) is BaseConfigInput input)
+                inputs.Add(input);
+
+        AddConfigInputs(inputs.ToArray());
         return this;
     }
 
@@ -112,8 +123,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.<br/>
     /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
     /// </summary>
-    /// <returns>The registered mod menu entry.</returns>
-    public ModMenuEntry Register()
+    public void Register()
     {
         ModMenuService.RegisterModEntry(this);
         Config?.Save(false);
@@ -124,8 +134,6 @@ public sealed class ModMenuEntry(MelonMod mod)
             if(type.IsSubclassOf(typeof(UnityEngine.Object)) && type.GetCustomAttribute<RegisterInIl2CppAttribute>() is not null)
                 ClassInjector.RegisterTypeInIl2Cpp(type);
         }
-
-        return this;
     }
 
     internal static string GetDefaultModName(MelonMod mod) => mod?.Info?.Name ?? "???";
