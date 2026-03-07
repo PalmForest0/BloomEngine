@@ -23,8 +23,8 @@ Place both files somewhere in your mod project and add a reference to `BloomEngi
 After referencing BloomEngine, you can now add you mod to the in-game mod menu like this:
 
 ```cs
-using BloomEngine.ModMenu.Services;
-using BloomEngine.Utilities;
+using BloomEngine.ModMenu;
+using BloomEngine.Helpers;
 using MelonLoader;
 
 namespace BloomEngine;
@@ -32,7 +32,7 @@ namespace BloomEngine;
 internal sealed class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
-    public const string Version = "0.3.0-beta";
+    public const string Version = "0.3.2-beta";
     public const string Author = "PalmForest";
 
     public override void OnInitializeMelon()
@@ -58,13 +58,11 @@ public static BoolConfigInput TestBoolInput = ConfigService.CreateBool("Test Boo
 Additionally, you can extend your config inputs with additional functionality through actions and function, for example:
 
 ```cs
-public static StringConfigInput TestStringInput = ConfigService.CreateString("Test String", "Cooler description.", "ABCDEFG", new()
-{
-    OnValueChanged = val => Melon<BloomEngine>.Logger.Msg($"Value of {nameof(TestStringInput)} updated to \"{val}\""),
-    OnInputChanged = () => StringInput.Textbox.SetTextWithoutNotify(StringInput.Textbox.text.ToUpperInvariant()),
-    TransformValue = val => val.ToUpperInvariant(),
-    ValidateValue = val => !string.IsNullOrWhiteSpace(val)
-});
+public static StringConfigInput TestStringInput = ConfigService.CreateString("Test String", "Cooler description.", "ABCDEFG")
+    .WithOnValueChanged(val => Melon<BloomEngine>.Logger.Msg($"Value of {nameof(TestStringInput)} updated to \"{val}\""))
+    .WithOnInputChanged(() => TestStringInput.Textbox.SetTextWithoutNotify(TestStringInput.Textbox.text.ToUpperInvariant()))
+    .WithTransformFunc(val => val.ToUpperInvariant())
+    .WithValidateFunc(val => !string.IsNullOrWhiteSpace(val));
 ```
 
 > [!NOTE]
