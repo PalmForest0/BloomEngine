@@ -55,5 +55,5 @@ TestResult.xml
 nunit-*.xml
 
 # DocFx
-_site/
-api/
+docs/_site/
+docs/api/
