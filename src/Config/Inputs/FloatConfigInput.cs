@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Config.Services;
 using BloomEngine.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +7,9 @@ namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// A config input type which contains UI implementation for handling <see cref="float"/> input.<br/>
-/// To create a <see cref="FloatConfigInput"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float, ConfigInputOptions{float})"/>
+/// To create a <see cref="FloatConfigInput"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
-public sealed class FloatConfigInput : TypedConfigInput<float>
+public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
 {
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider.
@@ -27,7 +26,7 @@ public sealed class FloatConfigInput : TypedConfigInput<float>
     /// </summary>
     public Slider Slider { get; private set; }
 
-    internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue, ConfigInputOptions<float> options) : base(name, description, defaultValue, options)
+    internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue) : base(name, description, defaultValue)
     {
         MinValue = minValue;
         MaxValue = maxValue;

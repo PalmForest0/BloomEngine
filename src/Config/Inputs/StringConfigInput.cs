@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Config.Services;
 using BloomEngine.Helpers;
 using Il2CppReloaded.Input;
 using UnityEngine;
@@ -8,16 +7,16 @@ namespace BloomEngine.Config.Inputs;
 
 /// <summary>
 /// A config input type which contains UI implementation for handling <see cref="string"/> input.<br/>
-/// To create a <see cref="StringConfigInput"/>, use <see cref="ConfigService.CreateString(string, string, string, ConfigInputOptions{string})"/>
+/// To create a <see cref="StringConfigInput"/>, use <see cref="ConfigService.CreateString(string, string, string)"/>
 /// </summary>
-public sealed class StringConfigInput : TypedConfigInput<string>
+public sealed class StringConfigInput : TypedConfigInput<string, StringConfigInput>
 {
     /// <summary>
     /// The UI textbox which corresponds to this config input in the config panel.
     /// </summary>
     public ReloadedInputField Textbox { get; private set; }
 
-    internal StringConfigInput(string name, string description, string defaultValue, ConfigInputOptions<string> options) : base(name, description, defaultValue, options) { }
+    internal StringConfigInput(string name, string description, string defaultValue) : base(name, description, defaultValue) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {

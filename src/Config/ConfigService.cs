@@ -1,10 +1,10 @@
 ﻿using BloomEngine.Config.Inputs;
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
-using BloomEngine.ModMenu.Services;
+using BloomEngine.ModMenu;
 using MelonLoader;
 
-namespace BloomEngine.Config.Services;
+namespace BloomEngine.Config;
 
 /// <summary>
 /// A static class which provides methods for creating config inputs.
@@ -35,8 +35,8 @@ public static class ConfigService
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="StringConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static StringConfigInput CreateString(string name, string description, string defaultValue, ConfigInputOptions<string> options = null)
-        => new StringConfigInput(name, description, defaultValue, options);
+    public static StringConfigInput CreateString(string name, string description, string defaultValue)
+        => new(name, description, defaultValue);
 
     /// <summary>
     /// Creates an <see cref="IntConfigInput"/> instance which represents a numeric textbox. To add this input to your config,
@@ -49,8 +49,8 @@ public static class ConfigService
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>An <see cref="IntConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static IntConfigInput CreateInt(string name, string description, int defaultValue, ConfigInputOptions<int> options = null)
-        => new IntConfigInput(name, description, defaultValue, options);
+    public static IntConfigInput CreateInt(string name, string description, int defaultValue)
+        => new(name, description, defaultValue);
 
     /// <summary>
     /// Creates a <see cref="FloatConfigInput"/> instance which represents a slider. To add this input to your config,
@@ -65,8 +65,8 @@ public static class ConfigService
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="FloatConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static FloatConfigInput CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue, ConfigInputOptions<float> options = null)
-        => new FloatConfigInput(name, description, defaultValue, minValue, maxValue, options);
+    public static FloatConfigInput CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue)
+        => new(name, description, defaultValue, minValue, maxValue);
 
     /// <summary>
     /// Creates a <see cref="BoolConfigInput"/> instance which represents a checkbox. To add this input to your config,
@@ -79,22 +79,22 @@ public static class ConfigService
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="BoolConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static BoolConfigInput CreateBool(string name, string description, bool defaultValue, ConfigInputOptions<bool> options = null)
-        => new BoolConfigInput(name, description, defaultValue, options);
+    public static BoolConfigInput CreateBool(string name, string description, bool defaultValue)
+        => new(name, description, defaultValue);
 
     /// <summary>
-    /// Creates an <see cref="EnumConfigInput"/> instance which represents a dropdown. To add this input to your config,
+    /// Creates an <see cref="EnumConfigInput{TEnum}"/> instance which represents a dropdown. To add this input to your config,
     /// pass it to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModMenuEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="Enum"/> value of this config input.</param>
+    /// <param name="defaultValue">The default enum value of this config input.</param>
     /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
-    /// <returns>An <see cref="EnumConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
+    /// <returns>An <see cref="EnumConfigInput{TEnum}"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
     /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
-    public static EnumConfigInput CreateEnum(string name, string description, Enum defaultValue, ConfigInputOptions<Enum> options = null)
-        => new EnumConfigInput(name, description, defaultValue, options);
+    public static EnumConfigInput<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue) where TEnum : Enum
+        => new(name, description, defaultValue);
 
     /// <summary>
     /// Displays the config config for the specified mod if it is registered and no other configuration config is currently open.
