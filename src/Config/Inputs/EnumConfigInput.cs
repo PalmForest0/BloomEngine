@@ -21,11 +21,14 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// </summary>
     private List<TEnum> options;
 
+    private Comparer<TEnum> comparer;
+
     internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
     internal override GameObject CreateInputObject(RectTransform parent)
     {
         options = Enum.GetValues(ValueType).Cast<TEnum>().ToList();
+        options.Sort(comparer);
 
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
@@ -36,6 +39,16 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         dropdownRect.sizeDelta = new Vector2(0, 60);
         dropdownRect.anchoredPosition += new Vector2(0, -15);
         return wrapper.gameObject;
+    }
+
+    /// <summary>
+    /// Sorts the option list using a comparer function. By default, the options are in the order they are defined in the enum type.
+    /// </summary>
+    /// <param name="comparer">A comparer that defines the order of the options.</param>
+    public EnumConfigInput<TEnum> WithOptionOrder(Comparer<TEnum> comparer)
+    {
+        this.comparer = comparer;
+        return this;
     }
 
     internal override void UpdateFromUI() => Value = options[Dropdown.value];
