@@ -2,7 +2,6 @@
 using BloomEngine.Config.UI;
 using BloomEngine.ModMenu;
 using MelonLoader;
-using System.Reflection;
 
 namespace BloomEngine.Config;
 
@@ -44,6 +43,8 @@ public sealed class ModConfig
     /// Reterns true if this config has zero inputs, meaning it is empty.
     /// </summary>
     public bool IsEmpty => InputCount == 0;
+
+    public event Action ConfigSaved;
 
     /// <summary>
     /// The UI panel created for this config.
@@ -101,5 +102,7 @@ public sealed class ModConfig
 
         if (printMessage)
             ConfigService.ConfigLogger.Msg($"Updated mod config for {DisplayName} and saved MelonPreferences.");
+
+        ConfigSaved?.Invoke();
     }
 }

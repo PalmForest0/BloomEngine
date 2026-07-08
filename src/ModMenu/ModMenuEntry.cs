@@ -124,6 +124,13 @@ public sealed class ModMenuEntry(MelonMod mod)
         return this;
     }
 
+    public ModMenuEntry AddConfigSavedAction(Action onConfigSaved)
+    {
+        Config ??= new ModConfig(Identifier, DisplayName, []);
+        Config.ConfigSaved += () => onConfigSaved?.Invoke();
+        return this;
+    }
+
     /// <summary>
     /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.<br/>
     /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
