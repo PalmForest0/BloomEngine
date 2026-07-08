@@ -40,6 +40,18 @@ public static class UIHelper
     public static PanelViewContainer GlobalPanels { get; private set; }
 
     /// <summary>
+    /// Gets the zen garden panel container, or null if outside of the ZenGarden scene.
+    /// This scene does not include the Tree of Wisdom, which is part of the Gameplay scene.
+    /// </summary>
+    public static PanelViewContainer ZenGardenPanels { get; internal set; }
+
+    /// <summary>
+    /// Gets the gameplay panel container, or null if outside of the Gameplay scene.
+    /// This scene also includes the Tree of Wisdom for some reason.
+    /// </summary>
+    public static PanelViewContainer GameplayPanels { get; internal set; }
+
+    /// <summary>
     /// Gets the Main Menu's achievements UI, if the Main Menu is currently active.
     /// </summary>
     public static AchievementsUI Achievements { get; private set; }

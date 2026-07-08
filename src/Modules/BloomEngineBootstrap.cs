@@ -1,14 +1,11 @@
 ﻿using BloomEngine.Config.UI;
 using BloomEngine.ModMenu.UI;
-using BloomEngine.Extensions;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
 using UnityEngine;
 using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
-using BloomEngine.Config;
-
 namespace BloomEngine;
 
 internal static class BloomEngineBootstrap
@@ -17,36 +14,48 @@ internal static class BloomEngineBootstrap
     public static MainMenuPanelView MainMenu { get; set; }
     public static PanelViewContainer GlobalPanels { get; set; }
 
+    private static bool CanInitialize => AchievementsUI && MainMenu && GlobalPanels;
+
     private static int initIndex = 0;
 
-    public static void TryInitialize()
+    public static void TryInitMainMenu()
     {
-        if (!AchievementsUI)
-            return;
-        if (!MainMenu)
-            return;
-        if (!GlobalPanels)
+        if (!CanInitialize)
             return;
 
-        // Setup UI Helper and mod menu every time the main menu scene loads
-        UIHelper.OnMainMenuLoaded(MainMenu, GlobalPanels, AchievementsUI);
+        OnEarlyInit();
 
-        // Create UI templates only on the first load
-        if (initIndex == 0)
-        {
-            // Create all UI templates only once
-            UIHelper.CreateTemplates();
+        if (initIndex++ == 0)
+            OnFirstInit();
 
-            // Create config panels globally only once
-            CreateConfigPanels(MainMenu, GlobalPanels);
-        }
-
-        // Recreate the mod menu every time the main menu loads
-        ModMenuService.ModMenuUI = new ModMenuUI(AchievementsUI);
-
-        initIndex++;
+        OnEveryInit();
     }
 
+    private static void OnEarlyInit()
+    {
+        // Setup UI Helper and mod menu every time the main menu scene loads
+        UIHelper.OnMainMenuLoaded(MainMenu, GlobalPanels, AchievementsUI);
+    }
+
+    private static void OnFirstInit()
+    {
+        // Create all UI templates only once
+        UIHelper.CreateTemplates();
+
+        // Create config panels globally only once
+        CreateConfigPanels(MainMenu, GlobalPanels);
+    }
+
+    private static void OnEveryInit()
+    {
+        // Recreate the mod menu every time the main menu loads
+        ModMenuService.ModMenuUI = new ModMenuUI(AchievementsUI);
+    }
+
+
+    /// <summary>
+    /// Clones an existing panel for every registered mod with a config and creates a new ConfigPanel for it.
+    /// </summary>
     private static void CreateConfigPanels(MainMenuPanelView mainMenu, PanelViewContainer globalPanels)
     {
         var template = mainMenu.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == "quit");
