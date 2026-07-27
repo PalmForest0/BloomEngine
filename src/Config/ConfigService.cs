@@ -17,7 +17,7 @@ public static class ConfigService
     /// <summary>
     /// The config panel UI that is currently open.
     /// </summary>
-    private static ConfigPanel currentPanel;
+    private static ConfigPanel? currentPanel;
 
     /// <summary>
     /// A value that indicates whether a mod config config is currently open.
@@ -32,9 +32,8 @@ public static class ConfigService
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">The default <see cref="string"/> value of this config input.</param>
-    /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="StringConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
+    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
     public static StringConfigInput CreateString(string name, string description, string defaultValue)
         => new(name, description, defaultValue);
 
@@ -46,9 +45,8 @@ public static class ConfigService
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">The default <see cref="int"/> value of this config input.</param>
-    /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>An <see cref="IntConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
+    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
     public static IntConfigInput CreateInt(string name, string description, int defaultValue)
         => new(name, description, defaultValue);
 
@@ -62,9 +60,8 @@ public static class ConfigService
     /// <param name="defaultValue">The default <see cref="float"/> value of this config input.</param>
     /// <param name="minValue">The <strong>minimum</strong> value constraint of this <see cref="float"/> input slider.</param>
     /// <param name="maxValue">The <strong>maximum</strong> value constraint of this <see cref="float"/> input slider.</param>
-    /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="FloatConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
+    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
     public static FloatConfigInput CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue)
         => new(name, description, defaultValue, minValue, maxValue);
 
@@ -76,9 +73,8 @@ public static class ConfigService
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">The default <see cref="bool"/> value of this config input.</param>
-    /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>A <see cref="BoolConfigInput"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
+    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
     public static BoolConfigInput CreateBool(string name, string description, bool defaultValue)
         => new(name, description, defaultValue);
 
@@ -90,9 +86,8 @@ public static class ConfigService
     /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
     /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">The default enum value of this config input.</param>
-    /// <param name="options">An optional object through which additional logic can be added to this config input.</param>
     /// <returns>An <see cref="EnumConfigInput{TEnum}"/> instance which can be passed to <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T}.Value"/></returns>
+    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
     public static EnumConfigInput<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue) where TEnum : Enum
         => new(name, description, defaultValue);
 
