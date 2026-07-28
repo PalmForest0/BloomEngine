@@ -14,6 +14,9 @@
     }
   ],
   "build": {
+	"template": [
+	  "default"
+    ],
     "content": [
       {
         "files": [
@@ -32,13 +35,10 @@
       }
     ],
     "output": "_site",
-    "template": [
-      "statictoc"
-    ],
     "globalMetadata": {
       "_appName": "BloomEngine",
       "_appTitle": "BloomEngine",
-	  "_appLogoPath": "images/icon.png",
+	  "_appLogoPath": "images/logo.png",
 	  "_appFaviconPath": "images/favicon.png",
       "_enableSearch": true,
       "pdf": false
