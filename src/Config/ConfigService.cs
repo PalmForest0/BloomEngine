@@ -2,7 +2,10 @@
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.ModMenu;
+using Il2CppReloaded.UI;
+using Il2CppTekly.PanelViews;
 using MelonLoader;
+using UnityEngine;
 
 namespace BloomEngine.Config;
 
@@ -17,12 +20,14 @@ public static class ConfigService
     /// <summary>
     /// The config panel UI that is currently open.
     /// </summary>
-    private static ConfigPanel? currentPanel;
+    private static ConfigPanel? CurrentPanel;
+
+    private static bool PanelsCreated = false;
 
     /// <summary>
     /// A value that indicates whether a mod config config is currently open.
     /// </summary>
-    public static bool IsConfigPanelOpen => currentPanel is not null;
+    public static bool IsConfigPanelOpen => CurrentPanel is not null;
 
     /// <summary>
     /// Creates a <see cref="StringConfigInput"/> instance which represents a textbox. To add this input to your config,
@@ -99,7 +104,7 @@ public static class ConfigService
     public static void ShowConfigPanel(ModMenuEntry mod)
     {
         // Return if a panel is already open
-        if (currentPanel is not null)
+        if (CurrentPanel is not null)
             return;
 
         // Log a warning if there is no config registered
@@ -116,7 +121,7 @@ public static class ConfigService
         }
 
         mod.Config.Panel.ShowPanel();
-        currentPanel = mod.Config.Panel;
+        CurrentPanel = mod.Config.Panel;
     }
 
     /// <summary>
@@ -124,10 +129,38 @@ public static class ConfigService
     /// </summary>
     public static void HideConfigPanel()
     {
-        if (currentPanel is null)
+        if (CurrentPanel is null)
             return;
 
-        currentPanel.HidePanel();
-        currentPanel = null;
+        CurrentPanel.HidePanel();
+        CurrentPanel = null;
+    }
+
+    /// <summary>
+    /// Clones an existing panel for every registered mod with a config and creates a new ConfigPanel for it.
+    /// Does not run if panels have already been created, or one of the provided parameters is null.
+    /// </summary>
+    internal static void TryCreateConfigPanels(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
+    {
+        if (PanelsCreated || !mainMenu || !globalPanels)
+            return;
+
+        const string templatePanelId = "quit";
+        PanelView? template = mainMenu!.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
+
+        if (template is null)
+        {
+            ConfigService.ConfigLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"");
+            return;
+        }
+
+        // Create a config panel for each mod entry with a registered config
+        foreach (var config in ModMenuService.RegisteredEntries.Where(e => e.HasConfigInputs).Select(e => e.Config))
+        {
+            var panelObj = GameObject.Instantiate(template.gameObject, globalPanels.transform);
+            config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
+        }
+
+        PanelsCreated = true;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Extensions;
-using BloomEngine.Modules;
 using BloomEngine.Utilities;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
@@ -17,7 +16,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace BloomEngine.Helpers;
+namespace BloomEngine.UI;
 
 /// <summary>
 /// Static helper class that provides methods for creating UI elements.
@@ -59,50 +58,86 @@ public static class UIHelper
     public static TMP_FontAsset Font1 { get; private set; }
     public static TMP_FontAsset Font2 { get; private set; }
 
+    /// <summary>
+    /// Gets a bool that states whether all UI element templates have been loaded
+    /// </summary>
+    internal static bool AllTemplatesLoaded => Template_Button && Template_Checkbox && Template_Dropdown && Template_Slider && Template_Textbox;
+
     // UI element templates which have been cloned and saved
-    private static GameObject textboxTemplate;
-    private static GameObject buttonTemplate;
-    private static GameObject checkboxTemplate;
-    private static GameObject dropdownTemplate;
-    private static GameObject sliderTemplate;
+    private static GameObject? Template_Textbox;
+    private static GameObject? Template_Button;
+    private static GameObject? Template_Checkbox;
+    private static GameObject? Template_Dropdown;
+    private static GameObject? Template_Slider;
+
+    private static GameObject? Template_Container;
 
     /// <summary>
-    /// Called by the Bootstrap when the Main Menu is loaded.
+    /// Attempts to load all necessary game UI screens and panels and performs other functions to initialise the UIHelper.
+    /// Does not run if 
     /// </summary>
-    internal static void OnMainMenuLoaded(MainMenuPanelView mainMenu, PanelViewContainer globalPanels, AchievementsUI achievements)
+    internal static void TryLoadAll(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
-        MainMenu = mainMenu;
-        GlobalPanels = globalPanels;
-        Achievements = achievements;
+        if (!mainMenu || !globalPanels)
+            return;
+
+        MainMenu = mainMenu!;
+        GlobalPanels = globalPanels!;
 
         Font1 = MainMenu.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
         Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
+
+        TryCreateTemplates();
     }
 
     /// <summary>
-    /// Called by the bootstrap when the UI templates are ready to be created.
+    /// Attempts to create template UI elements if they have not been created already.
     /// </summary>
-    internal static void CreateTemplates()
+    internal static void TryCreateTemplates()
     {
         Transform optionsPanelContent = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
 
-        GameObject templateContainer = new GameObject("BloomEngine_Templates");
-        GameObject.DontDestroyOnLoad(templateContainer);
-        Transform container = templateContainer.transform;
+        if(!Template_Container)
+        {
+            Template_Container = new GameObject("BloomEngine_Templates");
+            GameObject.DontDestroyOnLoad(Template_Container);
+        }
 
-        buttonTemplate = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
-        buttonTemplate.name = "ButtonTemplate";
-        textboxTemplate = GameObject.Instantiate(MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
-        textboxTemplate.name = "TextboxTemplate";
-        checkboxTemplate = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
-        checkboxTemplate.name = "CheckboxTemplate";
-        dropdownTemplate = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
-        dropdownTemplate.name = "DropdownTemplate";
-        sliderTemplate = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
-        sliderTemplate.name = "SliderTemplate";
+        Transform container = Template_Container!.transform;
 
-        RemoveBindersAndLocalizers(templateContainer.gameObject);
-        GameObject.Destroy(buttonTemplate.GetComponent<ExitGame>());
+        if(!Template_Button)
+        {
+            Template_Button = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
+            Template_Button.name = "ButtonTemplate";
+
+            GameObject.Destroy(Template_Button.GetComponent<ExitGame>());
+        }
+        
+        if(!Template_Textbox)
+        {
+            Template_Textbox = GameObject.Instantiate(MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
+            Template_Textbox.name = "TextboxTemplate";
+        }
+
+        if(!Template_Checkbox)
+        {
+            Template_Checkbox = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
+            Template_Checkbox.name = "CheckboxTemplate";
+        }
+
+        if(!Template_Dropdown)
+        {
+            Template_Dropdown = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
+            Template_Dropdown.name = "DropdownTemplate";
+        }
+        
+        if(!Template_Slider)
+        {
+            Template_Slider = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
+            Template_Slider.name = "SliderTemplate";
+        }
+
+        CleanUpChildren(Template_Container.gameObject);
 
         // Hook scene loaded event to determine if the current scene is the main menu
         SceneManager.add_sceneLoaded((scene, mode) => InMainMenu = scene.name == "Frontend");
@@ -118,7 +153,7 @@ public static class UIHelper
     /// <returns>A GameObject representing the newly created button, configured with the specified properties.</returns>
     public static GameObject CreateButton(string name, RectTransform parent, string text, Action onClick)
     {
-        GameObject button = GameObject.Instantiate(buttonTemplate, parent);
+        GameObject button = GameObject.Instantiate(Template_Button, parent);
         UIHelper.ModifyButton(button, name, text, onClick);
 
         RectTransform rect = button.GetComponent<RectTransform>();
@@ -138,7 +173,7 @@ public static class UIHelper
     /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
     public static ReloadedInputField CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
-        GameObject obj = GameObject.Instantiate(textboxTemplate, parent);
+        GameObject obj = GameObject.Instantiate(Template_Textbox, parent);
         obj.name = name;
 
         if (placeholder is null)
@@ -167,7 +202,7 @@ public static class UIHelper
     /// <returns>A Toggle component representing the created checkbox with the provided default value.</returns>
     public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(checkboxTemplate, parent);
+        GameObject obj = GameObject.Instantiate(Template_Checkbox, parent);
         obj.name = name;
 
         Toggle toggle = obj.GetComponent<Toggle>();
@@ -189,7 +224,7 @@ public static class UIHelper
     /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>
     public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum> onValueChanged = null) where TEnum : Enum
     {
-        GameObject obj = GameObject.Instantiate(dropdownTemplate, parent);
+        GameObject obj = GameObject.Instantiate(Template_Dropdown, parent);
         obj.name = name;
 
         ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
@@ -228,7 +263,7 @@ public static class UIHelper
     /// <returns>A Slider component configured with the specified range and value.</returns>
     public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(sliderTemplate, parent);
+        GameObject obj = GameObject.Instantiate(Template_Slider, parent);
         obj.name = name;
 
         Slider slider = obj.GetComponent<Slider>();
@@ -341,7 +376,7 @@ public static class UIHelper
     /// Destroys all <see cref="TextLocalizer"/> and <see cref="Binder"/> components on an object and its children.
     /// </summary>
     /// <param name="obj">The <see cref="GameObject"/> to remove these components from.</param>
-    public static void RemoveBindersAndLocalizers(GameObject obj)
+    public static void CleanUpChildren(GameObject obj)
     {
         foreach (var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
             GameObject.Destroy(localizer);

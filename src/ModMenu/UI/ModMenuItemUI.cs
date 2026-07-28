@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using BloomEngine.Helpers;
 using BloomEngine.Config;
+using BloomEngine.UI;
 
 namespace BloomEngine.ModMenu.UI;
 

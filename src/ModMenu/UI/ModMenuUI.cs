@@ -5,7 +5,7 @@ using Il2CppUI.Scripts;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
-using BloomEngine.Helpers;
+using BloomEngine.UI;
 
 namespace BloomEngine.ModMenu.UI;
 

@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Config;
+using BloomEngine.Modules;
 using HarmonyLib;
 using Il2CppUI.Scripts;
 
@@ -14,8 +15,7 @@ internal static class ModMenuPatches
     [HarmonyPostfix]
     private static void AchievementsUI_Start_Postfix(AchievementsUI __instance)
     {
-        BloomEngineBootstrap.AchievementsUI = __instance;
-        BloomEngineBootstrap.TryInitMainMenu();
+        BloomLoader.LoadAchievementsUI(__instance);
     }
 
     /// <summary>

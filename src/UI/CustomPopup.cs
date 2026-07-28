@@ -3,9 +3,8 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using BloomEngine.Helpers;
 
-namespace BloomEngine.Modules;
+namespace BloomEngine.UI;
 
 /// <summary>
 /// Wrapper for a PvZ Replanted popup with a customizable header, subheader, and up to two buttons.
@@ -67,7 +66,7 @@ public sealed class CustomPopup
         // Clean up
         GameObject.Destroy(window.Find("Buttons/P_BacicButton_No").gameObject);
         GameObject.Destroy(window.Find("Buttons/P_BacicButton_Cancel").gameObject);
-        UIHelper.RemoveBindersAndLocalizers(window.gameObject);
+        UIHelper.CleanUpChildren(window.gameObject);
     }
 
     /// <summary>
