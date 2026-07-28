@@ -1,21 +1,18 @@
 ﻿using BloomEngine.Config;
 using BloomEngine.ModMenu;
 using BloomEngine.UI;
-using Il2CppBest.HTTP.JSON.LitJson;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
 using MelonLoader;
-using System.Collections;
-using UnityEngine;
 
-namespace BloomEngine.Modules;
+namespace BloomEngine.Core;
 
 internal static class BloomLoader
 {
     internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(BloomLoader)}");
 
-    public static MainMenuPanelView? MainMenuPanels { get; private set; }
+    public static MainMenuPanelView? MainMenuPanel { get; private set; }
     public static PanelViewContainer? GlobalPanels { get; private set; }
 
     public static AchievementsUI? AchievementsUI { get; private set; }
@@ -27,15 +24,15 @@ internal static class BloomLoader
         ConfigService.TryCreateConfigPanels(mainMenuPanels, GlobalPanels);
         UIHelper.TryLoadAll(mainMenuPanels, GlobalPanels);
 
-        MainMenuPanels = mainMenuPanels;
+        MainMenuPanel = mainMenuPanels;
     }
 
     public static void LoadGlobalPanels(PanelViewContainer globalPanels)
     {
         Log.Msg("Loading global panel container...");
 
-        ConfigService.TryCreateConfigPanels(MainMenuPanels, globalPanels);
-        UIHelper.TryLoadAll(MainMenuPanels, globalPanels);
+        ConfigService.TryCreateConfigPanels(MainMenuPanel, globalPanels);
+        UIHelper.TryLoadAll(MainMenuPanel, globalPanels);
 
         GlobalPanels = globalPanels;
     }

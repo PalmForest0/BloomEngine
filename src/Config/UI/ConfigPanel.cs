@@ -62,7 +62,7 @@ internal sealed class ConfigPanel
             CreatePageControls(window.parent.GetComponent<RectTransform>());
 
         // Add click blocker background
-        UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
+        UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
 
         // Destroy all localizers
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
@@ -267,7 +267,7 @@ internal sealed class ConfigPanel
         horizontalLayout.childForceExpandHeight = false;
 
         // Create previous page button
-        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
+        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
         UnityEngine.Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();
@@ -275,10 +275,10 @@ internal sealed class ConfigPanel
         backButton.onClick.AddListener(() => SetPageIndex(PageIndex - 1));
 
         // Create page count label
-        pageCountLabel = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
+        pageCountLabel = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
 
         // Create next page button
-        pageNextButton = UnityEngine.Object.Instantiate(UIHelper.MainMenu.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
+        pageNextButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
         UnityEngine.Object.Destroy(pageNextButton.GetComponent<NavigationCheck>());
         pageNextButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var nextButton = pageNextButton.GetComponent<Button>();

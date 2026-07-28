@@ -49,7 +49,7 @@ public static class ModMenuService
     }
 
     /// <summary>
-    /// Creates the mod menu UI off of the existing achievements UI.
+    /// Waits for the UIHelper to load all templates, then creates the mod menu UI off of the existing achievements UI.
     /// </summary>
     internal static IEnumerator Co_CreateModMenu(AchievementsUI achievementsUI)
     {

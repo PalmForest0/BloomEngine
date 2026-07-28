@@ -49,7 +49,7 @@ public static class AssetHelper
     public static byte[] LoadBytes<TMarker>(string resourcePath)
     {
         Assembly assembly = typeof(TMarker).Assembly;
-        using Stream stream = assembly.GetManifestResourceStream(resourcePath);
+        using Stream? stream = assembly.GetManifestResourceStream(resourcePath);
         return stream is null ? [] : stream.ReadFully();
     }
 

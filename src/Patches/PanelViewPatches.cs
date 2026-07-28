@@ -1,4 +1,4 @@
-﻿using BloomEngine.Modules;
+﻿using BloomEngine.Core;
 using HarmonyLib;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;

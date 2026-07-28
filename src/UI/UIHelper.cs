@@ -13,7 +13,6 @@ using MelonLoader;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace BloomEngine.UI;
@@ -23,54 +22,57 @@ namespace BloomEngine.UI;
 /// </summary>
 public static class UIHelper
 {
-    /// <summary>
-    /// Gets a bool value that specifies whether the Main Menu is currently active.
-    /// </summary>
-    public static bool InMainMenu { get; private set; }
+    internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(UIHelper)}");
 
     /// <summary>
-    /// Gets the Main Menu panel view, or null if the Main Menu is currently inactive.
+    /// Gets the MainMenuPanelView, or null if the Main Menu is currently inactive.
     /// </summary>
-    public static MainMenuPanelView MainMenu { get; private set; }
+    public static MainMenuPanelView? MainMenuPanel { get; private set; }
 
     /// <summary>
-    /// Gets the global panel container.
+    /// Gets the global PanelView container.
     /// </summary>
-    public static PanelViewContainer GlobalPanels { get; private set; }
+    public static PanelViewContainer GlobalPanels { get; private set; } = null!;
 
     /// <summary>
     /// Gets the zen garden panel container, or null if outside of the ZenGarden scene.
     /// This scene does not include the Tree of Wisdom, which is part of the Gameplay scene.
     /// </summary>
-    public static PanelViewContainer ZenGardenPanels { get; internal set; }
+    public static PanelViewContainer? ZenGardenPanels { get; internal set; }
 
     /// <summary>
     /// Gets the gameplay panel container, or null if outside of the Gameplay scene.
     /// This scene also includes the Tree of Wisdom for some reason.
     /// </summary>
-    public static PanelViewContainer GameplayPanels { get; internal set; }
+    public static PanelViewContainer? GameplayPanels { get; internal set; }
 
     /// <summary>
     /// Gets the Main Menu's achievements UI, if the Main Menu is currently active.
     /// </summary>
-    public static AchievementsUI Achievements { get; private set; }
-
-    public static TMP_FontAsset Font1 { get; private set; }
-    public static TMP_FontAsset Font2 { get; private set; }
+    public static AchievementsUI? Achievements { get; private set; }
 
     /// <summary>
-    /// Gets a bool that states whether all UI element templates have been loaded
+    /// Rounded comic-style font that is used in places like the player name, level names, challenge names and the shop button.
+    /// </summary>
+    public static TMP_FontAsset? Font_BrianneTod { get; private set; }
+
+    /// <summary>
+    /// Rough, bold font that is used in placed like the title and page label on the help screen and the "Player's House" text.
+    /// </summary>
+    public static TMP_FontAsset? Font_HouseOfTerror { get; private set; }
+
+    /// <summary>
+    /// Gets a bool that is true when all UI element templates have een loaded.
     /// </summary>
     internal static bool AllTemplatesLoaded => Template_Button && Template_Checkbox && Template_Dropdown && Template_Slider && Template_Textbox;
 
-    // UI element templates which have been cloned and saved
+    private static GameObject? Template_Container;
+
     private static GameObject? Template_Textbox;
     private static GameObject? Template_Button;
     private static GameObject? Template_Checkbox;
     private static GameObject? Template_Dropdown;
     private static GameObject? Template_Slider;
-
-    private static GameObject? Template_Container;
 
     /// <summary>
     /// Attempts to load all necessary game UI screens and panels and performs other functions to initialise the UIHelper.
@@ -81,13 +83,15 @@ public static class UIHelper
         if (!mainMenu || !globalPanels)
             return;
 
-        MainMenu = mainMenu!;
+        MainMenuPanel = mainMenu!;
         GlobalPanels = globalPanels!;
 
-        Font1 = MainMenu.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
-        Font2 = MainMenu.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
+        Font_BrianneTod ??= MainMenuPanel.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
+        Font_HouseOfTerror ??= MainMenuPanel.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
 
         TryCreateTemplates();
+
+        Log.Msg("Successfully loaded UIHelper.");
     }
 
     /// <summary>
@@ -107,40 +111,47 @@ public static class UIHelper
 
         if(!Template_Button)
         {
-            Template_Button = GameObject.Instantiate(MainMenu.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
+            Template_Button = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
             Template_Button.name = "ButtonTemplate";
 
             GameObject.Destroy(Template_Button.GetComponent<ExitGame>());
+
+            Log.Msg("Created UI button template.");
         }
         
         if(!Template_Textbox)
         {
-            Template_Textbox = GameObject.Instantiate(MainMenu.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
+            Template_Textbox = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
             Template_Textbox.name = "TextboxTemplate";
+
+            Log.Msg("Created UI textbox template.");
         }
 
         if(!Template_Checkbox)
         {
             Template_Checkbox = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
             Template_Checkbox.name = "CheckboxTemplate";
+
+            Log.Msg("Created UI checkbox template.");
         }
 
         if(!Template_Dropdown)
         {
             Template_Dropdown = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
             Template_Dropdown.name = "DropdownTemplate";
+
+            Log.Msg("Created UI dropdown template.");
         }
         
         if(!Template_Slider)
         {
             Template_Slider = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
             Template_Slider.name = "SliderTemplate";
+
+            Log.Msg("Created UI slider template.");
         }
 
         CleanUpChildren(Template_Container.gameObject);
-
-        // Hook scene loaded event to determine if the current scene is the main menu
-        SceneManager.add_sceneLoaded((scene, mode) => InMainMenu = scene.name == "Frontend");
     }
 
     /// <summary>
@@ -153,7 +164,7 @@ public static class UIHelper
     /// <returns>A GameObject representing the newly created button, configured with the specified properties.</returns>
     public static GameObject CreateButton(string name, RectTransform parent, string text, Action onClick)
     {
-        GameObject button = GameObject.Instantiate(Template_Button, parent);
+        GameObject? button = GameObject.Instantiate(Template_Button, parent);
         UIHelper.ModifyButton(button, name, text, onClick);
 
         RectTransform rect = button.GetComponent<RectTransform>();
@@ -173,7 +184,7 @@ public static class UIHelper
     /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
     public static ReloadedInputField CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Textbox, parent);
+        GameObject? obj = GameObject.Instantiate(Template_Textbox, parent);
         obj.name = name;
 
         if (placeholder is null)
@@ -202,7 +213,7 @@ public static class UIHelper
     /// <returns>A Toggle component representing the created checkbox with the provided default value.</returns>
     public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Checkbox, parent);
+        GameObject? obj = GameObject.Instantiate(Template_Checkbox, parent);
         obj.name = name;
 
         Toggle toggle = obj.GetComponent<Toggle>();
@@ -224,7 +235,7 @@ public static class UIHelper
     /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>
     public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum> onValueChanged = null) where TEnum : Enum
     {
-        GameObject obj = GameObject.Instantiate(Template_Dropdown, parent);
+        GameObject? obj = GameObject.Instantiate(Template_Dropdown, parent);
         obj.name = name;
 
         ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
@@ -263,7 +274,7 @@ public static class UIHelper
     /// <returns>A Slider component configured with the specified range and value.</returns>
     public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Slider, parent);
+        GameObject? obj = GameObject.Instantiate(Template_Slider, parent);
         obj.name = name;
 
         Slider slider = obj.GetComponent<Slider>();

@@ -85,7 +85,7 @@ internal sealed class ModMenuUI
         TextMeshProUGUI label = bloomEngineLabel.AddComponent<TextMeshProUGUI>();
         label.fontSize = 52;
         label.characterSpacing = 0;
-        label.font = UIHelper.Font1;
+        label.font = UIHelper.Font_BrianneTod;
         label.text = $"BloomEngine  v{BloomEngineMod.Version}";
 
         RectTransform rect = label.GetComponent<RectTransform>();
@@ -140,5 +140,5 @@ internal sealed class ModMenuUI
     /// <summary>
     /// Triggers the animation that plays when the camera pans down to the achievements screen.
     /// </summary>
-    private static void PlayTransitionAnim() => UIHelper.MainMenu.PlayAnimation("A_MainMenu_Achievements_In");
+    private static void PlayTransitionAnim() => UIHelper.MainMenuPanel.PlayAnimation("A_MainMenu_Achievements_In");
 }
