@@ -15,8 +15,6 @@ internal static class BloomLoader
     public static MainMenuPanelView? MainMenuPanel { get; private set; }
     public static PanelViewContainer? GlobalPanels { get; private set; }
 
-    public static AchievementsUI? AchievementsUI { get; private set; }
-
     public static void LoadMainMenu(MainMenuPanelView mainMenuPanels)
     {
         Log.Msg("Loading main menu...");
@@ -43,6 +41,6 @@ internal static class BloomLoader
 
         MelonCoroutines.Start(ModMenuService.Co_CreateModMenu(achievementsUI));
 
-        AchievementsUI = achievementsUI;
+        UIHelper.AchievementsUI = achievementsUI;
     }
 }

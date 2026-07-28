@@ -47,9 +47,9 @@ public static class UIHelper
     public static PanelViewContainer? GameplayPanels { get; internal set; }
 
     /// <summary>
-    /// Gets the Main Menu's achievements UI, if the Main Menu is currently active.
+    /// Gets the Main Menu's achievements UI, or null if the Main Menu is currently inactive.
     /// </summary>
-    public static AchievementsUI? Achievements { get; private set; }
+    public static AchievementsUI? AchievementsUI { get; internal set; }
 
     /// <summary>
     /// Rounded comic-style font that is used in places like the player name, level names, challenge names and the shop button.
