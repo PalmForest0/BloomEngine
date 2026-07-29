@@ -1,15 +1,15 @@
-﻿using BloomEngine.Config;
+﻿using HarmonyLib;
+using BloomEngine.Config;
 using BloomEngine.Core;
-using HarmonyLib;
 using Il2CppUI.Scripts;
 
 namespace BloomEngine.Patches;
 
 [HarmonyPatch]
-internal static class ModMenuPatches
+internal static class AchievementsUIPatches
 {
     /// <summary>
-    /// Saves the AchievementsUI and attempts to initialize the mod menu.
+    /// Loads the AchievementsUI and passes it to BloomLoader to init.
     /// </summary>
     [HarmonyPatch(typeof(AchievementsUI), nameof(AchievementsUI.Start))]
     [HarmonyPostfix]
