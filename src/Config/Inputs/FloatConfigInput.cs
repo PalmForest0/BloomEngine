@@ -24,7 +24,7 @@ public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
     /// <summary>
     /// The UI slider which corresponds to this config input in the config panel.
     /// </summary>
-    public Slider Slider { get; private set; }
+    public Slider Slider { get; private set; } = null!;
 
     internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue) : base(name, description, defaultValue)
     {

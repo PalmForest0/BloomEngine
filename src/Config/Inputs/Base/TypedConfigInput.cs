@@ -7,15 +7,18 @@ namespace BloomEngine.Config.Inputs.Base;
 /// </summary>
 /// <typeparam name="T">The type of value stored within this config input.</typeparam>
 /// <typeparam name="TSelf">The type of this config input.</typeparam>
-public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput where TSelf : TypedConfigInput<T, TSelf>
+public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
+    where T : notnull
+    where TSelf : TypedConfigInput<T, TSelf>
 {
     /// <summary>
     /// Gets or sets the value stored in this config input, invoking <see cref="TransformFunc"/>.
-    /// If the new value is different to the old value,<br/> <see cref="OnValueChanged"/> is invoked and the <see cref="MelonEntry"/> value is updated.
+    /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueChanged(Action{T})"/>
+    /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
     public T Value
     {
-        get => field;
+        get => _value;
         set
         {
             T newValue = TransformFunc is not null ? TransformFunc.Invoke(value) : value;
@@ -25,14 +28,20 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput where TSelf :
                 return;
 
             // Don't call event or update MelonEntry value if there is no difference
-            if (EqualityComparer<T>.Default.Equals(field, newValue))
+            if (EqualityComparer<T>.Default.Equals(_value, newValue))
                 return;
             
-            field = newValue;
-            OnValueChanged?.Invoke(field);
-            MelonEntry?.Value = field;
+            _value = newValue;
+            MelonEntry?.Value = newValue;
+
+            OnValueChanged?.Invoke(newValue);
         }
     }
+
+    /// <summary>
+    /// The underlying field containing the value. Setting this directly is used to sidestep the MelonEntry update on init.
+    /// </summary>
+    private T _value;
 
     /// <summary>
     /// The default value of this config input. This is also used as a fallback when an unexpected value is encountered.
@@ -40,38 +49,41 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput where TSelf :
     public T DefaultValue { get; private init; }
 
     /// <summary>
+    /// The type of value stored within this config input.
+    /// </summary>
+    public Type ValueType { get; private init; }
+
+    /// <summary>
     /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config input and contains the saved value.
     /// </summary>
-    public MelonPreferences_Entry<T> MelonEntry { get; private set; }
-
-    /// <summary>
-    /// An event that is invoked when <see cref="Value"/> is modified.
-    /// </summary>
-    public event Action<T> OnValueChanged;
-
-    /// <summary>
-    /// An event that is invoked when the UI input is modified by the user.
-    /// </summary>
-    public event Action OnInputChanged;
+    public MelonPreferences_Entry<T> MelonEntry { get; private set; } = null!;
 
     /// <summary>
     /// A function that processes an incoming new value and returns a transformed value.
     /// </summary>
-    public Func<T, T> TransformFunc { get; private set; }
+    private Func<T, T>? TransformFunc;
 
     /// <summary>
     /// A function that validated an incoming new value and returns true if it should be assigned to <see cref="Value"/>.
     /// </summary>
     /// <remarks>The validation check occurs after the new value has been transformed by <see cref="TransformFunc"/></remarks>
-    public Func<T, bool> ValidateFunc { get; private set; }
+    private Func<T, bool>? ValidateFunc;
 
-    private protected TypedConfigInput(string name, string description, T defaultValue)
+    /// <summary>
+    /// An event that is invoked when <see cref="Value"/> is modified.
+    /// </summary>
+    private event Action<T>? OnValueChanged;
+
+    /// <summary>
+    /// An event that is invoked when the UI input is modified by the user.
+    /// </summary>
+    private event Action? OnInputChanged;
+
+    private protected TypedConfigInput(string name, string description, T defaultValue) : base(name, description)
     {
-        Name = name;
-        Description = description;
-
         DefaultValue = defaultValue;
-        ValueType = defaultValue.GetType();
+        _value = defaultValue;
+        ValueType = _value.GetType();
     }
 
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
@@ -94,43 +106,46 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput where TSelf :
 
 
     /// <summary>
-    /// Subscribes to the <see cref="OnValueChanged"/> event, which is invoked when <see cref="Value"/> is modified.
+    /// Subscribes to an event which is invoked when <see cref="Value"/> is modified.
     /// </summary>
-    /// <param name="onValueChanged">The action to invoke when the value changes, receiving the new value as a parameter.</param>
-    public TSelf WithOnValueChanged(Action<T> onValueChanged)
+    /// <param name="handler">The action to invoke when the value changes, receiving the new value as a parameter.</param>
+    public TSelf WithOnValueChanged(Action<T> handler)
     {
-        OnValueChanged += onValueChanged;
+        OnValueChanged += handler;
         return (TSelf)this;
     }
 
     /// <summary>
-    /// Subscribes to the <see cref="OnInputChanged"/> event, which is invoked when the UI input is modified by the user.
+    /// Subscribes to and event which is invoked immediately every time the UI input is modified by the user.
+    /// Depending on the type of input, the UI element can be accessed to modify the value.
     /// </summary>
-    /// <param name="onInputChanged">The action to invoke when the UI input changes.</param>
-    public TSelf WithOnInputChanged(Action onInputChanged)
+    /// <param name="handler">The action to invoke when the UI input is changed by the user.</param>
+    public TSelf WithOnInputChanged(Action handler)
     {
-        OnInputChanged += onInputChanged;
+        OnInputChanged += handler;
         return (TSelf)this;
     }
 
     /// <summary>
-    /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.
+    /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.<br/>
+    /// Be sure that the validator added through <see cref="WithValidation(Func{T, bool})"/> will approve the transformed value.
     /// </summary>
-    /// <param name="transformFunc">A function that takes the incoming value and returns the transformed value.</param>
-    public TSelf WithTransformFunc(Func<T, T> transformFunc)
+    /// <param name="transform">A function that takes the incoming value and returns the transformed value.</param>
+    public TSelf WithTransform(Func<T, T> transform)
     {
-        TransformFunc = transformFunc;
+        TransformFunc = transform;
         return (TSelf)this;
     }
 
     /// <summary>
-    /// Sets a function that validates an incoming value before it is assigned to <see cref="Value"/>.
-    /// The validation check occurs after any transformation applied by <see cref="TransformFunc"/>.
+    /// Sets a function that validates an incoming value before it is assigned to <see cref="Value"/>.<br/>
+    /// This validation check occurs after any transformations added with <see cref="WithTransform(Func{T, T})"/>.
+    /// It is therefore important to ensure that the performed transformation is valid.
     /// </summary>
-    /// <param name="validateFunc">A function that returns true if the value should be assigned, or false to reject it.</param>
-    public TSelf WithValidateFunc(Func<T, bool> validateFunc)
+    /// <param name="validator">A function that returns true if the value should be assigned, or false to reject it.</param>
+    public TSelf WithValidation(Func<T, bool> validator)
     {
-        ValidateFunc = validateFunc;
+        ValidateFunc = validator;
         return (TSelf)this;
     }
 }

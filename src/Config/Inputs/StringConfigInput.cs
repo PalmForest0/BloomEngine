@@ -14,7 +14,7 @@ public sealed class StringConfigInput : TypedConfigInput<string, StringConfigInp
     /// <summary>
     /// The UI textbox which corresponds to this config input in the config panel.
     /// </summary>
-    public ReloadedInputField Textbox { get; private set; }
+    public ReloadedInputField Textbox { get; private set; } = null!;
 
     internal StringConfigInput(string name, string description, string defaultValue) : base(name, description, defaultValue) { }
 

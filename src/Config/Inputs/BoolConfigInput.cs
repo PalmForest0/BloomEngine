@@ -14,7 +14,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
     /// <summary>
     /// The UI checkbox which corresponds to this config input in the config panel.
     /// </summary>
-    public Toggle Toggle { get; private set; }
+    public Toggle Toggle { get; private set; } = null!;
 
     internal BoolConfigInput(string name, string description, bool defaultValue) : base(name, description, defaultValue) { }
 

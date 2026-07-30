@@ -5,24 +5,19 @@ namespace BloomEngine.Config.Inputs.Base;
 
 /// <summary>
 /// Represents the base typeless structure of a config input, which is extended by
-/// <see cref="TypedConfigInput{T}"/> to provide type-specific functionality.
+/// <see cref="TypedConfigInput{T, TSelf}"/> to provide type-specific functionality.
 /// </summary>
-public abstract class BaseConfigInput
+public abstract class BaseConfigInput(string name, string description)
 {
     /// <summary>
     /// The display name of this config input, which is displayed in the config menu.
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; private set; } = name;
 
     /// <summary>
     /// The description of this input field, which is displayed in the config menu.
     /// </summary>
-    public string Description { get; set; }
-
-    /// <summary>
-    /// The type of value stored within this config input.
-    /// </summary>
-    public Type ValueType { get; protected set; }
+    public string Description { get; private set; } = description;
 
     /// <summary>
     /// Gets the name of the UI element that corresponds to this config input.
@@ -58,7 +53,7 @@ public abstract class BaseConfigInput
     internal abstract void RefreshUI();
 
     /// <summary>
-    /// Invokes the <see cref="TypedConfigInput{T}.OnInputChanged"/> action and performs any type-specific logic.
+    /// Invokes the <see cref="TypedConfigInput{T, TSelf}.OnInputChanged"/> action and performs any type-specific logic.
     /// </summary>
     internal abstract void OnUIChanged();
 }

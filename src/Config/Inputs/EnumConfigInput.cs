@@ -14,14 +14,14 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// <summary>
     /// The UI dropdown which corresponds to this config input in the config panel.
     /// </summary>
-    public ReloadedDropdown Dropdown { get; private set; }
+    public ReloadedDropdown Dropdown { get; private set; } = null!;
 
     /// <summary>
     /// Contains a list of the individual options of the value enum type.
     /// </summary>
-    private List<TEnum> options;
+    private List<TEnum> options = null!;
 
-    private Comparer<TEnum> comparer;
+    private Comparer<TEnum>? comparer;
 
     internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 

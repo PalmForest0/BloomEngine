@@ -16,7 +16,7 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     /// <summary>
     /// The UI textbox which corresponds to this config input in the config panel.
     /// </summary>
-    public ReloadedInputField Textbox { get; private set; }
+    public ReloadedInputField Textbox { get; private set; } = null!;
 
     internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
@@ -62,8 +62,8 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
         var minField = type.GetField("MinValue");
         var maxField = type.GetField("MaxValue");
 
-        double min = Convert.ToDouble(minField.GetValue(null));
-        double max = Convert.ToDouble(maxField.GetValue(null));
+        double min = Convert.ToDouble(minField?.GetValue(null) ?? 0);
+        double max = Convert.ToDouble(maxField?.GetValue(null) ?? byte.MaxValue);
         double val = double.Parse(input);
 
         return Convert.ChangeType(Math.Clamp(val, min, max), type);
