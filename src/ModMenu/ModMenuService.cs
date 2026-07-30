@@ -12,40 +12,26 @@ namespace BloomEngine.ModMenu;
 /// </summary>
 public static class ModMenuService
 {
-    internal static MelonLogger.Instance ModMenuLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(ModMenu)}");
+    internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(ModMenu)}");
+
     internal static Dictionary<MelonMod, ModMenuEntry> ModEntries { get; } = new();
     internal static IEnumerable<ModMenuEntry> RegisteredEntries => ModEntries.Values;
 
-    private static ModMenuUI? modMenuUI;
 
-    /// <summary>
-    /// Event that is invoked when a mod is added to the mod menu using <see cref="ModMenuEntry.Register"/>."/>
-    /// </summary>
-    public static event Action<ModMenuEntry>? OnModRegistered;
+    private static ModMenuUI? modMenuUI;
 
     /// <summary>
     /// Creates a new mod entry which can be customised and added to the mod menu with <see cref="ModMenuEntry.Register"/>.
     /// </summary>
     /// <param name="mod">The mod this entry belongs to.</param>
-    /// <returns>A new mod entry for the given mod, or null if one already exists.</returns>
-    public static ModMenuEntry? CreateEntry(MelonMod mod)
+    /// <returns>A new ModMenuEntry for the given mod, or the current one if it already exists.</returns>
+    public static ModMenuEntry CreateEntry(MelonMod mod)
     {
-        if(!ModEntries.ContainsKey(mod))
+        if(!ModEntries.TryGetValue(mod, out var entry))
             return new ModMenuEntry(mod);
-
-        ModMenuLogger.Warning($"Failed to create a mod menu entry for {mod.Info.Name} since one has already been created.");
-        return null;
-    }
-
-    /// <summary>
-    /// Registers a mod entry with the mod menu and invoked the <see cref="OnModRegistered"/> event.
-    /// </summary>
-    internal static void RegisterModEntry(ModMenuEntry entry)
-    {
-        ModEntries[entry.Mod] = entry;
-        OnModRegistered?.Invoke(entry);
-
-        ModMenuLogger.Msg($"Successfully added {entry.DisplayName} to the mod menu.");
+            
+        Log.Warning($"Encountered duplicate CreateEntry() call for {mod.Info.Name}, returning existing ModMenuEntry instance.");
+        return entry;
     }
 
     /// <summary>

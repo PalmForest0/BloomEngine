@@ -73,8 +73,8 @@ internal sealed class ConfigPanel
 
     private RectTransform InitializePanel(PanelView panel)
     {
-        panel.m_id = $"modConfig_{config.Identifier}";
-        panel.gameObject.name = $"P_ModConfig_{config.Identifier}";
+        panel.m_id = $"modConfig_{config.Id}";
+        panel.gameObject.name = $"P_ModConfig_{config.Id}";
 
         var window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
 

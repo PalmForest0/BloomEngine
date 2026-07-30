@@ -15,7 +15,7 @@ public sealed class ModConfig
     /// The identifier string of this config, which is used for saving it in MelonPreferences.
     /// This will usually match the identifier of the <see cref="ModMenuEntry"/> this config belongs to.
     /// </summary>
-    public string Identifier { get; private init; }
+    public string Id { get; private init; }
 
     /// <summary>
     /// The display name of this config, which will be saved in MelonPreferences and shown in the config menu.
@@ -32,7 +32,7 @@ public sealed class ModConfig
     /// The <see cref="MelonPreferences"/> category created by this config instance,
     /// to which the config inputs are saved.
     /// </summary>
-    public MelonPreferences_Category MelonCategory { get; private set; }
+    public MelonPreferences_Category MelonCategory { get; private set; } = null!;
 
     /// <summary>
     /// Gets the registered input count of this config instance.
@@ -44,19 +44,17 @@ public sealed class ModConfig
     /// </summary>
     public bool IsEmpty => InputCount == 0;
 
-    public event Action ConfigSaved;
-
     /// <summary>
     /// The UI panel created for this config.
     /// </summary>
-    internal ConfigPanel Panel { get; set; }
+    internal ConfigPanel? Panel { get; set; }
 
     /// <summary>
     /// Creates a mod config from an array of inputs (used by <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>).
     /// </summary>
     internal ModConfig(string identifier, string displayName, BaseConfigInput[] inputs)
     {
-        Identifier = identifier;
+        Id = identifier;
         DisplayName = displayName;
         ConfigInputs = inputs.ToList();
 
@@ -68,7 +66,7 @@ public sealed class ModConfig
     /// </summary>
     private void SetupMelonPreferences()
     {
-        MelonCategory = MelonPreferences.CreateCategory(Identifier, DisplayName);
+        MelonCategory = MelonPreferences.CreateCategory(Id, DisplayName);
 
         foreach (var input in ConfigInputs)
             input.CreateMelonEntry(MelonCategory);
@@ -101,8 +99,6 @@ public sealed class ModConfig
         MelonCategory.SaveToFile(false);
 
         if (printMessage)
-            ConfigService.ConfigLogger.Msg($"Updated mod config for {DisplayName} and saved MelonPreferences.");
-
-        ConfigSaved?.Invoke();
+            ConfigService.Log.Msg($"Updated mod config for {DisplayName} and saved MelonPreferences.");
     }
 }

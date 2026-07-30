@@ -15,7 +15,7 @@ namespace BloomEngine.Config;
 /// </summary>
 public static class ConfigService
 {
-    internal static MelonLogger.Instance ConfigLogger { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
+    internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(Config)}");
     
     /// <summary>
     /// The config panel UI that is currently open.
@@ -110,13 +110,13 @@ public static class ConfigService
         // Log a warning if there is no config registered
         if (mod.Config is null || mod.Config.IsEmpty)
         {
-            ConfigLogger.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
+            Log.Warning($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.");
             return;
         }
 
         if(mod.Config.Panel is null)
         {
-            ConfigLogger.Error($"Failed to open mod config panel for {mod.DisplayName}: Config UI panel has not been created.");
+            Log.Error($"Failed to open mod config panel for {mod.DisplayName}: Config UI panel has not been created.");
             return;
         }
 
@@ -150,7 +150,7 @@ public static class ConfigService
 
         if (template is null)
         {
-            ConfigService.ConfigLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"");
+            ConfigService.Log.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"");
             return;
         }
 

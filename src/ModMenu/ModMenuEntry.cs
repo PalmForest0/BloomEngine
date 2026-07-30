@@ -22,7 +22,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// <summary>
     /// A string that represents the unique identifier for this mod entry.
     /// </summary>
-    public string Identifier { get; private set; } = mod.Info.Name.Trim().Replace(" ", "");
+    public string Id { get; private set; } = mod.Info.Name.Trim().Replace(" ", "");
 
     /// <summary>
     /// The display name that shows up in the mod menu for this entry.
@@ -37,12 +37,12 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// <summary>
     /// Sprite that shows up as the icon for this mod in the mod menu.
     /// </summary>
-    public Sprite Icon { get; private set; }
+    public Sprite? Icon { get; private set; }
 
     /// <summary>
     /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfigInputs(BaseConfigInput[])"/> or <see cref="AddConfigClass(Type)"/>.
     /// </summary>
-    public ModConfig Config { get; private set; }
+    public ModConfig? Config { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this mod entry has a non-empty config.
@@ -95,7 +95,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     public ModMenuEntry AddConfigInputs(params BaseConfigInput[] inputs)
     {
         if (Config is null)
-            Config = new ModConfig(Identifier, DisplayName, inputs);
+            Config = new ModConfig(Id, DisplayName, inputs);
         else Config.ConfigInputs.AddRange(inputs);
 
         return this;
@@ -124,30 +124,34 @@ public sealed class ModMenuEntry(MelonMod mod)
         return this;
     }
 
-    public ModMenuEntry AddConfigSavedAction(Action onConfigSaved)
-    {
-        Config ??= new ModConfig(Identifier, DisplayName, []);
-        Config.ConfigSaved += () => onConfigSaved?.Invoke();
-        return this;
-    }
-
     /// <summary>
-    /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.<br/>
-    /// Calling this method invokes the <see cref="ModMenuService.OnModRegistered"/> event.
+    /// Registers this <see cref="ModMenuEntry"/> and adds it to the mod menu with the provided information.
     /// </summary>
     public void Register()
     {
-        ModMenuService.RegisterModEntry(this);
+        if (ModMenuService.ModEntries.ContainsKey(Mod))
+            ModMenuService.Log.Warning($"Encountered duplicate registration for {DisplayName}, replacing existing ModMenuEntry.");
+
+        ModMenuService.ModEntries[Mod] = this;
+        ModMenuService.Log.Msg($"Successfully added {DisplayName} to the mod menu.");
+
         Config?.Save(false);
 
-        // Register all classes with a custom attribute
-        foreach (var type in Mod.MelonAssembly.Assembly.GetTypes())
-        {
-            if(type.IsSubclassOf(typeof(UnityEngine.Object)) && type.GetCustomAttribute<RegisterInIl2CppAttribute>() is not null)
-                ClassInjector.RegisterTypeInIl2Cpp(type);
-        }
+        // Register all classes with a custom attribute in the mod
+        RegisterInIl2CppAttribute.RegisterClassesInAssembly(Mod.MelonAssembly.Assembly);
     }
 
-    internal static string GetDefaultModName(MelonMod mod) => mod?.Info?.Name ?? "???";
+    /// <summary>
+    /// Provides a string for the mod's name if it does not have a registered entry.
+    /// </summary>
+    /// <param name="mod">The mod to fetch the name from, if available.</param>
+    /// <returns>A string that can be used for display name of an unregistered mod.</returns>
+    internal static string GetDefaultModName(MelonMod mod) => mod?.Info?.Name ?? "Unknown mod";
+
+    /// <summary>
+    /// Provides a string for the mod's description if it does not have a registered entry.
+    /// </summary>
+    /// <param name="mod">The mod to fetch info such as the author and version from, if available.</param>
+    /// <returns>A string that can be used for the description of an unregistered mod.</returns>
     internal static string GetDefaultModDescription(MelonMod mod) => $"By {mod?.Info?.Author ?? "???"}\nVersion {mod?.Info?.Version ?? "???"}";
 }

@@ -10,12 +10,9 @@ internal sealed class BloomEngineMod : MelonMod
     public const string Version = "0.3.2-beta";
     public const string Author = "PalmForest";
 
-    internal static MelonLogger.Instance Logger { get; private set; }
-
     public override void OnInitializeMelon()
     {
-        Logger = LoggerInstance;
-        Logger.Msg($"Successfully loaded version {Version} of {Name}.");
+        LoggerInstance.Msg($"Successfully loaded version {Version} of {Name}.");
 
         ModMenuService.CreateEntry(this)
             .AddDisplayName(Name)
