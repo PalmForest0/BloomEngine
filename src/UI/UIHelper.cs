@@ -1,5 +1,4 @@
-﻿using BloomEngine.Extensions;
-using BloomEngine.Utilities;
+﻿using System.Collections;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
@@ -10,10 +9,11 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using BloomEngine.Extensions;
+using BloomEngine.Utilities;
 
 namespace BloomEngine.UI;
 
@@ -86,8 +86,10 @@ public static class UIHelper
         MainMenuPanel = mainMenu!;
         GlobalPanels = globalPanels!;
 
-        Font_BrianneTod ??= MainMenuPanel.transform.FindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel").font;
-        Font_HouseOfTerror ??= MainMenuPanel.transform.parent.FindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel").font;
+        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel", out var label, logErrorSource: Log))
+            Font_BrianneTod = label.font;
+        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel", out label, logErrorSource: Log))
+            Font_HouseOfTerror = label.font;
 
         TryCreateTemplates();
 
@@ -164,7 +166,7 @@ public static class UIHelper
     /// <returns>A GameObject representing the newly created button, configured with the specified properties.</returns>
     public static GameObject CreateButton(string name, RectTransform parent, string text, Action onClick)
     {
-        GameObject? button = GameObject.Instantiate(Template_Button, parent);
+        GameObject button = GameObject.Instantiate(Template_Button, parent)!;
         UIHelper.ModifyButton(button, name, text, onClick);
 
         RectTransform rect = button.GetComponent<RectTransform>();
@@ -182,9 +184,9 @@ public static class UIHelper
     /// <param name="onTextChanged">An optional callback invoked whenever the text in the input field changes.</param>
     /// <param name="onDeselect">An optional callback invoked when the input field is deselected or submitted.</param>
     /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
-    public static ReloadedInputField CreateTextField(string name, RectTransform parent, string placeholder = null, Action<ReloadedInputField> onTextChanged = null, Action<ReloadedInputField> onDeselect = null)
+    public static ReloadedInputField CreateTextField(string name, RectTransform parent, string? placeholder = null, Action<ReloadedInputField>? onTextChanged = null, Action<ReloadedInputField>? onDeselect = null)
     {
-        GameObject? obj = GameObject.Instantiate(Template_Textbox, parent);
+        GameObject obj = GameObject.Instantiate(Template_Textbox, parent)!;
         obj.name = name;
 
         if (placeholder is null)
@@ -192,11 +194,13 @@ public static class UIHelper
         else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholder;
 
         ReloadedInputField field = obj.GetComponent<ReloadedInputField>();
+
         field.onValueChanged = new();
         field.onValueChanged.AddListener(text => onTextChanged?.Invoke(field));
 
         field.onDeselect = new();
         field.onDeselect.AddListener(text => onDeselect?.Invoke(field));
+
         field.onSubmit = new();
         field.onSubmit.AddListener(text => onDeselect?.Invoke(field));
 
@@ -210,10 +214,10 @@ public static class UIHelper
     /// <param name="parent">The RectTransform that will serve as the parent for the checkbox.</param>
     /// <param name="value">The initial checked state of the checkbox, which is <see langword="true"/> by default.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the checkbox value changes.</param>
-    /// <returns>A Toggle component representing the created checkbox with the provided default value.</returns>
-    public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> onValueChanged = null)
+    /// <returns>A Toggle label representing the created checkbox with the provided default value.</returns>
+    public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> ?onValueChanged = null)
     {
-        GameObject? obj = GameObject.Instantiate(Template_Checkbox, parent);
+        GameObject obj = GameObject.Instantiate(Template_Checkbox, parent)!;
         obj.name = name;
 
         Toggle toggle = obj.GetComponent<Toggle>();
@@ -232,10 +236,10 @@ public static class UIHelper
     /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
     /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
-    /// <returns>A ReloadedDropdown component with the newly added enum options.</returns>
-    public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum> onValueChanged = null) where TEnum : Enum
+    /// <returns>A ReloadedDropdown label with the newly added enum options.</returns>
+    public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum>? onValueChanged = null) where TEnum : Enum
     {
-        GameObject? obj = GameObject.Instantiate(Template_Dropdown, parent);
+        GameObject obj = GameObject.Instantiate(Template_Dropdown, parent)!;
         obj.name = name;
 
         ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
@@ -250,9 +254,8 @@ public static class UIHelper
         dropdown.SetValueWithoutNotify(selectedIndex);
         dropdown.RefreshShownValue();
 
-        // On value changed events
         dropdown.onValueChanged = new();
-        dropdown.onValueChanged?.AddListener(selection =>
+        dropdown.onValueChanged.AddListener(selection =>
         {
             onValueChanged?.Invoke(values[selection]);
             dropdown.Hide(); // Force hide dropdown after selection
@@ -271,10 +274,10 @@ public static class UIHelper
     /// <param name="minValue">The minimum value allowed for the Slider.</param>
     /// <param name="maxValue">The maximum value allowed for the Slider.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Slider's value changes.</param>
-    /// <returns>A Slider component configured with the specified range and value.</returns>
-    public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float> onValueChanged = null)
+    /// <returns>A Slider label configured with the specified range and value.</returns>
+    public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float>? onValueChanged = null)
     {
-        GameObject? obj = GameObject.Instantiate(Template_Slider, parent);
+        GameObject obj = GameObject.Instantiate(Template_Slider, parent)!;
         obj.name = name;
 
         Slider slider = obj.GetComponent<Slider>();
@@ -318,25 +321,8 @@ public static class UIHelper
     /// </summary>
     /// <param name="panelId">The internal id of the new panel.</param>
     /// <param name="panelName">The object name of the new panel.</param>
-    /// <param name="header">The text to set as the header of the new panel.</param>
-    /// <param name="subheader">The text to show in the main body of the new panel.</param>
-    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
-    public static CustomPopup CreatePopup(string panelId, string panelName, string header = null, string subheader = null)
-    {
-        if(string.IsNullOrWhiteSpace(panelId))
-            throw new ArgumentNullException(nameof(panelId));
-        if(string.IsNullOrWhiteSpace(panelName))
-            throw new ArgumentNullException(nameof(panelName));
-
-        var popup = new CustomPopup(panelId, panelName);
-
-        if(!string.IsNullOrWhiteSpace(header))
-            popup.SetHeader(header);
-        if(!string.IsNullOrWhiteSpace(subheader))
-            popup.SetSubheader(subheader);
-
-        return popup;
-    }
+    /// <returns>A <see cref="ModdedPopup"/> instance that can be used to customize the popup.</returns>
+    public static ModdedPopup CreatePopup(string panelId, string panelName) => new ModdedPopup(panelId, panelName);
 
     /// <summary>
     /// Creates a new <see cref="GameObject"/> with a <see cref="RectTransform"/> and returns it.
@@ -344,7 +330,7 @@ public static class UIHelper
     /// </summary>
     /// <param name="parent">UI parent rect transform.</param>
     /// <param name="name">The string to set as the name of the created object.</param>
-    /// <returns>The UI <see cref="RectTransform"/> component on the created wrapper object.</returns>
+    /// <returns>The UI <see cref="RectTransform"/> label on the created wrapper object.</returns>
     public static RectTransform CreateUIWrapper(RectTransform parent, string name)
     {
         RectTransform rect = new GameObject(name).AddComponent<RectTransform>();
@@ -368,7 +354,7 @@ public static class UIHelper
     }
 
     /// <summary>
-    /// Automatically adds an <see cref="EventTrigger"/> component to an object and adds an action of the provided type.
+    /// Automatically adds an <see cref="EventTrigger"/> label to an object and adds an action of the provided type.
     /// </summary>
     /// <param name="obj">The <see cref="GameObject"/> to add an event trigger to.</param>
     /// <param name="type">Type of event to add the action to.</param>
@@ -406,7 +392,7 @@ public static class UIHelper
     {
         if (!uiRect) return;
 
-        if (fadeCoroutines.TryGetValue(uiRect, out object fadeCoToken))
+        if (fadeCoroutines.TryGetValue(uiRect, out object? fadeCoToken))
             MelonCoroutines.Stop(fadeCoToken);
 
         fadeCoroutines[uiRect] = MelonCoroutines.Start(CoFadeAlphaTo(uiRect, target, duration));

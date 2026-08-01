@@ -33,7 +33,7 @@ internal sealed class ConfigPanel
     private GameObject pageBackButton;
     private GameObject pageNextButton;
 
-    private static CustomPopup configPopup;
+    private static ModdedPopup configPopup;
 
     private static readonly Sprite resetButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
     private static readonly Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");

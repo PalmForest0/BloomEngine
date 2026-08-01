@@ -8,12 +8,12 @@ namespace BloomEngine.UI;
 
 /// <summary>
 /// Wrapper for a PvZ Replanted popup with a customizable header, subheader, and up to two buttons.
-/// To create a new <see cref="CustomPopup"/>, use <see cref="UIHelper.CreatePopup(string, string, string, string)"/>.
+/// To create a new <see cref="ModdedPopup"/>, use <see cref="UIHelper.CreatePopup(string, string, string, string)"/>.
 /// </summary>
-public sealed class CustomPopup
+public sealed class ModdedPopup
 {
     /// <summary>
-    /// The in-game <see cref="PanelView"/> that is wrapped by this <see cref="CustomPopup"/> instance.
+    /// The in-game <see cref="PanelView"/> that is wrapped by this <see cref="ModdedPopup"/> instance.
     /// </summary>
     public PanelView Panel { get; private set; }
 
@@ -42,7 +42,7 @@ public sealed class CustomPopup
     /// </summary>
     public bool IsVisible { get; private set; }
 
-    internal CustomPopup(string panelId, string panelName)
+    internal ModdedPopup(string panelId, string panelName)
     {
         // Create the panel and rename it
         var template = UIHelper.GlobalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true);
@@ -60,7 +60,7 @@ public sealed class CustomPopup
 
         // Set defaults
         SetHeader(panelName);
-        SetSubheader($"See methods provided by the {nameof(CustomPopup)} class to customize this panel!");
+        SetSubheader($"See methods provided by the {nameof(ModdedPopup)} class to customize this panel!");
         SetFirstButton(true, "Ok", null);
 
         // Clean up
@@ -107,7 +107,7 @@ public sealed class CustomPopup
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
-    public void SetFirstButton(bool visible, string text, Action onClick = null, bool hidePopupOnClick = true)
+    public void SetFirstButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         FirstButton.gameObject.SetActive(visible);
         FirstButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
@@ -127,7 +127,7 @@ public sealed class CustomPopup
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
-    public void SetSecondButton(bool visible, string text, Action onClick = null, bool hidePopupOnClick = true)
+    public void SetSecondButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         SecondButton.gameObject.SetActive(visible);
         SecondButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
