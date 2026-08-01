@@ -61,8 +61,8 @@ Additionally, you can extend your config inputs with additional functionality th
 public static StringConfigInput TestStringInput = ConfigService.CreateString("Test String", "Cooler description.", "ABCDEFG")
     .WithOnValueChanged(val => Melon<BloomEngine>.Logger.Msg($"Value of {nameof(TestStringInput)} updated to \"{val}\""))
     .WithOnInputChanged(() => TestStringInput.Textbox.SetTextWithoutNotify(TestStringInput.Textbox.text.ToUpperInvariant()))
-    .WithTransformFunc(val => val.ToUpperInvariant())
-    .WithValidateFunc(val => !string.IsNullOrWhiteSpace(val));
+    .WithTransform(val => val.ToUpperInvariant())
+    .WithValidate(val => !string.IsNullOrWhiteSpace(val));
 ```
 
 > [!NOTE]
