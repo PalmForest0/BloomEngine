@@ -88,7 +88,7 @@ public static class UIHelper
 
         if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel", out var label, logErrorSource: Log))
             Font_BrianneTod = label.font;
-        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel", out label, logErrorSource: Log))
+        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel", out label, logErrorSource: Log))
             Font_HouseOfTerror = label.font;
 
         TryCreateTemplates();

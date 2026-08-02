@@ -16,16 +16,20 @@ namespace BloomEngine.Config.UI;
 
 internal sealed class ConfigPanel
 {
+    public const int InputsPerPage = 7;
+
+    public int PageCount { get; private init; }
+    public int PageIndex { get; private set; } = 0;
+
+
     private readonly ModConfig config;
 
     private readonly RectTransform window;
     private readonly GameObject panel;
 
-    // Page navigation
-    public int PageCount { get; private init; }
-    public int PageIndex { get; private set; } = 0;
+    
 
-    const int InputFieldsPerPage = 7;
+    
     private readonly List<RectTransform> pageObjects = new();
 
     private RectTransform pageControlsRect;
@@ -35,15 +39,15 @@ internal sealed class ConfigPanel
 
     private static ModdedPopup configPopup;
 
-    private static readonly Sprite resetButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
-    private static readonly Sprite resetButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
-    private static readonly Sprite infoButtonSprite = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
-    private static readonly Sprite infoButtonSpriteSelected = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
+    private static readonly Sprite resetButtonSprite            = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
+    private static readonly Sprite resetButtonSpriteSelected    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
+    private static readonly Sprite infoButtonSprite             = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
+    private static readonly Sprite infoButtonSpriteSelected     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
 
     internal ConfigPanel(PanelView panel, ModConfig config)
     {
         this.config = config;
-        PageCount = (int)Math.Ceiling((double)config.InputCount / InputFieldsPerPage);
+        PageCount = (int)Math.Ceiling((double)config.InputCount / InputsPerPage);
 
         this.panel = panel.gameObject;
         window = InitializePanel(panel);
@@ -121,7 +125,7 @@ internal sealed class ConfigPanel
 
     private void SetupPages()
     {
-        var pages = config.ConfigInputs.Chunk(InputFieldsPerPage).ToList();
+        var pages = config.ConfigInputs.Chunk(InputsPerPage).ToList();
 
         for (int i = 0; i < pages.Count; i++)
         {

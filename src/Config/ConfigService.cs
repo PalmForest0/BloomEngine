@@ -157,8 +157,8 @@ public static class ConfigService
         // Create a config panel for each mod entry with a registered config
         foreach (var config in ModMenuService.RegisteredEntries.Where(e => e.HasConfigInputs).Select(e => e.Config))
         {
-            var panelObj = GameObject.Instantiate(template.gameObject, globalPanels.transform);
-            config.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
+            var panelObj = GameObject.Instantiate(template.gameObject, globalPanels!.transform);
+            config!.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
         }
 
         PanelsCreated = true;

@@ -8,9 +8,9 @@ namespace BloomEngine.UI;
 
 /// <summary>
 /// Wrapper for a PvZ Replanted popup with a customizable header, subheader, and up to two buttons.
-/// To create a new <see cref="ModdedPopup"/>, use <see cref="UIHelper.CreatePopup(string, string, string, string)"/>.
+/// To create a new <see cref="ModdedPopup"/>, use <see cref="UIHelper.CreatePopup(string, string)"/>.
 /// </summary>
-public sealed class ModdedPopup
+public class ModdedPopup
 {
     /// <summary>
     /// The in-game <see cref="PanelView"/> that is wrapped by this <see cref="ModdedPopup"/> instance.

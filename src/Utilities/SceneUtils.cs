@@ -47,7 +47,7 @@ public static class SceneUtils
     /// <returns><see langword="true"/> if a matching component was found; otherwise, <see langword="false"/>.</returns>
     public static bool TryFindComponent<T>(this Transform obj, string path, [NotNullWhen(true)] out T? component, MelonLogger.Instance? logErrorSource = null) where T : MonoBehaviour
     {
-        component = obj.FindComponent<T>(path)!;
+        component = obj.FindComponent<T>(path);
 
         if(!component && logErrorSource is not null)
             logErrorSource.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'");
@@ -67,7 +67,7 @@ public static class SceneUtils
     /// <returns><see langword="true"/> if a matching component was found; otherwise, <see langword="false"/>.</returns>
     public static bool TryFindComponent<T>(this GameObject obj, string path, [NotNullWhen(true)] out T? component, MelonLogger.Instance? logErrorSource = null) where T : MonoBehaviour
     {
-        component = obj.FindComponent<T>(path)!;
+        component = obj.FindComponent<T>(path);
 
         if (!component && logErrorSource is not null)
             logErrorSource.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'");

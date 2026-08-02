@@ -108,9 +108,12 @@ internal sealed class ModMenuUI
     /// </summary>
     private void SetHeaderText(string text)
     {
-        header.transform.FindComponent<TextMeshProUGUI>("Center/HeaderRock").text = text;
-        header.transform.FindComponent<TextMeshProUGUI>("Center/HeaderRockTop").text = text;
-        header.transform.FindComponent<TextMeshProUGUI>("Center/HeaderRockBottom").text = text;
+        if (header.transform.TryFindComponent<TextMeshProUGUI>("Center/HeaderRock", out var label, logErrorSource: ModMenuService.Log))
+            label.text = text;
+        if (header.transform.TryFindComponent<TextMeshProUGUI>("Center/HeaderRockTop", out label, logErrorSource: ModMenuService.Log))
+            label.text = text;
+        if (header.transform.TryFindComponent<TextMeshProUGUI>("Center/HeaderRockBottom", out label, logErrorSource: ModMenuService.Log))
+            label.text = text;
     }
 
     /// <summary>
