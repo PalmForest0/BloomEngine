@@ -17,9 +17,6 @@ public static class ModMenuService
     internal static Dictionary<MelonMod, ModMenuEntry> ModEntries { get; } = new();
     internal static IEnumerable<ModMenuEntry> RegisteredEntries => ModEntries.Values;
 
-
-    private static ModMenuUI? modMenuUI;
-
     /// <summary>
     /// Creates a new mod entry which can be customised and added to the mod menu with <see cref="ModMenuEntry.Register"/>.
     /// </summary>
@@ -41,6 +38,6 @@ public static class ModMenuService
     {
         yield return new WaitUntil((Il2CppSystem.Func<bool>)(() => UIHelper.AllTemplatesLoaded));
 
-        modMenuUI = new ModMenuUI(achievementsUI);
+        _ = new ModMenuUI(achievementsUI);
     }
 }
