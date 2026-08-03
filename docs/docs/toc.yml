@@ -1,10 +1,10 @@
 - name: Introduction
   href: introduction.md
-- name: Getting started
-  items:
-  - name: Registering your mod
-    href: Getting started/registering-your-mod.md
-  - name: Adding a config
-    href: Getting started/adding-a-config.md
-  - name: Advanced config options
-    href: Getting started/advanced-config-options.md
+- name: Registering your mod
+  href: registering-your-mod.md
+- name: Adding a config
+  href: adding-a-config.md
+- name: Advanced config options
+  href: advanced-config-options.md
+- name: Soft dependency
+  href: soft-dependency.md
