@@ -1,5 +1,6 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
+using BloomEngine.Core;
 using BloomEngine.ModMenu;
 using MelonLoader;
 
@@ -99,6 +100,6 @@ public sealed class ModConfig
         MelonCategory.SaveToFile(false);
 
         if (printMessage)
-            ConfigService.Log.Msg($"Updated mod config for {DisplayName} and saved MelonPreferences.");
+            BloomLogger.Info($"Updated mod config for {DisplayName} and saved MelonPreferences.", ConfigService.LOG_PREFIX);
     }
 }

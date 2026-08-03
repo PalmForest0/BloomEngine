@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Attributes;
 using BloomEngine.Config;
 using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Core;
 using BloomEngine.Helpers;
 using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
@@ -130,15 +131,15 @@ public sealed class ModMenuEntry(MelonMod mod)
     public void Register()
     {
         if (ModMenuService.ModEntries.ContainsKey(Mod))
-            ModMenuService.Log.Warning($"Encountered duplicate registration for {DisplayName}, replacing existing ModMenuEntry.");
+            BloomLogger.Warn($"Encountered duplicate registration for {DisplayName}, replacing existing ModMenuEntry.", ModMenuService.LOG_PREFIX);
 
         ModMenuService.ModEntries[Mod] = this;
-        ModMenuService.Log.Msg($"Successfully added {DisplayName} to the mod menu.");
-
         Config?.Save(false);
 
         // Register all classes with a custom attribute in the mod
         RegisterInIl2CppAttribute.RegisterClassesInAssembly(Mod.MelonAssembly.Assembly);
+
+        BloomLogger.Info($"Successfully added {DisplayName} to the mod menu.", ModMenuService.LOG_PREFIX);
     }
 
     /// <summary>

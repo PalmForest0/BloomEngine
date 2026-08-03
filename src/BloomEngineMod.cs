@@ -1,4 +1,5 @@
-﻿using BloomEngine.Helpers;
+﻿using BloomEngine.Core;
+using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
 using MelonLoader;
 
@@ -12,7 +13,8 @@ internal sealed class BloomEngineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg($"Successfully loaded version {Version} of {Name}.");
+        BloomLogger.Logger = LoggerInstance;
+        BloomLogger.Info($"Successfully loaded version {Version} of {Name}.");
 
         ModMenuService.CreateEntry(this)
             .AddDisplayName(Name)

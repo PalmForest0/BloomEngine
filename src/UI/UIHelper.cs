@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using BloomEngine.Config;
+using BloomEngine.Core;
+using BloomEngine.Extensions;
+using BloomEngine.Utilities;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
@@ -9,11 +12,10 @@ using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using BloomEngine.Extensions;
-using BloomEngine.Utilities;
 
 namespace BloomEngine.UI;
 
@@ -22,7 +24,10 @@ namespace BloomEngine.UI;
 /// </summary>
 public static class UIHelper
 {
-    internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(UIHelper)}");
+    /// <summary>
+    /// Specifies the prefix to use for all log messages from this static helper.
+    /// </summary>
+    internal const string LOG_PREFIX = $"[{nameof(UIHelper)}] ";
 
     /// <summary>
     /// Gets the MainMenuPanelView, or null if the Main Menu is currently inactive.
@@ -86,14 +91,18 @@ public static class UIHelper
         MainMenuPanel = mainMenu!;
         GlobalPanels = globalPanels!;
 
-        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>("Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel", out var label, logErrorSource: Log))
+        // Locate the fonts used in the game UI by finding specific text labels and getting their font assets.
+        const string nameLabelPath = "Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel";
+        const string helpPageLabelPath = "P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel";
+
+        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>(nameLabelPath, out var label, LOG_PREFIX))
             Font_BrianneTod = label.font;
-        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>("P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel", out label, logErrorSource: Log))
+        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out label, LOG_PREFIX))
             Font_HouseOfTerror = label.font;
 
         TryCreateTemplates();
 
-        Log.Msg("Successfully loaded UIHelper.");
+        BloomLogger.Info("Successfully loaded all UI elements.", LOG_PREFIX);
     }
 
     /// <summary>
@@ -118,7 +127,7 @@ public static class UIHelper
 
             GameObject.Destroy(Template_Button.GetComponent<ExitGame>());
 
-            Log.Msg("Created UI button template.");
+            BloomLogger.Info("Created UI button template.", LOG_PREFIX);
         }
         
         if(!Template_Textbox)
@@ -126,7 +135,7 @@ public static class UIHelper
             Template_Textbox = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
             Template_Textbox.name = "TextboxTemplate";
 
-            Log.Msg("Created UI textbox template.");
+            BloomLogger.Info("Created UI textbox template.", LOG_PREFIX);
         }
 
         if(!Template_Checkbox)
@@ -134,7 +143,7 @@ public static class UIHelper
             Template_Checkbox = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
             Template_Checkbox.name = "CheckboxTemplate";
 
-            Log.Msg("Created UI checkbox template.");
+            BloomLogger.Info("Created UI checkbox template.", LOG_PREFIX);
         }
 
         if(!Template_Dropdown)
@@ -142,7 +151,7 @@ public static class UIHelper
             Template_Dropdown = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
             Template_Dropdown.name = "DropdownTemplate";
 
-            Log.Msg("Created UI dropdown template.");
+            BloomLogger.Info("Created UI dropdown template.", LOG_PREFIX);
         }
         
         if(!Template_Slider)
@@ -150,7 +159,7 @@ public static class UIHelper
             Template_Slider = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
             Template_Slider.name = "SliderTemplate";
 
-            Log.Msg("Created UI slider template.");
+            BloomLogger.Info("Created UI slider template.", LOG_PREFIX);
         }
 
         CleanUpChildren(Template_Container.gameObject);

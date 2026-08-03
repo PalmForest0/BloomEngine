@@ -1,4 +1,4 @@
-﻿using MelonLoader;
+﻿using BloomEngine.Core;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
@@ -43,14 +43,14 @@ public static class SceneUtils
     /// <param name="obj">The Transform to search within. Cannot be null.</param>
     /// <param name="path">The relative path to the child Transform to search for. Cannot be null or empty.</param>
     /// <param name="component">Contains the first component of type T found in the children of the Transform at the given path, or null if no matching component is found.</param>
-    /// <param name="logErrorSource">An optional logger to send an error to if no matching component is found something along the way is null.</param>
+    /// <param name="logPrefix">An optional prefix for the log message if the component can be found. No log message is sent when this is null.</param>
     /// <returns><see langword="true"/> if a matching component was found; otherwise, <see langword="false"/>.</returns>
-    public static bool TryFindComponent<T>(this Transform obj, string path, [NotNullWhen(true)] out T? component, MelonLogger.Instance? logErrorSource = null) where T : MonoBehaviour
+    public static bool TryFindComponent<T>(this Transform obj, string path, [NotNullWhen(true)] out T? component, string? logPrefix = null) where T : MonoBehaviour
     {
         component = obj.FindComponent<T>(path);
 
-        if(!component && logErrorSource is not null)
-            logErrorSource.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'");
+        if(!component && logPrefix is not null)
+            BloomLogger.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'", logPrefix);
 
         return component;
     }
@@ -63,14 +63,14 @@ public static class SceneUtils
     /// <param name="obj">The GameObject to search within. Cannot be null.</param>
     /// <param name="path">The relative path to the child Transform to search for. Cannot be null or empty.</param>
     /// <param name="component">Contains the first component of type T found in the children of the Transform at the given path, or null if no matching component is found.</param>
-    /// <param name="logErrorSource">An optional logger to send an error to if no matching component is found something along the way is null.</param>
+    /// <param name="logPrefix">An optional prefix for the log message if the component can be found. No log message is sent when this is null.</param>
     /// <returns><see langword="true"/> if a matching component was found; otherwise, <see langword="false"/>.</returns>
-    public static bool TryFindComponent<T>(this GameObject obj, string path, [NotNullWhen(true)] out T? component, MelonLogger.Instance? logErrorSource = null) where T : MonoBehaviour
+    public static bool TryFindComponent<T>(this GameObject obj, string path, [NotNullWhen(true)] out T? component, string? logPrefix = null) where T : MonoBehaviour
     {
         component = obj.FindComponent<T>(path);
 
-        if (!component && logErrorSource is not null)
-            logErrorSource.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'");
+        if (!component && logPrefix is not null)
+            BloomLogger.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'", logPrefix);
 
         return component;
     }
