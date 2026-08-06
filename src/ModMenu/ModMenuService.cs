@@ -43,6 +43,6 @@ public static class ModMenuService
         yield return new WaitUntil((Il2CppSystem.Func<bool>)(() => UIHelper.AllTemplatesLoaded));
 
         BloomLogger.Info("All UI templates loaded, creating mod menu.", LOG_PREFIX);
-        _ = new ModMenuUI(achievementsUI);
+        ModMenuUI.Create(achievementsUI);
     }
 }

@@ -22,7 +22,14 @@ internal sealed class ModMenuUI
 
     private readonly GameObject bloomLabel;
 
-    public ModMenuUI(AchievementsUI achievementsUi)
+    /// <summary>
+    /// Creates the mod menu UI under the provided achievements UI and sets up all components.
+    /// </summary>
+    /// <param name="achievementsUI">The achievements UI to use as a base.</param>
+    /// <returns>The created mod menu UI.</returns>
+    internal static ModMenuUI Create(AchievementsUI achievementsUI) => new ModMenuUI(achievementsUI);
+
+    private ModMenuUI(AchievementsUI achievementsUi)
     {
         // Find all required AchievementsUI objects
         achievementsUI = achievementsUi;
