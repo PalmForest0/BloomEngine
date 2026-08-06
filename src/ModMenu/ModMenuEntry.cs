@@ -2,6 +2,7 @@
 using BloomEngine.Config;
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Core;
+using BloomEngine.Helpers;
 using MelonLoader;
 using System.Reflection;
 using UnityEngine;
