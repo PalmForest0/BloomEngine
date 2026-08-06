@@ -1,8 +1,7 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Extensions;
-using BloomEngine.Helpers;
 using BloomEngine.UI;
-using BloomEngine.Utilities;
+using BloomEngine.Helpers;
 using Il2CppReloaded.Input;
 using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;

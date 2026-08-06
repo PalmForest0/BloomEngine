@@ -1,13 +1,12 @@
-﻿using BloomEngine.Utilities;
-using BloomEngine.Extensions;
+﻿using BloomEngine.Extensions;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using BloomEngine.Helpers;
 using BloomEngine.Config;
 using BloomEngine.UI;
+using BloomEngine.Helpers;
 
 namespace BloomEngine.ModMenu.UI;
 

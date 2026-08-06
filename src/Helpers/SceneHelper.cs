@@ -2,12 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-namespace BloomEngine.Utilities;
+namespace BloomEngine.Helpers;
 
 /// <summary>
 /// Static utility class for scene-related helper methods.
 /// </summary>
-public static class SceneUtils
+public static class SceneHelper
 {
     /// <summary>
     /// Searches for a child Transform at the specified path and returns the first component of type T found in its

@@ -1,7 +1,6 @@
-﻿using BloomEngine.Config;
-using BloomEngine.Core;
+﻿using BloomEngine.Core;
 using BloomEngine.Extensions;
-using BloomEngine.Utilities;
+using BloomEngine.Helpers;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;

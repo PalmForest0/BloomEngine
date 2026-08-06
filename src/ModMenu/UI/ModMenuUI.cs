@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Extensions;
 using BloomEngine.UI;
-using BloomEngine.Utilities;
+using BloomEngine.Helpers;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
