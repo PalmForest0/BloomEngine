@@ -49,7 +49,7 @@ public static class SceneHelper
     {
         component = obj.FindComponent<T>(path);
 
-        if(!component && logPrefix is not null)
+        if(component.IsNull() && logPrefix is not null)
             BloomLogger.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'", logPrefix);
 
         return component;
@@ -69,7 +69,7 @@ public static class SceneHelper
     {
         component = obj.FindComponent<T>(path);
 
-        if (!component && logPrefix is not null)
+        if (component.IsNull() && logPrefix is not null)
             BloomLogger.Error($"Component of type {typeof(T).Name} not found at path '{path}' on GameObject '{obj.name}'", logPrefix);
 
         return component;

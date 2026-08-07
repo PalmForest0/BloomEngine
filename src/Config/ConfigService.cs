@@ -2,6 +2,7 @@
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
+using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
@@ -151,7 +152,7 @@ public static class ConfigService
         const string templatePanelId = "quit";
         PanelView? template = mainMenu!.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
 
-        if (template is null)
+        if (template.IsNull())
         {
             BloomLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"", LOG_PREFIX);
             return;

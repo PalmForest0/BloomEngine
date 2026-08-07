@@ -60,9 +60,9 @@ internal sealed class ConfigPanel
             CreatePageControls(window.parent.GetComponent<RectTransform>());
 
         // Add click blocker background
-        if (UIHelper.MainMenuPanel)
+        if (UIHelper.MainMenuPanel.NotNull())
         {
-            var clickBlockerTemplate = UIHelper.MainMenuPanel!.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject;
+            var clickBlockerTemplate = UIHelper.MainMenuPanel.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject;
             GameObject.Instantiate(clickBlockerTemplate, window.parent).transform.SetAsFirstSibling();
         }
         else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
@@ -236,7 +236,7 @@ internal sealed class ConfigPanel
         buttonImg.preserveAspect = true;
 
         // Make the sprite change on hover if needed
-        if (hoverSprite)
+        if (hoverSprite.NotNull())
         {
             UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerEnter, _ => buttonImg.sprite = hoverSprite);
             UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerExit, _ => buttonImg.sprite = normalSprite);
@@ -269,14 +269,14 @@ internal sealed class ConfigPanel
         horizontalLayout.childForceExpandWidth = false;
         horizontalLayout.childForceExpandHeight = false;
 
-        if(!UIHelper.MainMenuPanel)
+        if(UIHelper.MainMenuPanel.IsNull())
         {
             BloomLogger.Error($"Cannot create page controls for config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
             return;
         }
 
         // Create previous page button
-        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel!.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
+        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
         UnityEngine.Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();

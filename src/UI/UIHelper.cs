@@ -111,7 +111,7 @@ public static class UIHelper
     {
         Transform optionsPanelContent = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
 
-        if(!Template_Container)
+        if(Template_Container.IsNull())
         {
             Template_Container = new GameObject("BloomEngine_Templates");
             GameObject.DontDestroyOnLoad(Template_Container);
@@ -119,7 +119,7 @@ public static class UIHelper
 
         Transform container = Template_Container!.transform;
 
-        if(!Template_Button)
+        if(Template_Button.IsNull())
         {
             Template_Button = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
             Template_Button.name = "ButtonTemplate";
@@ -129,7 +129,7 @@ public static class UIHelper
             BloomLogger.Info("Created UI button template.", LOG_PREFIX);
         }
         
-        if(!Template_Textbox)
+        if(Template_Textbox.IsNull())
         {
             Template_Textbox = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
             Template_Textbox.name = "TextboxTemplate";
@@ -137,7 +137,7 @@ public static class UIHelper
             BloomLogger.Info("Created UI textbox template.", LOG_PREFIX);
         }
 
-        if(!Template_Checkbox)
+        if(Template_Checkbox.IsNull())
         {
             Template_Checkbox = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
             Template_Checkbox.name = "CheckboxTemplate";
@@ -145,7 +145,7 @@ public static class UIHelper
             BloomLogger.Info("Created UI checkbox template.", LOG_PREFIX);
         }
 
-        if(!Template_Dropdown)
+        if(Template_Dropdown.IsNull())
         {
             Template_Dropdown = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
             Template_Dropdown.name = "DropdownTemplate";
@@ -153,7 +153,7 @@ public static class UIHelper
             BloomLogger.Info("Created UI dropdown template.", LOG_PREFIX);
         }
         
-        if(!Template_Slider)
+        if(Template_Slider.IsNull())
         {
             Template_Slider = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
             Template_Slider.name = "SliderTemplate";
@@ -298,24 +298,17 @@ public static class UIHelper
 
         // Modify anchor and pivot of slider rects to stretch horizontally
         var handleArea = obj.transform.Find("Handle Slide Area").gameObject.GetComponent<RectTransform>();
-        if (handleArea)
-        {
-            handleArea.anchorMin = new Vector2(0f, handleArea.anchorMin.y);
-            handleArea.anchorMax = new Vector2(1f, handleArea.anchorMax.y);
-            handleArea.offsetMin = new Vector2(0f, handleArea.offsetMin.y);
-            handleArea.offsetMax = new Vector2(0f, handleArea.offsetMax.y);
-        }
-
+        handleArea.anchorMin = new Vector2(0f, handleArea.anchorMin.y);
+        handleArea.anchorMax = new Vector2(1f, handleArea.anchorMax.y);
+        handleArea.offsetMin = new Vector2(0f, handleArea.offsetMin.y);
+        handleArea.offsetMax = new Vector2(0f, handleArea.offsetMax.y);
         handleArea.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
-        var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>();
-        if (background)
-        {
-            background.anchorMin = new Vector2(0f, background.anchorMin.y);
-            background.anchorMax = new Vector2(1f, background.anchorMax.y);
-            background.offsetMin = new Vector2(0f, background.offsetMin.y);
-            background.offsetMax = new Vector2(0f, background.offsetMax.y);
-        }
+        var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>()
+        background.anchorMin = new Vector2(0f, background.anchorMin.y);
+        background.anchorMax = new Vector2(1f, background.anchorMax.y);
+        background.offsetMin = new Vector2(0f, background.offsetMin.y);
+        background.offsetMax = new Vector2(0f, background.offsetMax.y);
 
         // Force a layout rebuild so the UI updates
         LayoutRebuilder.ForceRebuildLayoutImmediate(obj.GetComponent<RectTransform>());
