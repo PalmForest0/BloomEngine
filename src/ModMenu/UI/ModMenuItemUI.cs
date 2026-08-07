@@ -24,9 +24,9 @@ internal sealed class ModMenuItemUI
     private readonly ModMenuEntry? entry;
     private readonly MelonMod mod;
 
-    private static readonly Sprite configIconSprite     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ConfigIcon.png");
-    private static readonly Sprite defaultIconSprite    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.DefaultModIcon.png");
-    private static readonly Sprite modIconBorderSprite  = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModIconBorder.png");
+    private static readonly Sprite ConfigIconSprite     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ConfigIcon.png");
+    private static readonly Sprite DefaultIconSprite    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.DefaultModIcon.png");
+    private static readonly Sprite ModIconBorderSprite  = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModIconBorder.png");
 
     private ModMenuItemUI(MelonMod mod, Transform parent, GameObject template)
     {
@@ -68,7 +68,7 @@ internal sealed class ModMenuItemUI
         RectTransform iconRect = image.GetComponent<RectTransform>();
         iconRect.pivot = new Vector2(0.5f, 0.5f);
         iconRect.sizeDelta = new Vector2(IconSize, IconSize);
-        image.sprite = entry?.Icon ?? defaultIconSprite;
+        image.sprite = entry?.Icon ?? DefaultIconSprite;
 
         // Create an icon container to hold the icon, border and config button
         GameObject containerObj = GameObject.Instantiate(image.gameObject, itemObject.transform);
@@ -114,7 +114,7 @@ internal sealed class ModMenuItemUI
     {
         Image borderImage = GameObject.Instantiate(iconImage, iconContainer);
         borderImage.name = "IconBorder";
-        borderImage.sprite = modIconBorderSprite;
+        borderImage.sprite = ModIconBorderSprite;
         borderImage.raycastTarget = false;
 
         RectTransform borderRect = borderImage.GetComponent<RectTransform>();
@@ -139,7 +139,7 @@ internal sealed class ModMenuItemUI
         configIconRect.sizeDelta = new Vector2(IconSize, IconSize);
 
         Image configIconImg = configIcon.GetComponent<Image>();
-        configIconImg.sprite = configIconSprite;
+        configIconImg.sprite = ConfigIconSprite;
         configIconImg.raycastTarget = false;
 
         configIcon.AddComponent<CanvasGroup>().alpha = 0f;

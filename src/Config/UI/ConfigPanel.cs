@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Config.Inputs.Base;
-using BloomEngine.Extensions;
 using BloomEngine.UI;
 using BloomEngine.Helpers;
 using Il2CppReloaded.Input;
@@ -10,68 +9,69 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using BloomEngine.Core;
 
 namespace BloomEngine.Config.UI;
 
 internal sealed class ConfigPanel
 {
-    public const int InputsPerPage = 7;
+    private const int InputsPerPage = 7;
 
-    public int PageCount { get; private init; }
-    public int PageIndex { get; private set; } = 0;
-
+    private readonly int pageCount;
+    private int pageIndex = 0;
 
     private readonly ModConfig config;
 
-    private readonly RectTransform window;
     private readonly GameObject panel;
+    private readonly RectTransform window;
+    private readonly List<RectTransform> pages = new();
 
-    
+    // Page controls UI is only created if there are multiple pages
+    private RectTransform? pageControlsRect;
+    private GameObject? pageCountLabel;
+    private GameObject? pageBackButton;
+    private GameObject? pageNextButton;
 
-    
-    private readonly List<RectTransform> pageObjects = new();
+    private static ModdedPopup ConfigPopup = null!;
 
-    private RectTransform pageControlsRect;
-    private GameObject pageCountLabel;
-    private GameObject pageBackButton;
-    private GameObject pageNextButton;
-
-    private static ModdedPopup configPopup;
-
-    private static readonly Sprite resetButtonSprite            = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
-    private static readonly Sprite resetButtonSpriteSelected    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
-    private static readonly Sprite infoButtonSprite             = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
-    private static readonly Sprite infoButtonSpriteSelected     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
+    private static readonly Sprite ResetButtonSprite            = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
+    private static readonly Sprite ResetButtonSpriteSelected    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
+    private static readonly Sprite InfoButtonSprite             = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
+    private static readonly Sprite InfoButtonSpriteSelected     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
 
     internal ConfigPanel(PanelView panel, ModConfig config)
     {
         this.config = config;
-        PageCount = (int)Math.Ceiling((double)config.InputCount / InputsPerPage);
+        pageCount = (int)Math.Ceiling((double)config.InputCount / InputsPerPage);
 
         this.panel = panel.gameObject;
         window = InitializePanel(panel);
 
         // Create popup that will be used to show input descriptions
-        configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
-        configPopup.SetFirstButton(true, "Close");
+        ConfigPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
+        ConfigPopup.SetFirstButton(true, "Close");
 
         SetupHeader();
         SetupButtons();
         SetupPages();
         
-
         // Create page controls if there are multiple pages
-        if (PageCount > 1)
+        if (pageCount > 1)
             CreatePageControls(window.parent.GetComponent<RectTransform>());
 
         // Add click blocker background
-        UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject, window.parent).transform.SetAsFirstSibling();
+        if (UIHelper.MainMenuPanel)
+        {
+            var clickBlockerTemplate = UIHelper.MainMenuPanel!.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject;
+            GameObject.Instantiate(clickBlockerTemplate, window.parent).transform.SetAsFirstSibling();
+        }
+        else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
 
         // Destroy all localizers
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             UnityEngine.Object.Destroy(localiser);
 
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.InputCount} fields across {PageCount} page{(PageCount > 1 ? "s" : "")}.");
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.InputCount} fields across {pageCount} page{(pageCount > 1 ? "s" : "")}.");
     }
 
     private RectTransform InitializePanel(PanelView panel)
@@ -82,7 +82,7 @@ internal sealed class ConfigPanel
         var window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
 
         // Make panel size static if there are multiple pages
-        if (PageCount > 1)
+        if (pageCount > 1)
         {
             UnityEngine.Object.Destroy(window.GetComponent<ContentSizeFitter>());
             window.sizeDelta = new Vector2(2800, 1900);
@@ -148,7 +148,7 @@ internal sealed class ConfigPanel
             foreach (BaseConfigInput input in pages[i])
                 CreateRow(input, pageRect);
 
-            pageObjects.Add(pageRect);
+            this.pages.Add(pageRect);
         }
 
         // Destroy the label used as a template
@@ -180,9 +180,9 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
-        CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, resetButtonSprite, resetButtonSpriteSelected);
+        CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(input.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => configPopup.ShowWithText(input.Name, input.Description), infoButtonSprite, infoButtonSpriteSelected);
+            CreateSquareButton("InputInfoButton", rowRect, () => ConfigPopup.ShowWithText(input.Name, input.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
     private void CreateLabel(BaseConfigInput input, RectTransform parent)
@@ -219,7 +219,7 @@ internal sealed class ConfigPanel
         layout.flexibleHeight = 0;
     }
 
-    private static void CreateSquareButton(string name, RectTransform parent, Action onClick, Sprite normalSprite, Sprite hoverSprite = null)
+    private static void CreateSquareButton(string name, RectTransform parent, Action onClick, Sprite normalSprite, Sprite? hoverSprite = null)
     {
         // Create the button using a wrapper and destroy the garbage
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
@@ -230,8 +230,8 @@ internal sealed class ConfigPanel
         UIHelper.SetParentAndStretch(buttonObj.GetComponent<RectTransform>(), wrapper);
 
         // Modify and cleanup the image component
-        Image buttonImg = buttonObj.FindComponent<Image>("Background/Image");
-        buttonImg.type = Image.Type.Simple;
+        Image? buttonImg = buttonObj.FindComponent<Image>("Background/Image");
+        buttonImg!.type = Image.Type.Simple;
         buttonImg.sprite = normalSprite;
         buttonImg.preserveAspect = true;
 
@@ -269,13 +269,19 @@ internal sealed class ConfigPanel
         horizontalLayout.childForceExpandWidth = false;
         horizontalLayout.childForceExpandHeight = false;
 
+        if(!UIHelper.MainMenuPanel)
+        {
+            BloomLogger.Error($"Cannot create page controls for config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
+            return;
+        }
+
         // Create previous page button
-        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
+        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel!.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
         UnityEngine.Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();
         backButton.onClick.RemoveAllListeners();
-        backButton.onClick.AddListener(() => SetPageIndex(PageIndex - 1));
+        backButton.onClick.AddListener(() => SetPageIndex(pageIndex - 1));
 
         // Create page count label
         pageCountLabel = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
@@ -286,7 +292,7 @@ internal sealed class ConfigPanel
         pageNextButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var nextButton = pageNextButton.GetComponent<Button>();
         nextButton.onClick.RemoveAllListeners();
-        nextButton.onClick.AddListener(() => SetPageIndex(PageIndex + 1));
+        nextButton.onClick.AddListener(() => SetPageIndex(pageIndex + 1));
 
         SetPageIndex(0);
     }
@@ -303,7 +309,7 @@ internal sealed class ConfigPanel
         SetPageIndex(0);
         panel.SetActive(true);
 
-        if (PageCount > 1)
+        if (pageCount > 1)
         {
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(pageControlsRect);
@@ -315,7 +321,7 @@ internal sealed class ConfigPanel
     /// </summary>
     public void HidePanel()
     {
-        configPopup.Hide();
+        ConfigPopup.Hide();
         panel.SetActive(false);
     }
 
@@ -325,19 +331,20 @@ internal sealed class ConfigPanel
     /// <param name="index">The index of the page to display.</param>
     public void SetPageIndex(int index)
     {
-        if (PageCount == 1)
+        // Page controls exist if there are multiple pages
+        if (pageCount == 1)
             return;
 
         // Clamp and update page index and label
-        PageIndex = Mathf.Clamp(index, 0, PageCount - 1);
-        pageCountLabel.transform.FindChild("Count").GetComponent<TextMeshProUGUI>().text = $"{PageIndex + 1}/{PageCount}";
+        pageIndex = Mathf.Clamp(index, 0, pageCount - 1);
+        pageCountLabel!.transform.FindChild("Count").GetComponent<TextMeshProUGUI>().text = $"{pageIndex + 1}/{pageCount}";
 
         // Active the correct page
-        for (int i = 0; i < pageObjects.Count; i++)
-            pageObjects[i].gameObject.SetActive(i == index);
+        for (int i = 0; i < pages.Count; i++)
+            pages[i].gameObject.SetActive(i == index);
 
         // Update button interactability
-        pageBackButton.GetComponent<Button>().interactable = PageIndex > 0;
-        pageNextButton.GetComponent<Button>().interactable = PageIndex < PageCount - 1;
+        pageBackButton!.GetComponent<Button>().interactable = pageIndex > 0;
+        pageNextButton!.GetComponent<Button>().interactable = pageIndex < pageCount - 1;
     }
 }
