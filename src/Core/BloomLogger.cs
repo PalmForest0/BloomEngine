@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
 using System.Diagnostics.CodeAnalysis;
+using MelonLoader.Logging;
 
 namespace BloomEngine.Core;
 
