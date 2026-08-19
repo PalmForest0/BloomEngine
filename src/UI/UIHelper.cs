@@ -321,9 +321,18 @@ public static class UIHelper
     /// Creates a custom popup that can be modified to display any message.
     /// </summary>
     /// <param name="panelId">The internal id of the new panel.</param>
-    /// <param name="panelName">The object name of the new panel.</param>
-    /// <returns>A <see cref="ModdedPopup"/> instance that can be used to customize the popup.</returns>
-    public static ModdedPopup CreatePopup(string panelId, string panelName) => new ModdedPopup(panelId, panelName);
+    /// <param name="panelName">The object name of the new panel and the default title.</param>
+    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
+    public static CustomPopup CreatePopup(string panelId, string panelName)
+    {
+        // Create the panel and rename it
+        var templateObj = GlobalPanels.transform.Find("P_PopUpMessage02").gameObject;
+        var panelObj = UnityEngine.Object.Instantiate(templateObj, GlobalPanels.transform);
+        panelObj.name = panelName;
+        panelObj.GetComponent<PanelView>().m_id = panelId;
+        
+        return panelObj.gameObject.AddComponent<CustomPopup>();
+    }
 
     /// <summary>
     /// Creates a new <see cref="GameObject"/> with a <see cref="RectTransform"/> and returns it.

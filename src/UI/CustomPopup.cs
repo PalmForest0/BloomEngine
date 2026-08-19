@@ -8,65 +8,65 @@ namespace BloomEngine.UI;
 
 /// <summary>
 /// Wrapper for a PvZ Replanted popup with a customizable header, subheader, and up to two buttons.
-/// To create a new <see cref="ModdedPopup"/>, use <see cref="UIHelper.CreatePopup(string, string)"/>.
+/// To create a new <see cref="CustomPopup"/>, use <see cref="UIHelper.CreatePopup(string, string)"/>.
 /// </summary>
-public class ModdedPopup
+public class CustomPopup : MonoBehaviour
 {
     /// <summary>
-    /// The in-game <see cref="PanelView"/> that is wrapped by this <see cref="ModdedPopup"/> instance.
+    /// The in-game <see cref="Il2CppTekly.PanelViews.PanelView"/> that is wrapped by this <see cref="CustomPopup"/> instance.
     /// </summary>
-    public PanelView Panel { get; private set; }
+    public PanelView PanelView { get; private set; } = null!;
 
+    /// <summary>
+    /// Gets the transform of the window element of this panel.
+    /// </summary>
+    public Transform Window { get; private set; } = null!;
+    
     /// <summary>
     /// Header label of the popup panel.
     /// </summary>
-    public TextMeshProUGUI Header { get; private set; }
+    public TextMeshProUGUI Header { get; private set; } = null!;
 
     /// <summary>
     /// Subheader (popup body) label of the popup panel.
     /// </summary>
-    public TextMeshProUGUI Subheader { get; private set; }
+    public TextMeshProUGUI Subheader { get; private set; } = null!;
 
     /// <summary>
     /// Gets the first button in the panel footer, which can be updated with <see cref="SetFirstButton(bool, string, Action, bool)"/>.
     /// </summary>
-    public Button FirstButton { get; private set; }
+    public Button FirstButton { get; private set; } = null!;
 
     /// <summary>
     /// Gets the second button in the panel footer, which can be updated with <see cref="SetSecondButton(bool, string, Action, bool)"/>.
     /// </summary>
-    public Button SecondButton { get; private set; }
+    public Button SecondButton { get; private set; } = null!;
 
     /// <summary>
     /// Gets a value indicating whether the popup is currently visible.
     /// </summary>
     public bool IsVisible { get; private set; }
 
-    internal ModdedPopup(string panelId, string panelName)
+    public void Awake()
     {
-        // Create the panel and rename it
-        var template = UIHelper.GlobalPanels.transform.Find("P_PopUpMessage02").GetComponentInChildren<PanelView>(true);
-        Panel = UnityEngine.Object.Instantiate(template, UIHelper.GlobalPanels.transform);
-        Panel.gameObject.name = panelName;
-        Panel.name = panelName;
-        Panel.m_id = panelId;
-
+        PanelView = GetComponent<PanelView>();
+        
         // Locate all elements
-        Transform window = Panel.transform.Find("Canvas/Layout/Center/Window");
-        Header = window.Find("HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
-        Subheader = window.Find("SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
-        FirstButton = window.Find("Buttons/P_BacicButton_Yes").GetComponentInChildren<Button>(true);
-        SecondButton = window.Find("Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
-
+        Window = transform.Find("Canvas/Layout/Center/Window");
+        Header = Window.Find("HeaderText").GetComponentInChildren<TextMeshProUGUI>(true);
+        Subheader = Window.Find("SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
+        FirstButton = Window.Find("Buttons/P_BacicButton_Yes").GetComponentInChildren<Button>(true);
+        SecondButton = Window.Find("Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
+        
         // Set defaults
-        SetHeader(panelName);
-        SetSubheader($"See methods provided by the {nameof(ModdedPopup)} class to customize this panel!");
+        SetHeader(name);
+        SetSubheader($"See methods provided by the {nameof(CustomPopup)} class to customise this panel!");
         SetFirstButton(true, "Ok", null);
 
         // Clean up
-        GameObject.Destroy(window.Find("Buttons/P_BacicButton_No").gameObject);
-        GameObject.Destroy(window.Find("Buttons/P_BacicButton_Cancel").gameObject);
-        UIHelper.CleanUpChildren(window.gameObject);
+        Destroy(Window.Find("Buttons/P_BacicButton_No").gameObject);
+        Destroy(Window.Find("Buttons/P_BacicButton_Cancel").gameObject);
+        UIHelper.CleanUpChildren(gameObject);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class ModdedPopup
     /// </summary>
     public void Show()
     {
-        Panel.gameObject.SetActive(true);
+        PanelView.gameObject.SetActive(true);
         IsVisible = true;
     }
 
@@ -83,7 +83,7 @@ public class ModdedPopup
     /// </summary>
     public void Hide()
     {
-        Panel.gameObject.SetActive(false);
+        PanelView.gameObject.SetActive(false);
         IsVisible = false;
     }
 
@@ -112,7 +112,7 @@ public class ModdedPopup
         FirstButton.gameObject.SetActive(visible);
         FirstButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
 
-        FirstButton.onClick = new();
+        FirstButton.onClick = new Button.ButtonClickedEvent();
         FirstButton.onClick.AddListener(() =>
         {
             onClick?.Invoke();
@@ -132,7 +132,7 @@ public class ModdedPopup
         SecondButton.gameObject.SetActive(visible);
         SecondButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
 
-        SecondButton.onClick = new();
+        SecondButton.onClick = new Button.ButtonClickedEvent();
         SecondButton.onClick.AddListener(() =>
         {
             onClick?.Invoke();
