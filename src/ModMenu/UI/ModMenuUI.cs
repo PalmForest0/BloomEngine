@@ -105,7 +105,7 @@ internal sealed class ModMenuUI
         TextMeshProUGUI label = labelObj.AddComponent<TextMeshProUGUI>();
         label.fontSize = 52;
         label.characterSpacing = 0;
-        label.font = UIHelper.Font_BrianneTod;
+        label.font = UIHelper.FontBrianneTod;
         label.text =$"""
         {MelonMod.RegisteredMelons.Count} Loaded,  {ModMenuService.RegisteredEntries.Count()} Registered
         BloomEngine  v{BloomEngineMod.Version}

@@ -15,6 +15,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.GameObject;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.UI;
 
@@ -26,7 +28,7 @@ public static class UIHelper
     /// <summary>
     /// Specifies the prefix to use for all log messages from this static helper.
     /// </summary>
-    internal const string LOG_PREFIX = $"[{nameof(UIHelper)}] ";
+    private const string LogPrefix = $"[{nameof(UIHelper)}] ";
 
     /// <summary>
     /// Gets the MainMenuPanelView, or null if the Main Menu is currently inactive.
@@ -39,13 +41,13 @@ public static class UIHelper
     public static PanelViewContainer GlobalPanels { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the zen garden panel container, or null if outside of the ZenGarden scene.
+    /// Gets the zen garden panel container, or null if outside the ZenGarden scene.
     /// This scene does not include the Tree of Wisdom, which is part of the Gameplay scene.
     /// </summary>
     public static PanelViewContainer? ZenGardenPanels { get; internal set; }
 
     /// <summary>
-    /// Gets the gameplay panel container, or null if outside of the Gameplay scene.
+    /// Gets the gameplay panel container, or null if outside the Gameplay scene.
     /// This scene also includes the Tree of Wisdom for some reason.
     /// </summary>
     public static PanelViewContainer? GameplayPanels { get; internal set; }
@@ -58,29 +60,28 @@ public static class UIHelper
     /// <summary>
     /// Rounded comic-style font that is used in places like the player name, level names, challenge names and the shop button.
     /// </summary>
-    public static TMP_FontAsset? Font_BrianneTod { get; private set; }
+    public static TMP_FontAsset? FontBrianneTod { get; private set; }
 
     /// <summary>
     /// Rough, bold font that is used in placed like the title and page label on the help screen and the "Player's House" text.
     /// </summary>
-    public static TMP_FontAsset? Font_HouseOfTerror { get; private set; }
+    public static TMP_FontAsset? FontHouseOfTerror { get; private set; }
 
     /// <summary>
     /// Gets a bool that is true when all UI element templates have een loaded.
     /// </summary>
-    internal static bool AllTemplatesLoaded => Template_Button && Template_Checkbox && Template_Dropdown && Template_Slider && Template_Textbox;
+    internal static bool AllTemplatesLoaded => _templateButton && _templateCheckbox && _templateDropdown && _templateSlider && _templateTextbox;
 
-    private static GameObject? Template_Container;
+    private static GameObject? _templateContainer;
 
-    private static GameObject? Template_Textbox;
-    private static GameObject? Template_Button;
-    private static GameObject? Template_Checkbox;
-    private static GameObject? Template_Dropdown;
-    private static GameObject? Template_Slider;
+    private static GameObject? _templateTextbox;
+    private static GameObject? _templateButton;
+    private static GameObject? _templateCheckbox;
+    private static GameObject? _templateDropdown;
+    private static GameObject? _templateSlider;
 
     /// <summary>
     /// Attempts to load all necessary game UI screens and panels and performs other functions to initialise the UIHelper.
-    /// Does not run if 
     /// </summary>
     internal static void TryLoadAll(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
@@ -94,74 +95,75 @@ public static class UIHelper
         const string nameLabelPath = "Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel";
         const string helpPageLabelPath = "P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel";
 
-        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>(nameLabelPath, out var label, LOG_PREFIX))
-            Font_BrianneTod = label.font;
-        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out label, LOG_PREFIX))
-            Font_HouseOfTerror = label.font;
+        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>(nameLabelPath, out var label, LogPrefix))
+            FontBrianneTod = label.font;
+        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out label, LogPrefix))
+            FontHouseOfTerror = label.font;
 
         TryCreateTemplates();
 
-        BloomLogger.Info("Successfully loaded all UI elements.", LOG_PREFIX);
+        BloomLogger.Info("Successfully loaded all UI elements.", LogPrefix);
     }
 
     /// <summary>
     /// Attempts to create template UI elements if they have not been created already.
     /// </summary>
-    internal static void TryCreateTemplates()
+    private static void TryCreateTemplates()
     {
-        Transform optionsPanelContent = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
+        var optionsTransform = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
 
-        if(Template_Container.IsNull())
+        if(_templateContainer.IsNull())
         {
-            Template_Container = new GameObject("BloomEngine_Templates");
-            GameObject.DontDestroyOnLoad(Template_Container);
+            _templateContainer = new GameObject("BloomEngine_Templates");
+            Object.DontDestroyOnLoad(_templateContainer);
         }
 
-        Transform container = Template_Container!.transform;
-
-        if(Template_Button.IsNull())
+        if(_templateButton.IsNull())
         {
-            Template_Button = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject, container);
-            Template_Button.name = "ButtonTemplate";
+            var quitButton = MainMenuPanel!.transform.parent.Find("P_QuitPanel/Canvas/Layout/Center/Window/Buttons/P_BacicButton_Quit").gameObject;
+            
+            _templateButton = Object.Instantiate(quitButton, _templateContainer.transform);
+            _templateButton.name = "ButtonTemplate";
+            Object.Destroy(_templateButton.GetComponent<ExitGame>());
 
-            GameObject.Destroy(Template_Button.GetComponent<ExitGame>());
-
-            BloomLogger.Info("Created UI button template.", LOG_PREFIX);
-        }
-        
-        if(Template_Textbox.IsNull())
-        {
-            Template_Textbox = GameObject.Instantiate(MainMenuPanel!.transform.parent.Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject, container);
-            Template_Textbox.name = "TextboxTemplate";
-
-            BloomLogger.Info("Created UI textbox template.", LOG_PREFIX);
-        }
-
-        if(Template_Checkbox.IsNull())
-        {
-            Template_Checkbox = GameObject.Instantiate(optionsPanelContent.Find("Vibration/VibrationP_CheckBox (1)").gameObject, container);
-            Template_Checkbox.name = "CheckboxTemplate";
-
-            BloomLogger.Info("Created UI checkbox template.", LOG_PREFIX);
-        }
-
-        if(Template_Dropdown.IsNull())
-        {
-            Template_Dropdown = GameObject.Instantiate(optionsPanelContent.Find("Resolution/Dropdown").gameObject, container);
-            Template_Dropdown.name = "DropdownTemplate";
-
-            BloomLogger.Info("Created UI dropdown template.", LOG_PREFIX);
+            BloomLogger.Info("Created UI button template.", LogPrefix);
         }
         
-        if(Template_Slider.IsNull())
+        if(_templateTextbox.IsNull())
         {
-            Template_Slider = GameObject.Instantiate(optionsPanelContent.Find("Music/MusicP_Slider").gameObject, container);
-            Template_Slider.name = "SliderTemplate";
+            var nameInput = MainMenuPanel!.transform.parent .Find("P_UsersPanel_Rename/Canvas/Layout/Center/Rename/NameInputField").gameObject;
+            
+            _templateTextbox = Object.Instantiate(nameInput, _templateContainer.transform);
+            _templateTextbox.name = "TextboxTemplate";
 
-            BloomLogger.Info("Created UI slider template.", LOG_PREFIX);
+            BloomLogger.Info("Created UI textbox template.", LogPrefix);
         }
 
-        CleanUpChildren(Template_Container.gameObject);
+        if(_templateCheckbox.IsNull())
+        {
+            _templateCheckbox = Object.Instantiate(optionsTransform.Find("Vibration/VibrationP_CheckBox (1)").gameObject, _templateContainer.transform);
+            _templateCheckbox.name = "CheckboxTemplate";
+
+            BloomLogger.Info("Created UI checkbox template.", LogPrefix);
+        }
+
+        if(_templateDropdown.IsNull())
+        {
+            _templateDropdown = Object.Instantiate(optionsTransform.Find("Resolution/Dropdown").gameObject, _templateContainer.transform);
+            _templateDropdown.name = "DropdownTemplate";
+
+            BloomLogger.Info("Created UI dropdown template.", LogPrefix);
+        }
+        
+        if(_templateSlider.IsNull())
+        {
+            _templateSlider = Object.Instantiate(optionsTransform.Find("Music/MusicP_Slider").gameObject, _templateContainer.transform);
+            _templateSlider.name = "SliderTemplate";
+
+            BloomLogger.Info("Created UI slider template.", LogPrefix);
+        }
+
+        CleanUpChildren(_templateContainer.gameObject);
     }
 
     /// <summary>
@@ -174,11 +176,11 @@ public static class UIHelper
     /// <returns>A GameObject representing the newly created button, configured with the specified properties.</returns>
     public static GameObject CreateButton(string name, RectTransform parent, string text, Action onClick)
     {
-        GameObject button = GameObject.Instantiate(Template_Button, parent)!;
-        UIHelper.ModifyButton(button, name, text, onClick);
+        var button = Object.Instantiate(_templateButton, parent)!;
+        ModifyButton(button, name, text, onClick);
 
-        RectTransform rect = button.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(500f, rect.sizeDelta.y);
+        var buttonRect = button.GetComponent<RectTransform>();
+        buttonRect.sizeDelta = new Vector2(500f, buttonRect.sizeDelta.y);
 
         return button;
     }
@@ -194,23 +196,23 @@ public static class UIHelper
     /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
     public static ReloadedInputField CreateTextField(string name, RectTransform parent, string? placeholder = null, Action<ReloadedInputField>? onTextChanged = null, Action<ReloadedInputField>? onDeselect = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Textbox, parent)!;
+        var obj = Object.Instantiate(_templateTextbox, parent)!;
         obj.name = name;
 
         if (placeholder is null)
             obj.transform.Find("Text Area").Find("Placeholder").gameObject.SetActive(false);
         else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholder;
 
-        ReloadedInputField field = obj.GetComponent<ReloadedInputField>();
+        var field = obj.GetComponent<ReloadedInputField>();
 
-        field.onValueChanged = new();
-        field.onValueChanged.AddListener(text => onTextChanged?.Invoke(field));
+        field.onValueChanged = new TMP_InputField.OnChangeEvent();
+        field.onValueChanged.AddListener(_ => onTextChanged?.Invoke(field));
 
-        field.onDeselect = new();
-        field.onDeselect.AddListener(text => onDeselect?.Invoke(field));
+        field.onDeselect = new TMP_InputField.SelectionEvent();
+        field.onDeselect.AddListener(_ => onDeselect?.Invoke(field));
 
-        field.onSubmit = new();
-        field.onSubmit.AddListener(text => onDeselect?.Invoke(field));
+        field.onSubmit = new TMP_InputField.SubmitEvent();
+        field.onSubmit.AddListener(_ => onDeselect?.Invoke(field));
 
         return field;
     }
@@ -225,13 +227,13 @@ public static class UIHelper
     /// <returns>A Toggle label representing the created checkbox with the provided default value.</returns>
     public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> ?onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Checkbox, parent)!;
+        var obj = Object.Instantiate(_templateCheckbox, parent)!;
         obj.name = name;
 
-        Toggle toggle = obj.GetComponent<Toggle>();
+        var toggle = obj.GetComponent<Toggle>();
         toggle.isOn = value;
 
-        toggle.onValueChanged = new();
+        toggle.onValueChanged = new Toggle.ToggleEvent();
         toggle.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         return toggle;
@@ -247,13 +249,13 @@ public static class UIHelper
     /// <returns>A ReloadedDropdown label with the newly added enum options.</returns>
     public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum>? onValueChanged = null) where TEnum : Enum
     {
-        GameObject obj = GameObject.Instantiate(Template_Dropdown, parent)!;
+        var obj = Object.Instantiate(_templateDropdown, parent)!;
         obj.name = name;
 
-        ReloadedDropdown dropdown = obj.GetComponent<ReloadedDropdown>();
+        var dropdown = obj.GetComponent<ReloadedDropdown>();
         dropdown.ClearOptions();
 
-        TEnum[] values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
+        var values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
 
         if (selectedIndex > values.Length - 1 || selectedIndex < 0)
             selectedIndex = 0;
@@ -262,7 +264,7 @@ public static class UIHelper
         dropdown.SetValueWithoutNotify(selectedIndex);
         dropdown.RefreshShownValue();
 
-        dropdown.onValueChanged = new();
+        dropdown.onValueChanged = new TMP_Dropdown.DropdownEvent();
         dropdown.onValueChanged.AddListener(selection =>
         {
             onValueChanged?.Invoke(values[selection]);
@@ -285,15 +287,15 @@ public static class UIHelper
     /// <returns>A Slider label configured with the specified range and value.</returns>
     public static Slider CreateSlider(string name, RectTransform parent, float defaultValue, float minValue, float maxValue, Action<float>? onValueChanged = null)
     {
-        GameObject obj = GameObject.Instantiate(Template_Slider, parent)!;
+        var obj = Object.Instantiate(_templateSlider, parent)!;
         obj.name = name;
 
-        Slider slider = obj.GetComponent<Slider>();
+        var slider = obj.GetComponent<Slider>();
         slider.minValue = minValue;
         slider.maxValue = maxValue;
         slider.SetValueWithoutNotify(Math.Clamp(defaultValue, minValue, maxValue));
 
-        slider.onValueChanged = new();
+        slider.onValueChanged = new Slider.SliderEvent();
         slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         // Modify anchor and pivot of slider rects to stretch horizontally
@@ -304,7 +306,7 @@ public static class UIHelper
         handleArea.offsetMax = new Vector2(0f, handleArea.offsetMax.y);
         handleArea.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
-        var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>()
+        var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>();
         background.anchorMin = new Vector2(0f, background.anchorMin.y);
         background.anchorMax = new Vector2(1f, background.anchorMax.y);
         background.offsetMin = new Vector2(0f, background.offsetMin.y);
@@ -322,12 +324,12 @@ public static class UIHelper
     /// </summary>
     /// <param name="panelId">The internal id of the new panel.</param>
     /// <param name="panelName">The object name of the new panel and the default title.</param>
-    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
+    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customise the popup.</returns>
     public static CustomPopup CreatePopup(string panelId, string panelName)
     {
         // Create the panel and rename it
         var templateObj = GlobalPanels.transform.Find("P_PopUpMessage02").gameObject;
-        var panelObj = UnityEngine.Object.Instantiate(templateObj, GlobalPanels.transform);
+        var panelObj = Object.Instantiate(templateObj, GlobalPanels.transform);
         panelObj.name = panelName;
         panelObj.GetComponent<PanelView>().m_id = panelId;
         
@@ -343,7 +345,7 @@ public static class UIHelper
     /// <returns>The UI <see cref="RectTransform"/> label on the created wrapper object.</returns>
     public static RectTransform CreateUIWrapper(RectTransform parent, string name)
     {
-        RectTransform rect = new GameObject(name).AddComponent<RectTransform>();
+        var rect = new GameObject(name).AddComponent<RectTransform>();
         rect.SetParent(parent);
         return rect;
     }
@@ -374,7 +376,7 @@ public static class UIHelper
         var entry = new EventTrigger.Entry() { eventID = type };
         entry.callback.AddListener(action);
 
-        EventTrigger trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();
+        var trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();
         trigger.triggers ??= new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
         trigger.triggers.Add(entry);
     }
@@ -386,9 +388,9 @@ public static class UIHelper
     public static void CleanUpChildren(GameObject obj)
     {
         foreach (var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
-            GameObject.Destroy(localizer);
+            Object.Destroy(localizer);
         foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
-            GameObject.Destroy(binder);
+            Object.Destroy(binder);
     }
 
     /// <summary>
@@ -402,15 +404,15 @@ public static class UIHelper
     {
         if (!uiRect) return;
 
-        if (fadeCoroutines.TryGetValue(uiRect, out object? fadeCoToken))
+        if (FadeCoroutines.TryGetValue(uiRect, out object? fadeCoToken))
             MelonCoroutines.Stop(fadeCoToken);
 
-        fadeCoroutines[uiRect] = MelonCoroutines.Start(CoFadeAlphaTo(uiRect, target, duration));
+        FadeCoroutines[uiRect] = MelonCoroutines.Start(CoFadeAlphaTo(uiRect, target, duration));
     }
 
     private static IEnumerator CoFadeAlphaTo(RectTransform uiRect, float target, float duration)
     {
-        CanvasGroup group = uiRect.GetComponent<CanvasGroup>() ?? uiRect.gameObject.AddComponent<CanvasGroup>();
+        var group = uiRect.GetComponent<CanvasGroup>() ?? uiRect.gameObject.AddComponent<CanvasGroup>();
 
         float start = group.alpha;
         float time = 0f;
@@ -423,16 +425,16 @@ public static class UIHelper
         }
 
         group.alpha = target;
-        fadeCoroutines.Remove(uiRect, out _);
+        FadeCoroutines.Remove(uiRect, out _);
     }
 
-    private static readonly Dictionary<RectTransform, object> fadeCoroutines = new();
+    private static readonly Dictionary<RectTransform, object> FadeCoroutines = new();
 
 
     /// <summary>
     /// Cleans up a PvZ Button and updates it with custom values.
     /// </summary>
-    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
+    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action? onClick)
     {
         // Update name and text
         buttonObj.name = newName;
@@ -440,19 +442,19 @@ public static class UIHelper
 
         // Remove garbage components
         if (buttonObj.TryGetComponent<ExitGame>(out var exit))
-            GameObject.Destroy(exit);
+            Object.Destroy(exit);
         if (buttonObj.TryGetComponent<TextLocalizer>(out var localiser))
-            GameObject.Destroy(localiser);
+            Object.Destroy(localiser);
         foreach (var local in buttonObj.GetComponentsInChildren<TextLocalizer>())
-            GameObject.Destroy(local);
+            Object.Destroy(local);
         if (buttonObj.TryGetComponent<UnityButtonBinder>(out var binder))
-            GameObject.Destroy(binder);
+            Object.Destroy(binder);
 
         // Add onClick event
         if (onClick is not null)
         {
             var button = buttonObj.GetComponent<Button>();
-            button.onClick = new();
+            button.onClick = new Button.ButtonClickedEvent();
             button.onClick.AddListener(onClick);
         }
 
