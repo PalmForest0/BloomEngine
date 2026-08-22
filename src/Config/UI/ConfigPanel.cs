@@ -1,4 +1,6 @@
 ﻿using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Core;
+using BloomEngine.Extensions;
 using BloomEngine.UI;
 using BloomEngine.Helpers;
 using Il2CppReloaded.Input;
@@ -9,7 +11,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using BloomEngine.Core;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.Config.UI;
 
@@ -18,7 +20,7 @@ internal sealed class ConfigPanel
     private const int InputsPerPage = 7;
 
     private readonly int pageCount;
-    private int pageIndex = 0;
+    private int pageIndex;
 
     private readonly ModConfig config;
 
@@ -32,7 +34,7 @@ internal sealed class ConfigPanel
     private GameObject? pageBackButton;
     private GameObject? pageNextButton;
 
-    private static ModdedPopup ConfigPopup = null!;
+    private static CustomPopup _configPopup = null!;
 
     private static readonly Sprite ResetButtonSprite            = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
     private static readonly Sprite ResetButtonSpriteSelected    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
@@ -48,8 +50,8 @@ internal sealed class ConfigPanel
         window = InitializePanel(panel);
 
         // Create popup that will be used to show input descriptions
-        ConfigPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
-        ConfigPopup.SetFirstButton(true, "Close");
+        _configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
+        _configPopup.SetFirstButton(true, "Close");
 
         SetupHeader();
         SetupButtons();
@@ -63,36 +65,36 @@ internal sealed class ConfigPanel
         if (UIHelper.MainMenuPanel.NotNull())
         {
             var clickBlockerTemplate = UIHelper.MainMenuPanel.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject;
-            GameObject.Instantiate(clickBlockerTemplate, window.parent).transform.SetAsFirstSibling();
+            Object.Instantiate(clickBlockerTemplate, window.parent).transform.SetAsFirstSibling();
         }
         else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
 
-        // Destroy all localizers
+        // Destroy all localiser components
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
-            UnityEngine.Object.Destroy(localiser);
+            Object.Destroy(localiser);
 
         Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.InputCount} fields across {pageCount} page{(pageCount > 1 ? "s" : "")}.");
     }
 
-    private RectTransform InitializePanel(PanelView panel)
+    private RectTransform InitializePanel(PanelView panelView)
     {
-        panel.m_id = $"modConfig_{config.Id}";
-        panel.gameObject.name = $"P_ModConfig_{config.Id}";
+        panelView.m_id = $"modConfig_{config.Id}";
+        panelView.gameObject.name = $"P_ModConfig_{config.Id}";
 
-        var window = panel.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
+        var windowRect = panelView.transform.Find("Canvas/Layout/Center/Window").GetComponent<RectTransform>();
 
         // Make panel size static if there are multiple pages
         if (pageCount > 1)
         {
-            UnityEngine.Object.Destroy(window.GetComponent<ContentSizeFitter>());
-            window.sizeDelta = new Vector2(2800, 1900);
-            window.anchoredPosition = new Vector2(0, -75);
+            Object.Destroy(windowRect.GetComponent<ContentSizeFitter>());
+            windowRect.sizeDelta = new Vector2(2800, 1900);
+            windowRect.anchoredPosition = new Vector2(0, -75);
         }
-        else window.sizeDelta = new Vector2(2800, 0);
+        else windowRect.sizeDelta = new Vector2(2800, 0);
 
-        window.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
+        windowRect.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
 
-        return window;
+        return windowRect;
     }
 
     private void SetupButtons()
@@ -124,12 +126,12 @@ internal sealed class ConfigPanel
 
     private void SetupPages()
     {
-        var pages = config.ConfigInputs.Chunk(InputsPerPage).ToList();
+        var inputPages = config.ConfigInputs.Chunk(InputsPerPage).ToList();
 
-        for (int i = 0; i < pages.Count; i++)
+        for (int i = 0; i < inputPages.Count; i++)
         {
             // Create layout for this page
-            GameObject pageObj = new GameObject($"ConfigPage_{i}");
+            var pageObj = new GameObject($"ConfigPage_{i}");
             var pageRect = pageObj.AddComponent<RectTransform>();
             pageRect.SetParent(window, false);
             pageRect.anchorMin = new Vector2(0, 1);
@@ -145,25 +147,25 @@ internal sealed class ConfigPanel
             var fitter = pageObj.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            foreach (BaseConfigInput input in pages[i])
+            foreach (var input in inputPages[i])
                 CreateRow(input, pageRect);
 
-            this.pages.Add(pageRect);
+            pages.Add(pageRect);
         }
 
         // Destroy the label used as a template
-        UnityEngine.Object.Destroy(window.Find("SubheadingText").gameObject);
+        Object.Destroy(window.Find("SubheadingText").gameObject);
     }
 
     private void CreateRow(BaseConfigInput input, RectTransform parent)
     {
         // Create row GameObject
-        GameObject rowObj = new GameObject($"ConfigRow_{input.Name.Trim().Replace(" ", "")}");
-        RectTransform rowRect = rowObj.AddComponent<RectTransform>();
+        var rowObj = new GameObject($"ConfigRow_{input.Name.Trim().Replace(" ", "")}");
+        var rowRect = rowObj.AddComponent<RectTransform>();
         rowRect.SetParent(parent, false);
 
         // Add a HorizontalLayoutGroup to the row to position elements
-        HorizontalLayoutGroup rowGroup = rowObj.AddComponent<HorizontalLayoutGroup>();
+        var rowGroup = rowObj.AddComponent<HorizontalLayoutGroup>();
         rowGroup.childAlignment = TextAnchor.MiddleLeft;
         rowGroup.childControlWidth = true;
         rowGroup.childControlHeight = false;
@@ -182,21 +184,21 @@ internal sealed class ConfigPanel
         CreateInput(input, rowRect);
         CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(input.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => ConfigPopup.ShowWithText(input.Name, input.Description), InfoButtonSprite, InfoButtonSpriteSelected);
+            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(input.Name, input.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
     private void CreateLabel(BaseConfigInput input, RectTransform parent)
     {
-        GameObject labelObj = UnityEngine.Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
+        var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         labelObj.name = $"Label_{input.Name.Trim().Replace(" ", "")}";
         labelObj.SetActive(true);
 
-        LayoutElement layout = labelObj.AddComponent<LayoutElement>();
+        var layout = labelObj.AddComponent<LayoutElement>();
         layout.minWidth = 900;
         layout.preferredWidth = 900;
         layout.flexibleWidth = 0;
 
-        RectTransform labelRect = labelObj.GetComponent<RectTransform>();
+        var labelRect = labelObj.GetComponent<RectTransform>();
         labelRect.sizeDelta = new Vector2(900, 134);
 
         var text = labelObj.GetComponent<TextMeshProUGUI>();
@@ -208,8 +210,8 @@ internal sealed class ConfigPanel
 
     private static void CreateInput(BaseConfigInput input, RectTransform parent)
     {
-        GameObject inputObj = input.CreateInputObject(parent);
-        LayoutElement layout = inputObj.AddComponent<LayoutElement>();
+        var inputObj = input.CreateInputObject(parent);
+        var layout = inputObj.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
         layout.flexibleWidth = 0;
@@ -221,16 +223,16 @@ internal sealed class ConfigPanel
 
     private static void CreateSquareButton(string name, RectTransform parent, Action onClick, Sprite normalSprite, Sprite? hoverSprite = null)
     {
-        // Create the button using a wrapper and destroy the garbage
-        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
-        GameObject buttonObj = UIHelper.CreateButton("Button_Internal", wrapper, "", onClick);
-        GameObject.Destroy(buttonObj.transform.Find("Label").gameObject);
-        GameObject.Destroy(buttonObj.transform.Find("Background/ImageSelected").gameObject);
+        // Create the button using a wrapper and destroy unnecessary parts
+        var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
+        var buttonObj = UIHelper.CreateButton("Button_Internal", wrapperRect, "", onClick);
+        Object.Destroy(buttonObj.transform.Find("Label").gameObject);
+        Object.Destroy(buttonObj.transform.Find("Background/ImageSelected").gameObject);
 
-        UIHelper.SetParentAndStretch(buttonObj.GetComponent<RectTransform>(), wrapper);
+        UIHelper.SetParentAndStretch(buttonObj.GetComponent<RectTransform>(), wrapperRect);
 
-        // Modify and cleanup the image component
-        Image? buttonImg = buttonObj.FindComponent<Image>("Background/Image");
+        // Modify and clean up the image component
+        var buttonImg = buttonObj.FindComponent<Image>("Background/Image");
         buttonImg!.type = Image.Type.Simple;
         buttonImg.sprite = normalSprite;
         buttonImg.preserveAspect = true;
@@ -242,12 +244,12 @@ internal sealed class ConfigPanel
             UIHelper.AddEventTrigger(buttonObj, EventTriggerType.PointerExit, _ => buttonImg.sprite = normalSprite);
         }
 
-        LayoutElement buttonLayout = wrapper.gameObject.AddComponent<LayoutElement>();
+        var buttonLayout = wrapperRect.gameObject.AddComponent<LayoutElement>();
         buttonLayout.preferredWidth = 105;
         buttonLayout.preferredHeight = 105;
 
-        RectTransform rect = buttonObj.GetComponent<RectTransform>();
-        rect.anchoredPosition += new Vector2(0, 12);
+        var buttonRect = buttonObj.GetComponent<RectTransform>();
+        buttonRect.anchoredPosition += new Vector2(0, 12);
     }
 
     private void CreatePageControls(RectTransform parent)
@@ -276,19 +278,19 @@ internal sealed class ConfigPanel
         }
 
         // Create previous page button
-        pageBackButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
-        UnityEngine.Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
+        pageBackButton = Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Back").gameObject, pageControlsRect);
+        Object.Destroy(pageBackButton.GetComponent<NavigationCheck>());
         pageBackButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var backButton = pageBackButton.GetComponent<Button>();
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(() => SetPageIndex(pageIndex - 1));
 
         // Create page count label
-        pageCountLabel = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
+        pageCountLabel = Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/PageCount").gameObject, pageControlsRect);
 
         // Create next page button
-        pageNextButton = UnityEngine.Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
-        UnityEngine.Object.Destroy(pageNextButton.GetComponent<NavigationCheck>());
+        pageNextButton = Object.Instantiate(UIHelper.MainMenuPanel.transform.parent.FindChild("P_HelpPanel/Canvas/Layout/Center/Arrows/NavArrow_Next").gameObject, pageControlsRect);
+        Object.Destroy(pageNextButton.GetComponent<NavigationCheck>());
         pageNextButton.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 200);
         var nextButton = pageNextButton.GetComponent<Button>();
         nextButton.onClick.RemoveAllListeners();
@@ -321,7 +323,7 @@ internal sealed class ConfigPanel
     /// </summary>
     public void HidePanel()
     {
-        ConfigPopup.Hide();
+        _configPopup.Hide();
         panel.SetActive(false);
     }
 
@@ -329,7 +331,7 @@ internal sealed class ConfigPanel
     /// Sets the current page index, updating the displayed page and related UI elements accordingly.
     /// </summary>
     /// <param name="index">The index of the page to display.</param>
-    public void SetPageIndex(int index)
+    private void SetPageIndex(int index)
     {
         // Page controls exist if there are multiple pages
         if (pageCount == 1)
