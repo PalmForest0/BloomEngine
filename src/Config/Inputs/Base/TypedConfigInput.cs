@@ -3,7 +3,7 @@
 namespace BloomEngine.Config.Inputs.Base;
 
 /// <summary>
-/// Represents a generic config input with a specificly typed <see cref="Value"/>.
+/// Represents a generic config input with a specifically typed <see cref="Value"/>.
 /// </summary>
 /// <typeparam name="T">The type of value stored within this config input.</typeparam>
 /// <typeparam name="TSelf">The type of this config input.</typeparam>
@@ -12,26 +12,26 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     where TSelf : TypedConfigInput<T, TSelf>
 {
     /// <summary>
-    /// Gets or sets the value stored in this config input, invoking <see cref="TransformFunc"/>.
+    /// Gets or sets the value stored in this config input, invoking <see cref="transformFunc"/>.
     /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueChanged(Action{T})"/>
     /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
     public T Value
     {
-        get => _value;
+        get => value;
         set
         {
-            T newValue = TransformFunc is not null ? TransformFunc.Invoke(value) : value;
+            var newValue = transformFunc is not null ? transformFunc.Invoke(value) : value;
 
             // Do not assign new value if validation fails
-            if (ValidateFunc is not null && !ValidateFunc.Invoke(newValue))
+            if (validateFunc is not null && !validateFunc.Invoke(newValue))
                 return;
 
             // Don't call event or update MelonEntry value if there is no difference
-            if (EqualityComparer<T>.Default.Equals(_value, newValue))
+            if (EqualityComparer<T>.Default.Equals(this.value, newValue))
                 return;
             
-            _value = newValue;
+            this.value = newValue;
             MelonEntry?.Value = newValue;
 
             OnValueChanged?.Invoke(newValue);
@@ -41,17 +41,17 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// <summary>
     /// The underlying field containing the value. Setting this directly is used to sidestep the MelonEntry update on init.
     /// </summary>
-    private T _value;
+    private T value;
 
     /// <summary>
     /// The default value of this config input. This is also used as a fallback when an unexpected value is encountered.
     /// </summary>
-    public T DefaultValue { get; private init; }
+    public T DefaultValue { get; }
 
     /// <summary>
     /// The type of value stored within this config input.
     /// </summary>
-    public Type ValueType { get; private init; }
+    public Type ValueType { get; }
 
     /// <summary>
     /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config input and contains the saved value.
@@ -61,13 +61,13 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// <summary>
     /// A function that processes an incoming new value and returns a transformed value.
     /// </summary>
-    private Func<T, T>? TransformFunc;
+    private Func<T, T>? transformFunc;
 
     /// <summary>
     /// A function that validated an incoming new value and returns true if it should be assigned to <see cref="Value"/>.
     /// </summary>
-    /// <remarks>The validation check occurs after the new value has been transformed by <see cref="TransformFunc"/></remarks>
-    private Func<T, bool>? ValidateFunc;
+    /// <remarks>The validation check occurs after the new value has been transformed by <see cref="transformFunc"/></remarks>
+    private Func<T, bool>? validateFunc;
 
     /// <summary>
     /// An event that is invoked when <see cref="Value"/> is modified.
@@ -82,8 +82,8 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     private protected TypedConfigInput(string name, string description, T defaultValue) : base(name, description)
     {
         DefaultValue = defaultValue;
-        _value = defaultValue;
-        ValueType = _value.GetType();
+        value = defaultValue;
+        ValueType = value.GetType();
     }
 
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
@@ -133,7 +133,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// <param name="transform">A function that takes the incoming value and returns the transformed value.</param>
     public TSelf WithTransform(Func<T, T> transform)
     {
-        TransformFunc = transform;
+        transformFunc = transform;
         return (TSelf)this;
     }
 
@@ -145,7 +145,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// <param name="validator">A function that returns true if the value should be assigned, or false to reject it.</param>
     public TSelf WithValidation(Func<T, bool> validator)
     {
-        ValidateFunc = validator;
+        validateFunc = validator;
         return (TSelf)this;
     }
 }

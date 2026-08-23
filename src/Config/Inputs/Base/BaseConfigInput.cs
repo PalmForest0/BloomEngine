@@ -12,12 +12,12 @@ public abstract class BaseConfigInput(string name, string description)
     /// <summary>
     /// The display name of this config input, which is displayed in the config menu.
     /// </summary>
-    public string Name { get; private set; } = name;
+    public string Name { get; } = name;
 
     /// <summary>
     /// The description of this input field, which is displayed in the config menu.
     /// </summary>
-    public string Description { get; private set; } = description;
+    public string Description { get; } = description;
 
     /// <summary>
     /// Gets the name of the UI element that corresponds to this config input.
