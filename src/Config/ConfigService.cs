@@ -19,7 +19,7 @@ public static class ConfigService
     /// <summary>
     /// Specifies the prefix to use for all log messages from this service.
     /// </summary>
-    internal const string LOG_PREFIX = $"[{nameof(ConfigService)}] ";
+    internal const string LogPrefix = $"[{nameof(ConfigService)}] ";
 
     /// <summary>
     /// The config panel UI that is currently open.
@@ -114,13 +114,13 @@ public static class ConfigService
         // Log a warning if there is no config registered
         if (mod.Config is null || mod.Config.IsEmpty)
         {
-            BloomLogger.Warn($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.", LOG_PREFIX);
+            BloomLogger.Warn($"Attempted to open mod config panel for {mod.DisplayName} with no config registered.", LogPrefix);
             return;
         }
 
         if(mod.Config.Panel is null)
         {
-            BloomLogger.Error($"Failed to open mod config panel for {mod.DisplayName}: Config UI panel has not been created.", LOG_PREFIX);
+            BloomLogger.Error($"Failed to open mod config panel for {mod.DisplayName}: Config UI panel has not been created.", LogPrefix);
             return;
         }
 
@@ -154,7 +154,7 @@ public static class ConfigService
 
         if (template.IsNull())
         {
-            BloomLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"", LOG_PREFIX);
+            BloomLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"", LogPrefix);
             return;
         }
 

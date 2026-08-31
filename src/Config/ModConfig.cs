@@ -100,6 +100,6 @@ public sealed class ModConfig
         MelonCategory.SaveToFile(false);
 
         if (printMessage)
-            BloomLogger.Info($"Updated mod config for {DisplayName} and saved MelonPreferences.", ConfigService.LOG_PREFIX);
+            BloomLogger.Info($"Updated mod config for {DisplayName} and saved MelonPreferences.", ConfigService.LogPrefix);
     }
 }

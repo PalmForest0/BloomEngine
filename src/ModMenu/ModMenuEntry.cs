@@ -130,7 +130,7 @@ public sealed class ModMenuEntry(MelonMod mod)
     public void Register()
     {
         if (ModMenuService.ModEntries.ContainsKey(Mod))
-            BloomLogger.Warn($"Encountered duplicate registration for {DisplayName}, replacing existing ModMenuEntry.", ModMenuService.LOG_PREFIX);
+            BloomLogger.Warn($"Encountered duplicate registration for {DisplayName}, replacing existing ModMenuEntry.", ModMenuService.LogPrefix);
 
         ModMenuService.ModEntries[Mod] = this;
         Config?.Save(false);
@@ -138,7 +138,7 @@ public sealed class ModMenuEntry(MelonMod mod)
         // Register all classes with a custom attribute in the mod
         RegisterInIl2CppAttribute.RegisterClassesInAssembly(Mod.MelonAssembly.Assembly);
 
-        BloomLogger.Info($"Successfully added {DisplayName} to the mod menu.", ModMenuService.LOG_PREFIX);
+        BloomLogger.Info($"Successfully added {DisplayName} to the mod menu.", ModMenuService.LogPrefix);
     }
 
     /// <summary>

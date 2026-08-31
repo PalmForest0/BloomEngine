@@ -67,7 +67,7 @@ internal sealed class ConfigPanel
             var clickBlockerTemplate = UIHelper.MainMenuPanel.transform.parent.Find("P_UsersPanel/Canvas/P_Scrim").gameObject;
             Object.Instantiate(clickBlockerTemplate, window.parent).transform.SetAsFirstSibling();
         }
-        else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
+        else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LogPrefix);
 
         // Destroy all localiser components
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
@@ -273,7 +273,7 @@ internal sealed class ConfigPanel
 
         if(UIHelper.MainMenuPanel.IsNull())
         {
-            BloomLogger.Error($"Cannot create page controls for config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LOG_PREFIX);
+            BloomLogger.Error($"Cannot create page controls for config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LogPrefix);
             return;
         }
 

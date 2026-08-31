@@ -89,7 +89,7 @@ internal sealed class ModMenuUI
         rect.anchoredPosition = new Vector2(25, rect.rect.height + 100);
 
         // Update the achievements button to deactivate the mod menu when clicked
-        if (achievementsRect.parent.TryFindComponent<Button>("Main/BG_Tree/AchievementsButton", out var btn, ModMenuService.LOG_PREFIX))
+        if (achievementsRect.parent.TryFindComponent<Button>("Main/BG_Tree/AchievementsButton", out var btn, ModMenuService.LogPrefix))
             btn.onClick.AddListener(() => SetModMenuActive(false));
     }
 

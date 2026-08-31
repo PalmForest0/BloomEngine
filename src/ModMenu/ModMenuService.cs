@@ -16,7 +16,7 @@ public static class ModMenuService
     /// <summary>
     /// Specifies the prefix to use for all log messages from this service.
     /// </summary>
-    internal const string LOG_PREFIX = $"[{nameof(ModMenuService)}] ";
+    internal const string LogPrefix = $"[{nameof(ModMenuService)}] ";
 
     internal static Dictionary<MelonMod, ModMenuEntry> ModEntries { get; } = new();
     internal static IEnumerable<ModMenuEntry> RegisteredEntries => ModEntries.Values;
@@ -31,7 +31,7 @@ public static class ModMenuService
         if(!ModEntries.TryGetValue(mod, out var entry))
             return new ModMenuEntry(mod);
             
-        BloomLogger.Warn($"Encountered duplicate CreateEntry() call for {mod.Info.Name}, returning existing ModMenuEntry instance.", LOG_PREFIX);
+        BloomLogger.Warn($"Encountered duplicate CreateEntry() call for {mod.Info.Name}, returning existing ModMenuEntry instance.", LogPrefix);
         return entry;
     }
 
@@ -42,7 +42,7 @@ public static class ModMenuService
     {
         yield return new WaitUntil((Il2CppSystem.Func<bool>)(() => UIHelper.AllTemplatesLoaded));
 
-        BloomLogger.Info("All UI templates loaded, creating mod menu.", LOG_PREFIX);
+        BloomLogger.Info("All UI templates loaded, creating mod menu.", LogPrefix);
         ModMenuUI.Create(achievementsUI);
     }
 }
