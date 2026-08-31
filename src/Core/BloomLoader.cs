@@ -10,14 +10,17 @@ namespace BloomEngine.Core;
 
 internal static class BloomLoader
 {
-    internal static MelonLogger.Instance Log { get; } = new MelonLogger.Instance($"{nameof(BloomEngine)}.{nameof(BloomLoader)}");
+    /// <summary>
+    /// Specifies the prefix to use for all log messages from this service.
+    /// </summary>
+    private const string LogPrefix = $"[{nameof(BloomLoader)}] ";
 
     public static MainMenuPanelView? MainMenuPanel { get; private set; }
     public static PanelViewContainer? GlobalPanels { get; private set; }
 
     public static void LoadMainMenu(MainMenuPanelView mainMenuPanels)
     {
-        Log.Msg("Loading main menu...");
+        BloomLogger.Info("Loading main menu...", LogPrefix);
 
         ConfigService.TryCreateConfigPanels(mainMenuPanels, GlobalPanels);
         UIHelper.TryLoadAll(mainMenuPanels, GlobalPanels);
@@ -27,7 +30,7 @@ internal static class BloomLoader
 
     public static void LoadGlobalPanels(PanelViewContainer globalPanels)
     {
-        Log.Msg("Loading global panel container...");
+        BloomLogger.Info("Loading global panel container...", LogPrefix);
 
         ConfigService.TryCreateConfigPanels(MainMenuPanel, globalPanels);
         UIHelper.TryLoadAll(MainMenuPanel, globalPanels);
@@ -37,7 +40,7 @@ internal static class BloomLoader
 
     public static void LoadAchievementsUI(AchievementsUI achievementsUI)
     {
-        Log.Msg("Loading achievements UI...");
+        BloomLogger.Info("Loading achievements UI...", LogPrefix);
 
         MelonCoroutines.Start(ModMenuService.Co_CreateModMenu(achievementsUI));
 

@@ -15,7 +15,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.GameObject;
 using Object = UnityEngine.Object;
 
 namespace BloomEngine.UI;
