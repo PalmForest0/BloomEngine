@@ -153,5 +153,6 @@ public sealed class ModMenuEntry(MelonMod mod)
     /// </summary>
     /// <param name="mod">The mod to fetch info such as the author and version from, if available.</param>
     /// <returns>A string that can be used for the description of an unregistered mod.</returns>
-    internal static string GetDefaultModDescription(MelonMod mod) => $"By {mod?.Info?.Author ?? "???"}\nVersion {mod?.Info?.Version ?? "???"}";
+    internal static string GetDefaultModDescription(MelonMod mod)
+        => $"By {mod?.Info?.Author ?? BloomEngineMod.UnknownString}\nVersion {mod?.Info?.Version ?? BloomEngineMod.UnknownString}";
 }
