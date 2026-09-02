@@ -5,7 +5,7 @@ namespace BloomEngine.Helpers;
 /// <summary>
 /// Provides helper methods for checking when a <see cref="UnityEngine.Object"/> reference is null using Unity's custom semantics.
 /// </summary>
-public static class UnityNullHelper
+public static class UnityHelper
 {
     /// <summary>
     /// Determines whether the specified <see cref="UnityEngine.Object"/> is considered null using Unity's custom null handling.
