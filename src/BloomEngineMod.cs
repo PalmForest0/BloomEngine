@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Core;
 using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
+using Il2CppInterop.Runtime.Injection;
 using MelonLoader;
 
 namespace BloomEngine;
@@ -15,6 +16,8 @@ internal sealed class BloomEngineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
+        ClassInjector.RegisterTypeInIl2Cpp<UI.BloomPopup>();
+        
         BloomLogger.Logger = LoggerInstance;
         BloomLogger.Info($"Successfully loaded {Name} v{Version} by {Author}.");
 

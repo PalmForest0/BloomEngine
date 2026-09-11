@@ -1,5 +1,4 @@
-﻿using BloomEngine.Attributes;
-using BloomEngine.Config;
+﻿using BloomEngine.Config;
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Core;
 using BloomEngine.Helpers;
@@ -134,9 +133,6 @@ public sealed class ModMenuEntry(MelonMod mod)
 
         ModMenuService.ModEntries[Mod] = this;
         Config?.Save(false);
-
-        // Register all classes with a custom attribute in the mod
-        RegisterInIl2CppAttribute.RegisterClassesInAssembly(Mod.MelonAssembly.Assembly);
 
         BloomLogger.Info($"Successfully added {DisplayName} to the mod menu.", ModMenuService.LogPrefix);
     }
