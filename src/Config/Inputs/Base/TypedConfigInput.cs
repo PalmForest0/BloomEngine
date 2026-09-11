@@ -25,7 +25,10 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
 
             // Do not assign new value if validation fails
             if (validateFunc is not null && !validateFunc.Invoke(newValue))
+            {
+                SetDisplayedValue(this.value);
                 return;
+            }
 
             // Don't call event or update MelonEntry value if there is no difference
             if (EqualityComparer<T>.Default.Equals(this.value, newValue))
