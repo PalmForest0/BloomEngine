@@ -16,7 +16,7 @@ internal sealed class BloomEngineMod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<UI.BloomPopup>();
+        ClassInjector.RegisterTypeInIl2Cpp<UI.CustomPopup>();
         
         BloomLogger.Logger = LoggerInstance;
         BloomLogger.Info($"Successfully loaded {Name} v{Version} by {Author}.");
