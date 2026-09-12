@@ -82,7 +82,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// </summary>
     private event Action? OnInputChanged;
 
-    private protected TypedConfigInput(string name, string description, T defaultValue) : base(name, description)
+    protected TypedConfigInput(string name, string description, T defaultValue) : base(name, description)
     {
         DefaultValue = defaultValue;
         value = defaultValue;

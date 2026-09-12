@@ -18,7 +18,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
 
     internal BoolConfigInput(string name, string description, bool defaultValue) : base(name, description, defaultValue) { }
 
-    internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent)
     {
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
@@ -31,7 +31,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
         return wrapper.gameObject;
     }
 
-    internal override void UpdateFromUI() => Value = Toggle.isOn;
+    protected internal override void UpdateFromUI() => Value = Toggle.isOn;
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(bool value) => Toggle.SetIsOnWithoutNotify(value);

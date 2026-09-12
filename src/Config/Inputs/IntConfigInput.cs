@@ -20,13 +20,13 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
 
     internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
-    internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent)
     {
         Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
         return Textbox.gameObject;
     }
 
-    internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
+    protected internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());

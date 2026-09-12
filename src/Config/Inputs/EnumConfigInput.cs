@@ -25,7 +25,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
 
     internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
-    internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent)
     {
         options = Enum.GetValues(ValueType).Cast<TEnum>().ToList();
         options.Sort(comparer);
@@ -51,7 +51,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         return this;
     }
 
-    internal override void UpdateFromUI() => Value = options[Dropdown.value];
+    protected internal override void UpdateFromUI() => Value = options[Dropdown.value];
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(TEnum value)

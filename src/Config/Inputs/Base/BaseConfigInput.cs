@@ -29,7 +29,7 @@ public abstract class BaseConfigInput(string name, string description)
     /// </summary>
     /// <param name="parent">The parent under which this UI object should be instantiated.</param>
     /// <returns>The created <see cref="GameObject"/>.</returns>
-    internal abstract GameObject CreateInputObject(RectTransform parent);
+    protected internal abstract GameObject CreateInputObject(RectTransform parent);
 
     /// <summary>
     /// Created the <see cref="MelonPreferences"/> entry for this config input to which the value will be saved.
@@ -45,7 +45,7 @@ public abstract class BaseConfigInput(string name, string description)
     /// <summary>
     /// Updates the value of this config input to the current value stored in the UI input.
     /// </summary>
-    internal abstract void UpdateFromUI();
+    protected internal abstract void UpdateFromUI();
 
     /// <summary>
     /// Updates the UI with the current value saved in this config input.
