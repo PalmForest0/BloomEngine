@@ -84,11 +84,11 @@ public static class UIHelper
     /// </summary>
     internal static void TryLoadAll(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
-        if (!mainMenu || !globalPanels)
+        if (mainMenu.IsNull() || globalPanels.IsNull())
             return;
-
-        MainMenuPanel = mainMenu!;
-        GlobalPanels = globalPanels!;
+        
+        MainMenuPanel = mainMenu;
+        GlobalPanels = globalPanels;
 
         // Locate the fonts used in the game UI by finding specific text labels and getting their font assets.
         const string nameLabelPath = "Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel";
@@ -329,10 +329,13 @@ public static class UIHelper
         // Create the panel and rename it
         var templateObj = GlobalPanels.transform.Find("P_PopUpMessage02").gameObject;
         var panelObj = Object.Instantiate(templateObj, GlobalPanels.transform);
+        
         panelObj.name = panelName;
         panelObj.GetComponent<PanelView>().m_id = panelId;
         
-        return panelObj.gameObject.AddComponent<CustomPopup>();
+        var popup = panelObj.AddComponent<CustomPopup>();
+        popup.SetupDefaults();
+        return popup;
     }
 
     /// <summary>

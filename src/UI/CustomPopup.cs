@@ -1,8 +1,11 @@
-﻿using BloomEngine.Extensions;
+﻿using BloomEngine.Core;
+using BloomEngine.Extensions;
+using BloomEngine.Helpers;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.UI;
 
@@ -47,7 +50,7 @@ public class CustomPopup : MonoBehaviour
     /// </summary>
     public bool IsVisible { get; private set; }
 
-    public void Awake()
+    public void SetupDefaults()
     {
         PanelView = GetComponent<PanelView>();
         
@@ -57,6 +60,8 @@ public class CustomPopup : MonoBehaviour
         Subheader = Window.Find("SubheadingText").GetComponentInChildren<TextMeshProUGUI>(true);
         FirstButton = Window.Find("Buttons/P_BacicButton_Yes").GetComponentInChildren<Button>(true);
         SecondButton = Window.Find("Buttons/P_BacicButton_Ok").GetComponentInChildren<Button>(true);
+
+        Window.parent.Find("P_ControllerPrompt_Legend").gameObject.SetActive(false);
         
         // Set defaults
         SetHeader(name);

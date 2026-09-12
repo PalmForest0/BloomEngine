@@ -6,7 +6,7 @@ using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.Config;
 
@@ -146,22 +146,22 @@ public static class ConfigService
     /// </summary>
     internal static void TryCreateConfigPanels(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
-        if (PanelsCreated || !mainMenu || !globalPanels)
+        if (PanelsCreated || mainMenu.IsNull() || globalPanels.IsNull())
             return;
 
         const string templatePanelId = "quit";
-        PanelView? template = mainMenu!.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
+        var template = mainMenu?.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
 
         if (template.IsNull())
         {
-            BloomLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\"", LogPrefix);
+            BloomLogger.Error($"Failed to create config panels: Unable to find template panel with id \"{templatePanelId}\".", LogPrefix);
             return;
         }
 
         // Create a config panel for each mod entry with a registered config
         foreach (var config in ModMenuService.RegisteredEntries.Where(e => e.HasConfigInputs).Select(e => e.Config))
         {
-            var panelObj = GameObject.Instantiate(template.gameObject, globalPanels!.transform);
+            var panelObj = Object.Instantiate(template.gameObject, globalPanels!.transform);
             config!.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
         }
 
