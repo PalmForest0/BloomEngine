@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Config;
+using BloomEngine.Helpers;
 using BloomEngine.ModMenu;
 using BloomEngine.UI;
 using Il2CppReloaded.UI;
@@ -21,29 +22,33 @@ internal static class BloomLoader
     public static void LoadMainMenu(MainMenuPanelView mainMenuPanels)
     {
         BloomLogger.Info("Loading main menu...", LogPrefix);
-
-        ConfigService.TryCreateConfigPanels(mainMenuPanels, GlobalPanels);
-        UIHelper.TryLoadAll(mainMenuPanels, GlobalPanels);
-
+        
         MainMenuPanel = mainMenuPanels;
+        TryInitializeAll();
     }
 
     public static void LoadGlobalPanels(PanelViewContainer globalPanels)
     {
         BloomLogger.Info("Loading global panel container...", LogPrefix);
-
-        ConfigService.TryCreateConfigPanels(MainMenuPanel, globalPanels);
-        UIHelper.TryLoadAll(MainMenuPanel, globalPanels);
-
+        
         GlobalPanels = globalPanels;
+        TryInitializeAll();
     }
 
     public static void LoadAchievementsUI(AchievementsUI achievementsUI)
     {
         BloomLogger.Info("Loading achievements UI...", LogPrefix);
-
-        MelonCoroutines.Start(ModMenuService.Co_CreateModMenu(achievementsUI));
-
+        
         UIHelper.AchievementsUI = achievementsUI;
+        MelonCoroutines.Start(ModMenuService.Co_CreateModMenu(achievementsUI));
+    }
+
+    private static void TryInitializeAll()
+    {
+        if(MainMenuPanel.IsNull() || GlobalPanels.IsNull())
+            return;
+        
+        UIHelper.TryLoadAll(MainMenuPanel, GlobalPanels);
+        ConfigService.TryCreateConfigPanels(MainMenuPanel, GlobalPanels);
     }
 }
