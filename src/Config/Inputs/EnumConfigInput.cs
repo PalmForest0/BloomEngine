@@ -1,4 +1,5 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using System.Text;
+using BloomEngine.Config.Inputs.Base;
 using BloomEngine.UI;
 using Il2CppSource.UI;
 using UnityEngine;
@@ -21,6 +22,11 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// </summary>
     private List<TEnum> options = GetEnumOptions<TEnum>().ToList();
 
+    /// <summary>
+    /// A function that determines the display names of options.
+    /// </summary>
+    private Func<TEnum, string?>? nameSelector = opt => StringToReadable(opt.ToString());
+    
     internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
@@ -28,7 +34,9 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     {
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
-        Dropdown = UIHelper.CreateDropdown<TEnum>("Dropdown_Internal", wrapper, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
+        string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => OnUIChanged());
+        
         RectTransform dropdownRect = Dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);
 
@@ -53,6 +61,16 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         return this;
     }
 
+    /// <summary>
+    /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
+    /// </summary>
+    /// <param name="selector">A selector that specifies the display string (or null to use the default via ToString) for a given enum option.</param>
+    public EnumConfigInput<TEnum> WithOptionNames(Func<TEnum, string?> selector)
+    {
+        nameSelector = selector;
+        return this;
+    }
+
     /// <inheritdoc/>
     protected internal override void UpdateFromUI() => Value = options[Dropdown.value];
 
@@ -69,4 +87,52 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// <typeparam name="T">An enum type.</typeparam>
     /// <returns>Collection containing all enum options.</returns>
     private static IEnumerable<T> GetEnumOptions<T>() where T : Enum => Enum.GetValues(typeof(T)).Cast<T>();
+
+    /// <summary>
+    /// Converts a string that would show up in code to a readable display string.
+    /// </summary>
+    /// <param name="input">Input string that should be processed.</param>
+    /// <returns>A readable display string.</returns>
+    private static string StringToReadable(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        var sb = new StringBuilder();
+        sb.Append(char.ToUpper(input[0]));
+
+        for (int i = 1; i < input.Length; i++)
+        {
+            char current = input[i];
+            char prev = input[i - 1];
+            bool lastCharIsSpace = sb.Length > 0 && sb[^1] == ' ';
+
+            if (current is '_' or '-')
+            {
+                if (!lastCharIsSpace)
+                    sb.Append(' ');
+                continue;
+            }
+
+            if (!lastCharIsSpace)
+            {
+                // Splits words from lowercase to uppercase
+                if (char.IsUpper(current) && !char.IsUpper(prev))
+                    sb.Append(' ');
+                // Splits words between two uppercase
+                else if (char.IsUpper(current) && char.IsUpper(prev) && i + 1 < input.Length && char.IsLower(input[i + 1]))
+                    sb.Append(' ');
+                // Splits digits before
+                else if (char.IsDigit(current) && !char.IsDigit(prev))
+                    sb.Append(' ');
+                // Splits digits after
+                else if (!char.IsDigit(current) && char.IsDigit(prev))
+                    sb.Append(' ');
+            }
+
+            sb.Append(current);
+        }
+
+        return sb.ToString().TrimEnd();
+    }
 }
