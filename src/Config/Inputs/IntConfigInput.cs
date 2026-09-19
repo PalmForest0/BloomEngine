@@ -20,20 +20,23 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
 
     internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
+    /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent)
     {
         Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
         return Textbox.gameObject;
     }
 
+    /// <inheritdoc/>
     protected internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());
 
+    /// <inheritdoc/>
     internal override void OnUIChanged()
     {
-        // Perform basic sanitization on live input change
+        // Perform basic sanitisation on live input change
         Textbox.SetTextWithoutNotify(SanitizeNumericInput(Textbox.text));
         base.OnUIChanged();
     }
@@ -88,7 +91,7 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
                 sb.Append(c);
                 hasSign = true;
             }
-            // Decimal point if one doesnt already exist and the type allows it
+            // Decimal point if one doesn't already exist and the type allows it
             else if (c == '.' && !hasDecimal)
             {
                 sb.Append('.');
