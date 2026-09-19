@@ -33,9 +33,9 @@ public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
     }
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Slider = UIHelper.CreateSlider(InputObjectName, parent, Value, MinValue, MaxValue, onValueChanged: _ => RaiseInputChanged());
+        Slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onValueChanged: _ => RaiseInputChanged());
         return Slider.gameObject;
     }
 

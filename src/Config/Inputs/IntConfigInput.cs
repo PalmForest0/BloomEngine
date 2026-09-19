@@ -21,9 +21,9 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
+        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
         return Textbox.gameObject;
     }
 

@@ -20,16 +20,12 @@ public abstract class BaseConfigInput(string name, string description)
     public string Description { get; } = description;
 
     /// <summary>
-    /// Gets the name of the UI element that corresponds to this config input.
-    /// </summary>
-    protected string InputObjectName => $"ConfigInput_{Name.Trim().Replace(" ", "")}";
-
-    /// <summary>
     /// Creates the appropriate UI object for this config input.
     /// </summary>
     /// <param name="parent">The parent under which this UI object should be instantiated.</param>
+    /// <param name="name">The string to use as the name of the UI input object.</param>
     /// <returns>The created <see cref="GameObject"/>.</returns>
-    protected internal abstract GameObject CreateInputObject(RectTransform parent);
+    protected internal abstract GameObject CreateInputObject(RectTransform parent, string name);
 
     /// <summary>
     /// Created the <see cref="MelonPreferences"/> entry for this config input to which the value will be saved.

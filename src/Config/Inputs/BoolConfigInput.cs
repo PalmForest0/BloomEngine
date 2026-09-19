@@ -19,9 +19,9 @@ public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
     internal BoolConfigInput(string name, string description, bool defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent)
+    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
+        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
 
         Toggle = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => RaiseInputChanged());
         RectTransform toggleRect = Toggle.gameObject.GetComponent<RectTransform>();

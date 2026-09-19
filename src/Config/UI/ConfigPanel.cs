@@ -210,7 +210,7 @@ internal sealed class ConfigPanel
 
     private static void CreateInput(BaseConfigInput input, RectTransform parent)
     {
-        var inputObj = input.CreateInputObject(parent);
+        var inputObj = input.CreateInputObject(parent, $"ConfigInput_{input.Name.Trim().Replace(" ", "")}");
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
