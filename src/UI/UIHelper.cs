@@ -244,29 +244,45 @@ public static class UIHelper
     /// <param name="name">The name to assign to the newly created Dropdown GameObject.</param>
     /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
     /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
+    /// <param name="textSelector">A selector that specifies the display string (or null to use the default via ToString) for a given enum option.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
     /// <returns>A ReloadedDropdown label with the newly added enum options.</returns>
-    public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Action<TEnum>? onValueChanged = null) where TEnum : Enum
+    public static ReloadedDropdown CreateDropdown<TEnum>(string name, RectTransform parent, int selectedIndex = 0, Func<TEnum, string?>? textSelector = null, Action<TEnum>? onValueChanged = null) where TEnum : Enum
+    {
+        var values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
+        string[] strings = values.Select(v => textSelector?.Invoke(v) ?? v.ToString()).ToArray();
+        
+        return CreateDropdown(name, parent, strings, selectedIndex, (i, _) => onValueChanged?.Invoke(values[i]));
+    }
+
+    /// <summary>
+    /// Creates a PvZ-style Dropdown UI element as a child of the specified parent, and sets its options to the values of an enum.
+    /// </summary>
+    /// <param name="name">The name to assign to the newly created Dropdown GameObject.</param>
+    /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
+    /// <param name="options">The array of string options to add to the Dropdown.</param>
+    /// <param name="selectedIndex">The index of the default selected option. If the index is out of range, it is set to 0.</param>
+    /// <param name="onValueChanged">An optional callback that is invoked whenever the Dropdowns's selection changes.</param>
+    /// <returns>A ReloadedDropdown label with the newly added enum options.</returns>
+    public static ReloadedDropdown CreateDropdown(string name, RectTransform parent, string[] options, int selectedIndex = 0, Action<int, string>? onValueChanged = null)
     {
         var obj = Object.Instantiate(_templateDropdown, parent)!;
         obj.name = name;
 
         var dropdown = obj.GetComponent<ReloadedDropdown>();
         dropdown.ClearOptions();
-
-        var values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
-
-        if (selectedIndex > values.Length - 1 || selectedIndex < 0)
+        
+        if (selectedIndex > options.Length - 1 || selectedIndex < 0)
             selectedIndex = 0;
 
-        dropdown.AddOptions(values.Select(value => value.ToString()).ToIl2CppList());
+        dropdown.AddOptions(options.ToIl2CppList());
         dropdown.SetValueWithoutNotify(selectedIndex);
         dropdown.RefreshShownValue();
 
         dropdown.onValueChanged = new TMP_Dropdown.DropdownEvent();
         dropdown.onValueChanged.AddListener(selection =>
         {
-            onValueChanged?.Invoke(values[selection]);
+            onValueChanged?.Invoke(selection, options[selection]);
             dropdown.Hide(); // Force hide dropdown after selection
         });
 
