@@ -15,21 +15,17 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// The UI dropdown which corresponds to this config input in the config panel.
     /// </summary>
     public ReloadedDropdown Dropdown { get; private set; } = null!;
-
+    
     /// <summary>
-    /// Contains a list of the individual options of the value enum type.
+    /// The list of options that gets shown in the dropdown.
     /// </summary>
-    private List<TEnum> options = null!;
-
-    private Comparer<TEnum>? comparer;
+    private List<TEnum> options = GetEnumOptions<TEnum>().ToList();
 
     internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
+    /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent)
     {
-        options = Enum.GetValues(ValueType).Cast<TEnum>().ToList();
-        options.Sort(comparer);
-
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
         Dropdown = UIHelper.CreateDropdown<TEnum>("Dropdown_Internal", wrapper, Convert.ToInt32(Value), onValueChanged: _ => OnUIChanged());
@@ -42,15 +38,22 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     }
 
     /// <summary>
-    /// Sorts the option list using a comparer function. By default, the options are in the order they are defined in the enum type.
+    /// Specifies an explicit option order for the dropdown. Any missing options will be appended to the end in numeric order.
     /// </summary>
-    /// <param name="comparer">A comparer that defines the order of the options.</param>
-    public EnumConfigInput<TEnum> WithOptionOrder(Comparer<TEnum> comparer)
+    /// <param name="order">An array of enum entries in the desired order.</param>
+    public EnumConfigInput<TEnum> WithOptionOrder(params TEnum[] order)
     {
-        this.comparer = comparer;
+        var seen = new HashSet<TEnum>();
+        
+        // Adds all ordered options, then all remaining options, while excluding duplicates
+        options = new List<TEnum>(order.Length);
+        options.AddRange(order.Where(seen.Add));
+        options.AddRange(GetEnumOptions<TEnum>().Where(seen.Add));
+        
         return this;
     }
 
+    /// <inheritdoc/>
     protected internal override void UpdateFromUI() => Value = options[Dropdown.value];
 
     /// <inheritdoc/>
@@ -59,4 +62,11 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         Dropdown.SetValueWithoutNotify(options.IndexOf(value));
         Dropdown.RefreshShownValue();
     }
+
+    /// <summary>
+    /// Gets all options of an enum as an enumerable.
+    /// </summary>
+    /// <typeparam name="T">An enum type.</typeparam>
+    /// <returns>Collection containing all enum options.</returns>
+    private static IEnumerable<T> GetEnumOptions<T>() where T : Enum => Enum.GetValues(typeof(T)).Cast<T>();
 }
