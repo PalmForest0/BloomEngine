@@ -25,6 +25,7 @@ internal sealed class BloomEngineMod : MelonMod
             .AddDisplayName(Name)
             .AddDescription(Description)
             .AddIcon(AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.BloomEngineIcon.png"))
+            .AddConfigClass(typeof(BloomConfig))
             .Register();
     }
 }
