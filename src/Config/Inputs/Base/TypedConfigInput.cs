@@ -57,6 +57,11 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     public Type ValueType { get; }
 
     /// <summary>
+    /// Contains an old identifier that MelonPreferences will automatically migrate. Set this using <see cref="WithOldIdentifier"/>.
+    /// </summary>
+    public string? OldIdentifier { get; private set; }
+    
+    /// <summary>
     /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config input and contains the saved value.
     /// </summary>
     public MelonPreferences_Entry<T> MelonEntry { get; private set; } = null!;
@@ -91,7 +96,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
 
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
-        MelonEntry = melonCategory.CreateEntry(Name, DefaultValue, Name, Description);
+        MelonEntry = melonCategory.CreateEntry(Name, DefaultValue, Name, Description, oldIdentifier: OldIdentifier);
         Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
     }
 
@@ -107,7 +112,16 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// <param name="value">The value to insert into the UI input.</param>
     protected abstract void SetDisplayedValue(T value);
 
-
+    /// <summary>
+    /// Specifies an old identifier that will be automatically migrated by MelonPreferences to the current identifier.
+    /// </summary>
+    /// <param name="oldIdentifier">The old identifier to be passed to MelonPreferences.</param>
+    public TSelf WithOldIdentifier(string oldIdentifier)
+    {
+        OldIdentifier = oldIdentifier;
+        return (TSelf)this;
+    }
+    
     /// <summary>
     /// Subscribes to an event which is invoked when <see cref="Value"/> is modified.
     /// </summary>
