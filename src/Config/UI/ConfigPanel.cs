@@ -182,7 +182,7 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(input, rowRect);
         CreateInput(input, rowRect);
-        CreateSquareButton("InputResetButton", rowRect, input.ResetValueUI, ResetButtonSprite, ResetButtonSpriteSelected);
+        CreateSquareButton("InputResetButton", rowRect, input.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(input.Description))
             CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(input.Name, input.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }

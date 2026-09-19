@@ -11,6 +11,6 @@ public static class BloomConfig
     public static readonly EnumConfigInput<FileAccess> TestEnumField =
         ConfigService.CreateEnum<FileAccess>("Test Enum Field", "???", FileAccess.Write)
             .WithOptionOrder(FileAccess.ReadWrite)
-            .WithOnValueChanged(day => BloomLogger.Debug($"Test Enum Field value set to: {day}", LogPrefix));
+            .WithOnValueApplied(day => BloomLogger.Debug($"Test Enum Field value set to: {day}", LogPrefix));
 #endif
 }

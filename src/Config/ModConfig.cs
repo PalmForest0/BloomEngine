@@ -79,7 +79,7 @@ public sealed class ModConfig
     internal void UpdateAllFromUI()
     {
         foreach (var input in ConfigInputs)
-            input.UpdateFromUI();
+            input.ApplyInput();
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public sealed class ModConfig
     internal void RefreshAllUI()
     {
         foreach (var input in ConfigInputs)
-            input.RefreshUI();
+            input.RefreshInput();
     }
 
     /// <summary>

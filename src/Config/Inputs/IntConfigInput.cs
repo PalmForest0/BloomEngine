@@ -23,22 +23,22 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent)
     {
-        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
+        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
         return Textbox.gameObject;
     }
 
     /// <inheritdoc/>
-    protected internal override void UpdateFromUI() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
+    protected internal override void ApplyInput() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());
 
     /// <inheritdoc/>
-    internal override void OnUIChanged()
+    internal override void RaiseInputChanged()
     {
         // Perform basic sanitisation on live input change
         Textbox.SetTextWithoutNotify(SanitizeNumericInput(Textbox.text));
-        base.OnUIChanged();
+        base.RaiseInputChanged();
     }
 
     /// <summary>

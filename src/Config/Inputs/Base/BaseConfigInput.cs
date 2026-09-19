@@ -40,20 +40,15 @@ public abstract class BaseConfigInput(string name, string description)
     /// <summary>
     /// Sets the current value shown in the UI to the default value without updating the actual value.
     /// </summary>
-    internal abstract void ResetValueUI();
+    internal abstract void ResetInput();
 
     /// <summary>
     /// Updates the value of this config input to the current value stored in the UI input.
     /// </summary>
-    protected internal abstract void UpdateFromUI();
+    protected internal abstract void ApplyInput();
 
     /// <summary>
     /// Updates the UI with the current value saved in this config input.
     /// </summary>
-    internal abstract void RefreshUI();
-
-    /// <summary>
-    /// Invokes the <see cref="TypedConfigInput{T, TSelf}.OnInputChanged"/> action and performs any type-specific logic.
-    /// </summary>
-    internal abstract void OnUIChanged();
+    internal abstract void RefreshInput();
 }

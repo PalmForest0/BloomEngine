@@ -21,12 +21,12 @@ public sealed class StringConfigInput : TypedConfigInput<string, StringConfigInp
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent)
     {
-        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => OnUIChanged());
+        Textbox = UIHelper.CreateTextField(InputObjectName, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
         return Textbox.gameObject;
     }
 
     /// <inheritdoc/>
-    protected internal override void UpdateFromUI() => Value = Textbox.text;
+    protected internal override void ApplyInput() => Value = Textbox.text;
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(string value) => Textbox.SetTextWithoutNotify(value);

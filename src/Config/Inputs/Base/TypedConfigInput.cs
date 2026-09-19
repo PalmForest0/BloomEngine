@@ -13,7 +13,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
 {
     /// <summary>
     /// Gets or sets the value stored in this config input, invoking <see cref="transformFunc"/>.
-    /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueChanged(Action{T})"/>
+    /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueApplied"/>
     /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
     public T Value
@@ -37,7 +37,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
             this.value = newValue;
             MelonEntry?.Value = newValue;
 
-            OnValueChanged?.Invoke(newValue);
+            OnValueApplied?.Invoke(newValue);
         }
     }
 
@@ -78,9 +78,9 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     private Func<T, bool>? validateFunc;
 
     /// <summary>
-    /// An event that is invoked when <see cref="Value"/> is modified.
+    /// An event that is invoked when <see cref="Value"/> is updated.
     /// </summary>
-    private event Action<T>? OnValueChanged;
+    private event Action<T>? OnValueApplied;
 
     /// <summary>
     /// An event that is invoked when the UI input is modified by the user.
@@ -100,11 +100,11 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
         Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
     }
 
-    internal override void OnUIChanged() => OnInputChanged?.Invoke();
+    internal virtual void RaiseInputChanged() => OnInputChanged?.Invoke();
 
-    internal sealed override void ResetValueUI() => SetDisplayedValue(DefaultValue);
+    internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
 
-    internal sealed override void RefreshUI() => SetDisplayedValue(Value);
+    internal sealed override void RefreshInput() => SetDisplayedValue(Value);
 
     /// <summary>
     /// Sets the UI value using an implementation specific to the input type.
@@ -123,12 +123,12 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     }
     
     /// <summary>
-    /// Subscribes to an event which is invoked when <see cref="Value"/> is modified.
+    /// Subscribes to an event which is invoked when <see cref="Value"/> is updated.
     /// </summary>
     /// <param name="handler">The action to invoke when the value changes, receiving the new value as a parameter.</param>
-    public TSelf WithOnValueChanged(Action<T> handler)
+    public TSelf WithOnValueApplied(Action<T> handler)
     {
-        OnValueChanged += handler;
+        OnValueApplied += handler;
         return (TSelf)this;
     }
 

@@ -35,7 +35,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, InputObjectName);
 
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
-        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => OnUIChanged());
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => RaiseInputChanged());
         
         RectTransform dropdownRect = Dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);
@@ -72,7 +72,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     }
 
     /// <inheritdoc/>
-    protected internal override void UpdateFromUI() => Value = options[Dropdown.value];
+    protected internal override void ApplyInput() => Value = options[Dropdown.value];
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(TEnum value)
