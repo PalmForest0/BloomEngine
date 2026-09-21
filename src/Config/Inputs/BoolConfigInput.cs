@@ -23,7 +23,7 @@ public sealed class BoolConfigInput : TypedConfigInput<bool, BoolConfigInput>
     {
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
 
-        Toggle = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => RaiseInputChanged());
+        Toggle = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => HandleInputChanged());
         RectTransform toggleRect = Toggle.gameObject.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(toggleRect, wrapper);
 

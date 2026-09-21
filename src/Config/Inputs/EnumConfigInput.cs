@@ -35,7 +35,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
         RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
 
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
-        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => RaiseInputChanged());
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => HandleInputChanged());
         
         RectTransform dropdownRect = Dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);

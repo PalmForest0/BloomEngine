@@ -21,7 +21,7 @@ public sealed class StringConfigInput : TypedConfigInput<string, StringConfigInp
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
+        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => HandleInputChanged());
         return Textbox.gameObject;
     }
 

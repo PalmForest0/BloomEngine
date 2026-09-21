@@ -100,7 +100,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
         Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
     }
 
-    internal virtual void RaiseInputChanged() => OnInputChanged?.Invoke();
+    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke();
 
     internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
 

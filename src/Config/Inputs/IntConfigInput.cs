@@ -23,7 +23,7 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => RaiseInputChanged());
+        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => HandleInputChanged());
         return Textbox.gameObject;
     }
 
@@ -34,11 +34,11 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());
 
     /// <inheritdoc/>
-    internal override void RaiseInputChanged()
+    internal override void HandleInputChanged()
     {
         // Perform basic sanitisation on live input change
         Textbox.SetTextWithoutNotify(SanitizeNumericInput(Textbox.text));
-        base.RaiseInputChanged();
+        base.HandleInputChanged();
     }
 
     /// <summary>
