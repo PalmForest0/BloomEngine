@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using BloomEngine.Core;
-using BloomEngine.Helpers;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -21,6 +20,11 @@ public static class UnityExtensions
         /// </summary>
         /// <param name="call">This listener action to add to this <see cref="UnityEvent"/></param>
         public void AddListener(Action call) => unityEvent.AddListener(call);
+        
+        /// <summary>
+        /// Removes a listener action from a <see cref="UnityEvent"/>, taking in a normal <see cref="Action"/> instead of a <see cref="UnityAction"/>.
+        /// </summary>
+        /// <param name="call">This listener action to remove from this <see cref="UnityEvent"/></param>
         public void RemoveListener(Action call) => unityEvent.RemoveListener(call);
     }
     
@@ -34,6 +38,11 @@ public static class UnityExtensions
         /// </summary>
         /// <param name="call">This listener action to add to this <see cref="UnityEvent"/></param>
         public void AddListener(Action<T> call) => unityEvent.AddListener(call);
+        
+        /// <summary>
+        /// Removes a listener action from a <see cref="UnityEvent"/>, taking in a normal <see cref="Action"/> instead of a <see cref="UnityAction"/>.
+        /// </summary>
+        /// <param name="call">This listener action to remove from this <see cref="UnityEvent"/></param>
         public void RemoveListener(Action<T> call) => unityEvent.RemoveListener(call);
     }
 

@@ -1,18 +1,18 @@
 ﻿namespace BloomEngine.Extensions;
 
 /// <summary>
-/// Provides extension methods for certain Stream types.
+/// Provides extensions for Stream types.
 /// </summary>
 public static class StreamExtensions
 {
     /// <summary>
-    /// Fully reads a stream into a byte array.
+    /// Fully reads a Stream into a byte array.
     /// </summary>
-    /// <param name="input">Input stream</param>
-    /// <returns>Output byte array</returns>
+    /// <param name="input">Input stream to copy from.</param>
+    /// <returns>Output byte array containing the contents of the Stream.</returns>
     public static byte[] ReadFully(this Stream input)
     {
-        using MemoryStream stream = new MemoryStream();
+        using var stream = new MemoryStream();
         input.CopyTo(stream);
         return stream.ToArray();
     }

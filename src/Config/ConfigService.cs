@@ -2,7 +2,7 @@
 using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
-using BloomEngine.Helpers;
+using BloomEngine.Extensions;
 using BloomEngine.ModList;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;

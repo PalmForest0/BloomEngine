@@ -1,5 +1,5 @@
 ﻿using BloomEngine.Config;
-using BloomEngine.Helpers;
+using BloomEngine.Extensions;
 using BloomEngine.ModList;
 using BloomEngine.UI;
 using Il2CppReloaded.UI;
