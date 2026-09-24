@@ -27,27 +27,21 @@ using BloomEngine.ModMenu;
 using BloomEngine.Helpers;
 using MelonLoader;
 
-namespace BloomEngine;
-
-internal sealed class BloomEngineMod : MelonMod
+internal sealed class YourCoreModClass : MelonMod
 {
-    public const string Name = "BloomEngine";
-    public const string Version = "0.3.2-beta";
-    public const string Author = "PalmForest";
-
     public override void OnInitializeMelon()
     {
         ModMenuService.CreateEntry(this)
-            .AddDisplayName(Name)
-            .AddDescription($"Mod menu and config manager library for PvZ Replanted.")
-            .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.BloomEngineIcon.png"))
+            .AddDisplayName("YourCoolMod")
+            .AddDescription("Your cool mod description.")
+            .AddIcon(AssetHelper.LoadSprite("YourModAssembly.YourResourcesFolder.YourModIcon.png"))
             .Register();
     }
 }
 ```
 
 ### 3. Creating config inputs
-To create config inputs for your mod, you can use the methods provided by `ConfigService`. BloomEngine currently supports the following types: `string`, `int`, `float`, `bool` and `enum`.
+To create config inputs for your mod, you can use the methods provided by `ConfigService`. BloomEngine provides built-in support for the following types: `string`, `int`, `float`, `bool` and `enum`.
 
 Here is an example definition of a simple config input that sets a **display name**, **description** and **default value**.
 
@@ -55,28 +49,24 @@ Here is an example definition of a simple config input that sets a **display nam
 public static BoolConfigInput TestBoolInput = ConfigService.CreateBool("Test Bool", "Cool description.", true);
 ```
 
-Additionally, you can extend your config inputs with additional functionality through actions and function, for example:
+Additionally, you can extend your config inputs with additional functionality through the provided methods, for example:
 
 ```cs
 public static StringConfigInput TestStringInput = ConfigService.CreateString("Test String", "Cooler description.", "ABCDEFG")
-    .WithOnValueChanged(val => Melon<BloomEngine>.Logger.Msg($"Value of {nameof(TestStringInput)} updated to \"{val}\""))
+    .WithOnValueChanged(val => Melon<YourCoreModClass>.Logger.Msg($"Value of {nameof(TestStringInput)} updated to \"{val}\""))
     .WithOnInputChanged(() => TestStringInput.Textbox.SetTextWithoutNotify(TestStringInput.Textbox.text.ToUpperInvariant()))
     .WithTransform(val => val.ToUpperInvariant())
     .WithValidate(val => !string.IsNullOrWhiteSpace(val));
 ```
-
-> [!NOTE]
-> Using `MelonLogger.Msg()` within one of the above actions will show `[BloomEngine]` as the source in the MelonLoader console.
-> Instead, it is recommended you use `Melon<YourMainModClass>.Logger.Msg()` or create a custom logger using `new MelonLogger.Instance()`.
 
 ### 4. Registering the config
 Finally, to add the config inputs you just created to your mod's config, you must pass them to `AddConfigInputs(StringInput, BoolInput)` when registering your mod:
 
 ```cs
 ModMenuService.CreateEntry(this)
-    .AddDisplayName(Name)
-    .AddDescription($"Mod menu and config manager library for PvZ Replanted.")
-    .AddIcon(AssetHelper.LoadSprite("BloomEngine.Resources.BloomEngineIcon.png"))
+    .AddDisplayName("YourCoolMod")
+    .AddDescription("Your cool mod description.")
+    .AddIcon(AssetHelper.LoadSprite("YourModAssembly.YourResourcesFolder.YourModIcon.png"))
     .AddConfigInputs(TestStringInput, TestBoolInput)
     .Register();
 ```
