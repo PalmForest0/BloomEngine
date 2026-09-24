@@ -1,16 +1,16 @@
-﻿using BloomEngine.Extensions;
+﻿using BloomEngine.Config;
+using BloomEngine.Extensions;
+using BloomEngine.Helpers;
+using BloomEngine.UI;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using BloomEngine.Config;
-using BloomEngine.UI;
-using BloomEngine.Helpers;
 
-namespace BloomEngine.ModMenu.UI;
+namespace BloomEngine.ModList.UI;
 
-internal sealed class ModMenuItemUI
+internal sealed class ModListItemUI
 {
     // Constants for UI sizes
     private const int IconSize = 225;
@@ -21,18 +21,18 @@ internal sealed class ModMenuItemUI
     private readonly RectTransform iconContainer;
     private readonly Image iconImage;
 
-    private readonly ModMenuEntry? entry;
+    private readonly ModListEntry? entry;
     private readonly MelonMod mod;
 
     private static readonly Sprite ConfigIconSprite     = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ConfigIcon.png");
     private static readonly Sprite DefaultIconSprite    = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.DefaultModIcon.png");
     private static readonly Sprite ModIconBorderSprite  = AssetHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModIconBorder.png");
 
-    private ModMenuItemUI(MelonMod mod, Transform parent, GameObject template)
+    private ModListItemUI(MelonMod mod, Transform parent, GameObject template)
     {
         // Store the mod and try get the mod entry
         this.mod = mod;
-        ModMenuService.ModEntries.TryGetValue(mod, out entry);
+        ModListService.ModEntries.TryGetValue(mod, out entry);
 
         // Clone an achievement item for this mod entry
         itemObject = GameObject.Instantiate(template, parent);
@@ -49,13 +49,13 @@ internal sealed class ModMenuItemUI
     }
 
     /// <summary>
-    /// Creates a new ModMenu item UI element and populates it with the mod's information.
+    /// Creates a new <see cref="ModListItemUI"/> element and populates it with the mod's information.
     /// </summary>
     /// <param name="mod">The <see cref="MelonMod"/> to which this entry belongs.</param>
     /// <param name="parent">The parent transform to place this UI element under.</param>
-    /// <param name="template">The achivement object to use as a template.</param>
-    /// <returns>The created mod menu item UI.</returns>
-    internal static ModMenuItemUI Create(MelonMod mod, Transform parent, GameObject template) => new ModMenuItemUI(mod, parent, template);
+    /// <param name="template">The achievement object to use as a template.</param>
+    /// <returns>The created <see cref="ModListItemUI"/>.</returns>
+    internal static ModListItemUI Create(MelonMod mod, Transform parent, GameObject template) => new(mod, parent, template);
 
     /// <summary>
     /// Modifies the mod icon's pivot and size, also creating a container for it.
@@ -91,7 +91,7 @@ internal sealed class ModMenuItemUI
         if (itemObject.TryFindComponent<TextMeshProUGUI>("Title", out var title))
         {
             title.GetComponent<RectTransform>().anchoredPosition = new Vector2(125, 15);
-            title.text = entry?.DisplayName ?? ModMenuEntry.GetDefaultModName(mod);
+            title.text = entry?.DisplayName ?? ModListEntry.GetDefaultModName(mod);
 
             if(entry is null)
                 title.color = new Color(1f, 0.6f, 0.1f, 1f); // Make the mod name yellow if it isn't registered
@@ -101,7 +101,7 @@ internal sealed class ModMenuItemUI
         if (itemObject.TryFindComponent<TextMeshProUGUI>("Subheader", out var subheader))
         {
             subheader.GetComponent<RectTransform>().anchoredPosition = new Vector2(125, -67);
-            subheader.text = entry?.Description ?? ModMenuEntry.GetDefaultModDescription(mod);
+            subheader.text = entry?.Description ?? ModListEntry.GetDefaultModDescription(mod);
 
             subheader.maxVisibleLines = 4; // Modify the text rect to fit more lines in the description
         } 

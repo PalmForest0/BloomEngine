@@ -31,7 +31,7 @@ internal static class PanelViewPatches
     }
 
     /// <summary>
-    /// Passes the MainMenuPanelView to BloomLoader on Start to init UIHelper and the mod menu.
+    /// Passes the MainMenuPanelView to BloomLoader on Start to init UIHelper and the mod list.
     /// </summary>
     [HarmonyPatch(typeof(MainMenuPanelView), nameof(MainMenuPanelView.Start))]
     [HarmonyPostfix]

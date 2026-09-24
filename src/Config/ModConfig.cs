@@ -1,26 +1,26 @@
 ﻿using BloomEngine.Config.Inputs.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
-using BloomEngine.ModMenu;
+using BloomEngine.ModList;
 using MelonLoader;
 
 namespace BloomEngine.Config;
 
 /// <summary>
-/// Represents the mod config of a BloomEngine <see cref="ModMenuEntry"/>. When a config is registered,
+/// Represents the mod config of a BloomEngine <see cref="ModListEntry"/>. When a config is registered,
 /// a new MelonPreferences category is created for the mod and the config is saved to it.
 /// </summary>
 public sealed class ModConfig
 {
     /// <summary>
     /// The identifier string of this config, which is used for saving it in MelonPreferences.
-    /// This will usually match the identifier of the <see cref="ModMenuEntry"/> this config belongs to.
+    /// This will usually match the identifier of the <see cref="ModListEntry"/> this config belongs to.
     /// </summary>
     public string Id { get; private init; }
 
     /// <summary>
     /// The display name of this config, which will be saved in MelonPreferences and shown in the config menu.
-    /// This will usually match the display name of the <see cref="ModMenuEntry"/> this config belongs to.
+    /// This will usually match the display name of the <see cref="ModListEntry"/> this config belongs to.
     /// </summary>
     public string DisplayName { get; private init; }
 
@@ -51,7 +51,7 @@ public sealed class ModConfig
     internal ConfigPanel? Panel { get; set; }
 
     /// <summary>
-    /// Creates a mod config from an array of inputs (used by <see cref="ModMenuEntry.AddConfigInputs(BaseConfigInput[])"/>).
+    /// Creates a mod config from an array of inputs (used by <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>).
     /// </summary>
     internal ModConfig(string identifier, string displayName, BaseConfigInput[] inputs)
     {

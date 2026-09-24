@@ -1,20 +1,19 @@
 ﻿using BloomEngine.Extensions;
-using BloomEngine.UI;
 using BloomEngine.Helpers;
+using BloomEngine.UI;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.ModMenu.UI;
+namespace BloomEngine.ModList.UI;
 
-internal sealed class ModMenuUI
+internal sealed class ModListUI
 {
     private readonly GameObject achievementsContainer;
     private readonly GameObject modsContainer;
-
-    private readonly GameObject header;
+    
     private readonly TextMeshProUGUI[] headerLabels;
 
     private readonly RectTransform achievementsRect;
@@ -23,13 +22,13 @@ internal sealed class ModMenuUI
     private readonly GameObject bloomLabel;
 
     /// <summary>
-    /// Creates the mod menu UI under the provided achievements UI and sets up all components.
+    /// Creates the <see cref="ModListUI"/> under the provided achievements UI and sets up all components.
     /// </summary>
     /// <param name="achievementsUI">The achievements UI to use as a base.</param>
-    /// <returns>The created mod menu UI.</returns>
-    internal static ModMenuUI Create(AchievementsUI achievementsUI) => new ModMenuUI(achievementsUI);
+    /// <returns>The created <see cref="ModListUI"/>.</returns>
+    internal static ModListUI Create(AchievementsUI achievementsUI) => new ModListUI(achievementsUI);
 
-    private ModMenuUI(AchievementsUI achievementsUi)
+    private ModListUI(AchievementsUI achievementsUi)
     {
         // Find all required AchievementsUI objects
         achievementsUI = achievementsUi;
@@ -37,7 +36,7 @@ internal sealed class ModMenuUI
         achievementsContainer = achievementsUi.transform.Find("ScrollView/Viewport/Content/Achievements").gameObject;
 
         // Prevent header from blocking clicks on mod ModEntries and save labels to be changed later
-        header = achievementsRect.Find("ScrollView/Viewport/Content/Header").gameObject;
+        var header = achievementsRect.Find("ScrollView/Viewport/Content/Header").gameObject;
         header.transform.Find("Shadow").GetComponent<Image>().raycastTarget = false;
         header.transform.Find("Left/Background_grass02").GetComponent<Image>().raycastTarget = false;
         headerLabels = header.transform.Find("Center").GetComponentsInChildren<TextMeshProUGUI>(true);
@@ -88,13 +87,13 @@ internal sealed class ModMenuUI
         rect.anchorMax = new Vector2(0, 1);
         rect.anchoredPosition = new Vector2(25, rect.rect.height + 100);
 
-        // Update the achievements button to deactivate the mod menu when clicked
-        if (achievementsRect.parent.TryFindComponent<Button>("Main/BG_Tree/AchievementsButton", out var btn, ModMenuService.LogPrefix))
+        // Update the achievements button to deactivate the mod list when clicked
+        if (achievementsRect.parent.TryFindComponent<Button>("Main/BG_Tree/AchievementsButton", out var btn, ModListService.LogPrefix))
             btn.onClick.AddListener(() => SetModMenuActive(false));
     }
 
     /// <summary>
-    /// Creates a label in the bottom left corner of the mod menu that displays the BloomEngine version.
+    /// Creates a label in the bottom left corner of the mod list that displays the BloomEngine version.
     /// </summary>
     /// <returns>The created label object.</returns>
     private GameObject CreateBloomLabel()
@@ -107,7 +106,7 @@ internal sealed class ModMenuUI
         label.characterSpacing = 0;
         label.font = UIHelper.FontBrianneTod;
         label.text =$"""
-        {MelonMod.RegisteredMelons.Count} Loaded,  {ModMenuService.RegisteredEntries.Count()} Registered
+        {MelonMod.RegisteredMelons.Count} Loaded,  {ModListService.RegisteredEntries.Count()} Registered
         BloomEngine  v{BloomEngineMod.Version}
         """;
 
@@ -126,17 +125,17 @@ internal sealed class ModMenuUI
     }
 
     /// <summary>
-    /// Loops through all registered mods and creates a ModMenuItemUI for each one, adding them to the container.
+    /// Loops through all registered mods and creates a <see cref="ModListItemUI"/> element for each one, adding them to the container.
     /// </summary>
     private void CreateEntries()
     {
         foreach (var mod in MelonMod.RegisteredMelons)
-            ModMenuItemUI.Create(mod, modsContainer.transform, achievementsRect.Find("AchievementItem").gameObject); 
+            ModListItemUI.Create(mod, modsContainer.transform, achievementsRect.Find("AchievementItem").gameObject); 
     }
 
 
     /// <summary>
-    /// Sets the header text of the mods/achievements menu to the specified string.
+    /// Sets the header text of the mod list/achievements menu to the specified string.
     /// </summary>
     private void SetHeaderText(string text)
     {
@@ -145,9 +144,9 @@ internal sealed class ModMenuUI
     }
 
     /// <summary>
-    /// Sets the current menu to either the mod menu or achievements menu.
+    /// Sets the current menu to either the mod list or achievements menu.
     /// </summary>
-    /// <param name="isActive">If true, enables the mod menu, otherwise shows the achievements menu.</param>
+    /// <param name="isActive">If true, enables the mod list, otherwise shows the achievements menu.</param>
     private void SetModMenuActive(bool isActive)
     {
         SetHeaderText(isActive ? "Mods" : "Achievements");
@@ -158,7 +157,7 @@ internal sealed class ModMenuUI
     }
 
     /// <summary>
-    /// Sets the current menu to the mod menu and plays the transition animation.
+    /// Sets the current menu to the mod list and plays the transition animation.
     /// </summary>
     private void OpenModMenu()
     {

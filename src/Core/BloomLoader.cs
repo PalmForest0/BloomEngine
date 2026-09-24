@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Config;
 using BloomEngine.Helpers;
-using BloomEngine.ModMenu;
+using BloomEngine.ModList;
 using BloomEngine.UI;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
@@ -40,7 +40,7 @@ internal static class BloomLoader
         BloomLogger.Info("Loading achievements UI...", LogPrefix);
         
         UIHelper.AchievementsUI = achievementsUI;
-        MelonCoroutines.Start(ModMenuService.Co_CreateModMenu(achievementsUI));
+        MelonCoroutines.Start(ModListService.Co_CreateModList(achievementsUI));
     }
 
     private static void TryInitializeAll()

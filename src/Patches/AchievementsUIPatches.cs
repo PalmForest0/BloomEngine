@@ -19,7 +19,7 @@ internal static class AchievementsUIPatches
     }
 
     /// <summary>
-    /// Hides the currently open config panel when the mod menu is closed.
+    /// Hides the currently open config panel when the mod list is closed.
     /// </summary>
     [HarmonyPatch(typeof(AchievementsUI), nameof(AchievementsUI.SetAchievementsIsActive))]
     [HarmonyPrefix]
