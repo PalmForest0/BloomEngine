@@ -34,7 +34,7 @@ internal sealed class YourCoreModClass : MelonMod
         ModMenuService.CreateEntry(this)
             .AddDisplayName("YourCoolMod")
             .AddDescription("Your cool mod description.")
-            .AddIcon(AssetHelper.LoadSprite("YourModAssembly.YourResourcesFolder.YourModIcon.png"))
+            .AddIcon(AssetHelper.LoadSprite("YourModNamespace.YourResourcesFolder.YourModIcon.png"))
             .Register();
     }
 }
