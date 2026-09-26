@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using MelonLoader.Logging;
 
 namespace BloomEngine.Core;
@@ -12,8 +13,32 @@ internal static class BloomLogger
     /// <summary>
     /// Gets the logger instance, which is set on load.
     /// </summary>
-    internal static MelonLogger.Instance Logger { get; set; } = null!;
+    private static MelonLogger.Instance Logger { get; set; } = null!;
 
+    internal static void Initialize(MelonLogger.Instance logger)
+    {
+        Logger = logger;
+        
+        var message = new List<string> {
+            $"{BloomEngineMod.Name} {BloomEngineMod.Version} by {BloomEngineMod.Author}",
+            "",
+#if DEBUG
+            "You are running a debug build! Get the latest release here:",
+            "https://github.com/PalmForest0/BloomEngine"
+#else
+            "Please submit any bug reports to the Discord server:",
+            "https://discord.gg/UfBMKTHN5b"
+#endif
+        };
+
+        int boxWidth = message.Max(line => line.Length) + 2;
+
+        Info($"┌{new string('─', boxWidth)}┐");
+        foreach (string line in message)
+            Info($"│ {line.PadRight(boxWidth - 2)} │");
+        Info($"└{new string('─', boxWidth)}┘");
+    }
+    
     /// <summary>
     /// Logs a debug message to the MelonLoader console if running in DEBUG mode.
     /// The message is prefixed with an optional string and displayed in a gray color.
