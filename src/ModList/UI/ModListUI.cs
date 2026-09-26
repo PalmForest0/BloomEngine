@@ -1,11 +1,11 @@
 ﻿using BloomEngine.Extensions;
-using BloomEngine.Helpers;
 using BloomEngine.UI;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.ModList.UI;
 
@@ -55,20 +55,20 @@ internal sealed class ModListUI
     /// <returns>The created container object.</returns>
     private GameObject CreateModsContainer()
     {
-        GameObject container = GameObject.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
+        var container = Object.Instantiate(achievementsContainer, achievementsContainer.transform.parent);
         container.name = "ModEntries";
 
-        RectTransform modsContainerRect = container.GetComponent<RectTransform>();
+        var modsContainerRect = container.GetComponent<RectTransform>();
         modsContainerRect.sizeDelta = new Vector2(2800, modsContainerRect.sizeDelta.y);
         modsContainerRect.anchoredPosition = new Vector2(70, -1020);
 
-        GridLayoutGroup modsContainerGrid = container.GetComponent<GridLayoutGroup>();
+        var modsContainerGrid = container.GetComponent<GridLayoutGroup>();
         modsContainerGrid.childAlignment = TextAnchor.UpperCenter;
         modsContainerGrid.cellSize = new Vector2(1100, 250);
         modsContainerGrid.spacing = new Vector2(150, 100);
 
         for (int i = 0; i < container.transform.childCount; i++)
-            GameObject.Destroy(container.transform.GetChild(i).gameObject);
+            Object.Destroy(container.transform.GetChild(i).gameObject);
 
         return container;
     }
@@ -78,10 +78,10 @@ internal sealed class ModListUI
     /// </summary>
     private void CreateButtons()
     {
-        GameObject obj = UIHelper.CreateButton("ModsButton", achievementsRect, "Mods", OpenModMenu);
+        var obj = UIHelper.CreateButton("ModsButton", achievementsRect, "Mods", OpenModMenu);
 
         // Position the modsButton in the bottom left corner
-        RectTransform rect = obj.GetComponent<RectTransform>();
+        var rect = obj.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0, 1);
         rect.anchorMin = new Vector2(0, 1);
         rect.anchorMax = new Vector2(0, 1);
@@ -101,7 +101,7 @@ internal sealed class ModListUI
         var labelObj = new GameObject("BloomEngineLabel");
         labelObj.transform.SetParent(achievementsRect, false);
 
-        TextMeshProUGUI label = labelObj.AddComponent<TextMeshProUGUI>();
+        var label = labelObj.AddComponent<TextMeshProUGUI>();
         label.fontSize = 52;
         label.characterSpacing = 0;
         label.font = UIHelper.FontBrianneTod;
@@ -110,7 +110,7 @@ internal sealed class ModListUI
         BloomEngine  v{BloomEngineMod.Version}
         """;
 
-        RectTransform rect = label.GetComponent<RectTransform>();
+        var rect = label.GetComponent<RectTransform>();
         rect.pivot = new Vector2(0, 0);
         rect.anchorMin = new Vector2(0, 0);
         rect.anchorMax = new Vector2(0, 0);

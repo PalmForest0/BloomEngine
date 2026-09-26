@@ -7,6 +7,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace BloomEngine.ModList.UI;
 
@@ -15,7 +16,6 @@ internal sealed class ModListItemUI
     // Constants for UI sizes
     private const int IconSize = 225;
     private const int IconBorderSize = 275;
-
 
     private readonly GameObject itemObject;
     private readonly RectTransform iconContainer;
@@ -35,7 +35,7 @@ internal sealed class ModListItemUI
         ModListService.ModEntries.TryGetValue(mod, out entry);
 
         // Clone an achievement item for this mod entry
-        itemObject = GameObject.Instantiate(template, parent);
+        itemObject = Object.Instantiate(template, parent);
         itemObject.SetActive(true);
         itemObject.name = $"ModEntry_{(entry?.DisplayName ?? mod.Info.Name).Replace(" ", "")}";
 
@@ -65,17 +65,17 @@ internal sealed class ModListItemUI
     {
         // Update the icon's pivot and size and set the sprite
         var image = itemObject.transform.Find("Icon").GetComponent<Image>();
-        RectTransform iconRect = image.GetComponent<RectTransform>();
+        var iconRect = image.GetComponent<RectTransform>();
         iconRect.pivot = new Vector2(0.5f, 0.5f);
         iconRect.sizeDelta = new Vector2(IconSize, IconSize);
         image.sprite = entry?.Icon ?? DefaultIconSprite;
 
         // Create an icon container to hold the icon, border and config button
-        GameObject containerObj = GameObject.Instantiate(image.gameObject, itemObject.transform);
-        GameObject.Destroy(containerObj.GetComponent<Image>());
+        var containerObj = Object.Instantiate(image.gameObject, itemObject.transform);
+        Object.Destroy(containerObj.GetComponent<Image>());
         containerObj.name = "IconContainer";
 
-        RectTransform containerRect = containerObj.GetComponent<RectTransform>();
+        var containerRect = containerObj.GetComponent<RectTransform>();
         containerRect.pivot = new Vector2(0.2f, 0.5f);
         iconRect.SetParent(containerRect);
 
@@ -112,12 +112,12 @@ internal sealed class ModListItemUI
     /// </summary>
     private void CreateIconBorder()
     {
-        Image borderImage = GameObject.Instantiate(iconImage, iconContainer);
+        var borderImage = Object.Instantiate(iconImage, iconContainer);
         borderImage.name = "IconBorder";
         borderImage.sprite = ModIconBorderSprite;
         borderImage.raycastTarget = false;
 
-        RectTransform borderRect = borderImage.GetComponent<RectTransform>();
+        var borderRect = borderImage.GetComponent<RectTransform>();
         borderRect.pivot = new Vector2(0.5f, 0.5f);
         borderRect.sizeDelta = new Vector2(IconBorderSize, IconBorderSize);
     }
@@ -131,21 +131,21 @@ internal sealed class ModListItemUI
             return;
 
         // Create the config icon
-        GameObject configIcon = GameObject.Instantiate(iconImage.gameObject, iconContainer);
+        var configIcon = Object.Instantiate(iconImage.gameObject, iconContainer);
         configIcon.name = "ConfigIcon";
 
-        RectTransform configIconRect = configIcon.GetComponent<RectTransform>();
+        var configIconRect = configIcon.GetComponent<RectTransform>();
         configIconRect.pivot = new Vector2(0.5f, 0.5f);
         configIconRect.sizeDelta = new Vector2(IconSize, IconSize);
 
-        Image configIconImg = configIcon.GetComponent<Image>();
+        var configIconImg = configIcon.GetComponent<Image>();
         configIconImg.sprite = ConfigIconSprite;
         configIconImg.raycastTarget = false;
 
         configIcon.AddComponent<CanvasGroup>().alpha = 0f;
 
         // Add a button component to the icon object
-        Button configButton = iconImage.gameObject.AddComponent<Button>();
+        var configButton = iconImage.gameObject.AddComponent<Button>();
         configButton.onClick.AddListener(() => ConfigService.ShowConfigPanel(entry));
 
         // Adjust the icon's hover colors
@@ -156,16 +156,16 @@ internal sealed class ModListItemUI
         configButton.colors = colors;
 
         // Add event triggers for pointer enter and exit to fade in/out the config icon
-        EventTrigger trigger = iconImage.gameObject.AddComponent<EventTrigger>();
+        var trigger = iconImage.gameObject.AddComponent<EventTrigger>();
         trigger.triggers = new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
 
         // On pointer enter trigger - fade in config icon
-        EventTrigger.Entry pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        var pointerEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
         pointerEnter.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 1f, 0.2f));
         trigger.triggers.Add(pointerEnter);
 
         // On pointer exit trigger - fade out config icon
-        EventTrigger.Entry pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+        var pointerExit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
         pointerExit.callback.AddListener(_ => UIHelper.FadeUIAlpha(configIconRect, 0f, 0.2f));
         trigger.triggers.Add(pointerExit);
     }

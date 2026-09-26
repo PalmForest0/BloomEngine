@@ -22,6 +22,7 @@ public static class CollectionExtensions
         }
     }
     
+    // ReSharper disable once InconsistentNaming
     extension<T>(Il2CppSystem.Collections.Generic.List<T> il2cppCollection)
     {
         /// <summary>

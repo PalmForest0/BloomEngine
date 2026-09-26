@@ -1,11 +1,8 @@
-﻿using BloomEngine.Core;
-using BloomEngine.Extensions;
-using BloomEngine.Helpers;
+﻿using BloomEngine.Extensions;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace BloomEngine.UI;
 
@@ -66,7 +63,7 @@ public class CustomPopup : MonoBehaviour
         // Set defaults
         SetHeader(name);
         SetSubheader($"See methods provided by the {nameof(CustomPopup)} class to customise this panel!");
-        SetFirstButton(true, "Ok", null);
+        SetFirstButton(true, "Ok");
 
         // Clean up
         Destroy(Window.Find("Buttons/P_BacicButton_No").gameObject);

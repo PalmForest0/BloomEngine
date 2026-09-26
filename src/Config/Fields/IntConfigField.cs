@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppReloaded.Input;
@@ -31,23 +32,23 @@ public sealed class IntConfigField : TypedConfigField<int, IntConfigField>
     protected internal override void ApplyInput() => Value = (int)ValidateNumericInput(Textbox.text, typeof(int));
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString());
+    protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString(CultureInfo.InvariantCulture));
 
     /// <inheritdoc/>
     internal override void HandleInputChanged()
     {
-        // Perform basic sanitisation on live input change
+        // Perform basic sanitization on live input change
         Textbox.SetTextWithoutNotify(SanitizeNumericInput(Textbox.text));
         base.HandleInputChanged();
     }
 
     /// <summary>
-    /// Performs basic sanitisation of numeric input strings to be used live for config fields. Does not perform clamping, parsing or type conversion.
+    /// Performs basic sanitization of numeric input strings to be used live for config fields. Does not perform clamping, parsing or type conversion.
     /// </summary>
-    private static string SanitizeNumericInput(string input) => new string([.. input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.')]);
+    private static string SanitizeNumericInput(string input) => new([.. input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.')]);
 
     /// <summary>
-    /// Performs full validation of an input string for a numeric type, including sanitisation, parsing and clamping to the type's min/max values.
+    /// Performs full validation of an input string for a numeric type, including sanitization, parsing and clamping to the type's min/max values.
     /// </summary>
     private static object ValidateNumericInput(string input, Type type)
     {
@@ -60,16 +61,16 @@ public sealed class IntConfigField : TypedConfigField<int, IntConfigField>
         input = FormatNumericString(input);
 
         if (string.IsNullOrWhiteSpace(input) || input == "-" || input == "+" || input == ".")
-            return Convert.ChangeType(0, type);
+            return Convert.ChangeType(0, type, CultureInfo.InvariantCulture);
 
         var minField = type.GetField("MinValue");
         var maxField = type.GetField("MaxValue");
 
-        double min = Convert.ToDouble(minField?.GetValue(null) ?? 0);
-        double max = Convert.ToDouble(maxField?.GetValue(null) ?? byte.MaxValue);
-        double val = double.Parse(input);
+        double min = Convert.ToDouble(minField?.GetValue(null) ?? 0, CultureInfo.InvariantCulture);
+        double max = Convert.ToDouble(maxField?.GetValue(null) ?? byte.MaxValue, CultureInfo.InvariantCulture);
+        double val = double.Parse(input, CultureInfo.InvariantCulture);
 
-        return Convert.ChangeType(Math.Clamp(val, min, max), type);
+        return Convert.ChangeType(Math.Clamp(val, min, max), type, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -86,7 +87,7 @@ public sealed class IntConfigField : TypedConfigField<int, IntConfigField>
             char c = input[i];
 
             // Allow + or - sign at te start if the type is signed
-            if ((c == '-' || c == '+') && i == 0 && !hasSign)
+            if (c is '-' or '+' && i == 0 && !hasSign)
             {
                 sb.Append(c);
                 hasSign = true;

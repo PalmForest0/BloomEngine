@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppSource.UI;
@@ -32,12 +33,12 @@ public sealed class EnumConfigField<TEnum> : TypedConfigField<TEnum, EnumConfigF
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
+        var wrapper = UIHelper.CreateUIWrapper(parent, name);
 
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
-        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value), (_, _) => HandleInputChanged());
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value, CultureInfo.InvariantCulture), (_, _) => HandleInputChanged());
         
-        RectTransform dropdownRect = Dropdown.GetComponent<RectTransform>();
+        var dropdownRect = Dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);
 
         dropdownRect.sizeDelta = new Vector2(0, 60);
@@ -99,7 +100,7 @@ public sealed class EnumConfigField<TEnum> : TypedConfigField<TEnum, EnumConfigF
             return input;
 
         var sb = new StringBuilder();
-        sb.Append(char.ToUpper(input[0]));
+        sb.Append(char.ToUpper(input[0], CultureInfo.InvariantCulture));
 
         for (int i = 1; i < input.Length; i++)
         {

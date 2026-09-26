@@ -35,7 +35,7 @@ public abstract class TypedConfigField<T, TSelf> : BaseConfigField
                 return;
             
             this.value = newValue;
-            MelonEntry?.Value = newValue;
+            MelonEntry.Value = newValue;
 
             OnValueApplied?.Invoke(newValue);
         }

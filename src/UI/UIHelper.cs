@@ -1,6 +1,5 @@
 ﻿using BloomEngine.Core;
 using BloomEngine.Extensions;
-using BloomEngine.Helpers;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
@@ -80,7 +79,7 @@ public static class UIHelper
     private static GameObject? _templateSlider;
 
     /// <summary>
-    /// Attempts to load all necessary game UI screens and panels and performs other functions to initialise the UIHelper.
+    /// Attempts to load all necessary game UI screens and panels and performs other functions to initialize the UIHelper.
     /// </summary>
     internal static void TryLoadAll(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
@@ -94,10 +93,10 @@ public static class UIHelper
         const string nameLabelPath = "Canvas/Layout/Center/Main/AccountSign/SignTop/NameLabel";
         const string helpPageLabelPath = "P_HelpPanel/Canvas/Layout/Center/PageCount/PageLabel";
 
-        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>(nameLabelPath, out var label, LogPrefix))
-            FontBrianneTod = label.font;
-        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out label, LogPrefix))
-            FontHouseOfTerror = label.font;
+        if (MainMenuPanel.transform.TryFindComponent<TextMeshProUGUI>(nameLabelPath, out var label1, LogPrefix))
+            FontBrianneTod = label1.font;
+        if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out var label2, LogPrefix))
+            FontHouseOfTerror = label2.font;
 
         TryCreateTemplates();
 
@@ -391,7 +390,7 @@ public static class UIHelper
     /// <param name="action">The code to execute on this event.</param>
     public static void AddEventTrigger(GameObject obj, EventTriggerType type, Action<BaseEventData> action)
     {
-        var entry = new EventTrigger.Entry() { eventID = type };
+        var entry = new EventTrigger.Entry { eventID = type };
         entry.callback.AddListener(action);
 
         var trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();

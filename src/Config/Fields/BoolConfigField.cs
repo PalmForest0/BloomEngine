@@ -21,10 +21,10 @@ public sealed class BoolConfigField : TypedConfigField<bool, BoolConfigField>
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        RectTransform wrapper = UIHelper.CreateUIWrapper(parent, name);
+        var wrapper = UIHelper.CreateUIWrapper(parent, name);
 
         Checkbox = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => HandleInputChanged());
-        RectTransform toggleRect = Checkbox.gameObject.GetComponent<RectTransform>();
+        var toggleRect = Checkbox.gameObject.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(toggleRect, wrapper);
 
         toggleRect.anchoredPosition += new Vector2(0, -35);
