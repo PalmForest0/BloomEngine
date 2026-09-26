@@ -16,14 +16,14 @@ internal static class BloomLoader
     /// </summary>
     private const string LogPrefix = $"[{nameof(BloomLoader)}] ";
 
-    public static MainMenuPanelView? MainMenuPanel { get; private set; }
-    public static PanelViewContainer? GlobalPanels { get; private set; }
+    private static MainMenuPanelView? _mainMenuPanel;
+    private static PanelViewContainer? _globalPanels;
 
     public static void LoadMainMenu(MainMenuPanelView mainMenuPanels)
     {
         BloomLogger.Info("Loading main menu...", LogPrefix);
         
-        MainMenuPanel = mainMenuPanels;
+        _mainMenuPanel = mainMenuPanels;
         TryInitializeAll();
     }
 
@@ -31,7 +31,7 @@ internal static class BloomLoader
     {
         BloomLogger.Info("Loading global panel container...", LogPrefix);
         
-        GlobalPanels = globalPanels;
+        _globalPanels = globalPanels;
         TryInitializeAll();
     }
 
@@ -45,10 +45,10 @@ internal static class BloomLoader
 
     private static void TryInitializeAll()
     {
-        if(MainMenuPanel.IsNull() || GlobalPanels.IsNull())
+        if(_mainMenuPanel.IsNull() || _globalPanels.IsNull())
             return;
         
-        UIHelper.TryLoadAll(MainMenuPanel, GlobalPanels);
-        ConfigService.TryCreateConfigPanels(MainMenuPanel, GlobalPanels);
+        UIHelper.TryLoadAll(_mainMenuPanel, _globalPanels);
+        ConfigService.TryCreateConfigPanels(_mainMenuPanel, _globalPanels);
     }
 }
