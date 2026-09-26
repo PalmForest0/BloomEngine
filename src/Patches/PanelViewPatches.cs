@@ -16,18 +16,12 @@ internal static class PanelViewPatches
     [HarmonyPostfix]
     private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
-        switch(__instance)
-        {
-            case var c when c.name == "GlobalPanels(Clone)":
-                BloomLoader.LoadGlobalPanels(c);
-                return;
-            case var c when c.name == "Panels" && c.transform.FindChild("P_ZenGarden_MainHUD"):
-                UIHelper.ZenGardenPanels = c;
-                return;
-            case var c when c.name == "Panels" && c.transform.FindChild("P_Gameplay_MainHUD"):
-                UIHelper.GameplayPanels = c;
-                return;
-        }
+        if(__instance.name == "GlobalPanels(Clone)")
+            BloomLoader.LoadGlobalPanels(__instance);
+        else if(__instance.transform.FindChild("P_ZenGarden_MainHUD"))
+            UIHelper.ZenGardenPanels = __instance;
+        else if(__instance.transform.FindChild("P_Gameplay_MainHUD"))
+            UIHelper.GameplayPanels = __instance;
     }
 
     /// <summary>

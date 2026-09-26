@@ -1,0 +1,8 @@
+[Patches/**/*.cs]
+dotnet_naming_rule.harmony_patch_parameters.symbols  = harmony_patch_parameters_symbols
+dotnet_naming_rule.harmony_patch_parameters.style    = harmony_patch_parameters_style
+dotnet_naming_rule.harmony_patch_parameters.severity = silent
+
+dotnet_naming_symbols.harmony_patch_parameters_symbols.applicable_kinds = parameter
+
+dotnet_naming_style.harmony_patch_parameters_style.capitalization = camel_case
