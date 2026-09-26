@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using BloomEngine.Config;
-using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Config.Fields.Base;
 using BloomEngine.Core;
 using BloomEngine.Helpers;
 using MelonLoader;
@@ -21,7 +21,7 @@ public sealed class ModListEntry(MelonMod mod)
     /// <summary>
     /// A string that represents the unique identifier for this mod entry.
     /// </summary>
-    public string Id { get; private set; } = mod.Info.Name.Trim().Replace(" ", "");
+    public string Id { get; } = mod.Info.Name.Trim().Replace(" ", "");
 
     /// <summary>
     /// The display name that shows up in the mod list for this entry.
@@ -39,14 +39,14 @@ public sealed class ModListEntry(MelonMod mod)
     public Sprite? Icon { get; private set; }
 
     /// <summary>
-    /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfigInputs(BaseConfigInput[])"/> or <see cref="AddConfigClass(Type)"/>.
+    /// This mod's config that will be available in-game. To add a config, use <see cref="AddConfigFields"/> or <see cref="AddConfigClass(Type)"/>.
     /// </summary>
     public ModConfig? Config { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this mod entry has a non-empty config.
     /// </summary>
-    public bool HasConfigInputs => Config is not null && !Config.IsEmpty;
+    public bool HasConfigFields => Config is not null && !Config.IsEmpty;
 
     /// <summary>
     /// Adds a custom display name that will replace this entry's mod name in the mod list.
@@ -86,47 +86,48 @@ public sealed class ModListEntry(MelonMod mod)
     }
 
     /// <summary>
-    /// Creates a config for this mod and adds all the provided inputs, adding them to the existing ones if a config alredy exists.<br/>
-    /// To create a config input, use the static methods provided by <see cref="ConfigService"/>.
+    /// Creates a config for this mod and adds all the provided fields, appending them to the existing ones if a config already exists.<br/>
+    /// To create a config field, use the static methods provided by the <see cref="ConfigService"/>.
     /// </summary>
-    /// <param name="inputs">An array of inputs to create the config with.</param>
-    /// <returns>This mod entry with the added config inputs.</returns>
-    public ModListEntry AddConfigInputs(params BaseConfigInput[] inputs)
+    /// <param name="fields">An array of fields to create the config with.</param>
+    /// <returns>This mod entry with the added config fields.</returns>
+    public ModListEntry AddConfigFields(params BaseConfigField[] fields)
     {
         if (Config is null)
-            Config = new ModConfig(Id, DisplayName, inputs);
-        else Config.ConfigInputs.AddRange(inputs);
+            Config = new ModConfig(Id, DisplayName, fields);
+        else Config.ConfigFields.AddRange(fields);
 
         return this;
     }
 
     /// <summary>
-    /// Adds a config to this mod using a static config class. To add input fields,
-    /// use the static methods provided by <see cref="ConfigService"/> and make the config inputs publicly accessible.
+    /// Adds a config to this mod using a static config class. To add config fields,
+    /// use the static methods provided by the <see cref="ConfigService"/> and make the config fields publicly accessible.
     /// </summary>
-    /// <param name="configType">The static class type containing public input fields to be registered in the config menu.</param>
-    /// <returns>This mod entry with the config added.</returns>
+    /// <param name="configType">The static class type containing public config fields.</param>
+    /// <returns>This mod entry with the config fields added.</returns>
     public ModListEntry AddConfigClass(Type configType)
     {
-        List<BaseConfigInput> inputs = new();
+        List<BaseConfigField> fields = new();
 
-        // Use reflection to find all fields and properties that define input fields
+        // Use reflection to find all public fields and properties containing config fields
         foreach (var field in configType.GetFields(BindingFlags.Static | BindingFlags.Public))
-            if (field.GetValue(null) is BaseConfigInput input)
-                inputs.Add(input);
+            if (field.GetValue(null) is BaseConfigField configField)
+                fields.Add(configField);
 
-        foreach (var prop in configType.GetProperties(BindingFlags.Static | BindingFlags.Public))
-            if (prop.GetValue(null) is BaseConfigInput input)
-                inputs.Add(input);
+        foreach (var property in configType.GetProperties(BindingFlags.Static | BindingFlags.Public))
+            if (property.GetValue(null) is BaseConfigField configField)
+                fields.Add(configField);
 
-        AddConfigInputs(inputs.ToArray());
+        AddConfigFields(fields.ToArray());
         return this;
     }
 
     /// <summary>
     /// Registers this <see cref="ModListEntry"/> and adds it to the mod list with the provided information.
     /// </summary>
-    public void Register()
+    /// <returns>This registered mod entry.</returns>
+    public ModListEntry Register()
     {
         if (ModListService.ModEntries.ContainsKey(Mod))
             BloomLogger.Warn($"Encountered duplicate registration for {DisplayName}, replacing existing {nameof(ModListEntry)}.", ModListService.LogPrefix);
@@ -135,6 +136,7 @@ public sealed class ModListEntry(MelonMod mod)
         Config?.Save(false);
 
         BloomLogger.Info($"Successfully added {DisplayName} to the mod list.", ModListService.LogPrefix);
+        return this;
     }
 
     /// <summary>
@@ -142,7 +144,7 @@ public sealed class ModListEntry(MelonMod mod)
     /// </summary>
     /// <param name="mod">The mod to fetch the name from, if available.</param>
     /// <returns>A string that can be used for display name of an unregistered mod.</returns>
-    internal static string GetDefaultModName(MelonMod mod) => mod?.Info?.Name ?? "Unknown mod";
+    internal static string GetDefaultModName(MelonMod mod) => mod.Info?.Name ?? "Unknown mod";
 
     /// <summary>
     /// Provides a string for the mod's description if it does not have a registered entry.
@@ -150,5 +152,5 @@ public sealed class ModListEntry(MelonMod mod)
     /// <param name="mod">The mod to fetch info such as the author and version from, if available.</param>
     /// <returns>A string that can be used for the description of an unregistered mod.</returns>
     internal static string GetDefaultModDescription(MelonMod mod)
-        => $"By {mod?.Info?.Author ?? "???"}\nVersion {mod?.Info?.Version ?? "???"}";
+        => $"By {mod.Info?.Author ?? "???"}\nVersion {mod.Info?.Version ?? "???"}";
 }

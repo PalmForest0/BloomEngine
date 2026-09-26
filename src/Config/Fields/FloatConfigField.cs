@@ -1,15 +1,15 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Fields;
 
 /// <summary>
-/// A config input type which contains UI implementation for handling <see cref="float"/> input.<br/>
-/// To create a <see cref="FloatConfigInput"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
+/// A config field which displays and processes a <see cref="float"/> value using a slider.
+/// To create a <see cref="FloatConfigField"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
-public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
+public sealed class FloatConfigField : TypedConfigField<float, FloatConfigField>
 {
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider.
@@ -22,11 +22,11 @@ public sealed class FloatConfigInput : TypedConfigInput<float, FloatConfigInput>
     public float MaxValue { get; private init; }
 
     /// <summary>
-    /// The UI slider which corresponds to this config input in the config panel.
+    /// The UI slider which corresponds to this config field in the config panel.
     /// </summary>
     public Slider Slider { get; private set; } = null!;
 
-    internal FloatConfigInput(string name, string description, float defaultValue, float minValue, float maxValue) : base(name, description, defaultValue)
+    internal FloatConfigField(string name, string description, float defaultValue, float minValue, float maxValue) : base(name, description, defaultValue)
     {
         MinValue = minValue;
         MaxValue = maxValue;

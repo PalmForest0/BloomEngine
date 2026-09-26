@@ -185,14 +185,14 @@ public static class UIHelper
     }
 
     /// <summary>
-    /// Creates a new text input field as a child of the specified parent, with optional placeholder text.
+    /// Creates a new textbox input as a child of the specified parent, with optional placeholder text.
     /// </summary>
-    /// <param name="name">The name to assign to the created input field GameObject.</param>
-    /// <param name="parent">The parent RectTransform under which the input field will be instantiated.</param>
-    /// <param name="placeholder">The placeholder text to display when the input field is empty. If null, the placeholder will be hidden.</param>
-    /// <param name="onTextChanged">An optional callback invoked whenever the text in the input field changes.</param>
-    /// <param name="onDeselect">An optional callback invoked when the input field is deselected or submitted.</param>
-    /// <returns>A ReloadedInputField instance representing the newly created text input field.</returns>
+    /// <param name="name">The name to assign to the created input GameObject.</param>
+    /// <param name="parent">The parent RectTransform under which the input will be instantiated.</param>
+    /// <param name="placeholder">The placeholder text to display when the input is empty. If null, the placeholder will be hidden.</param>
+    /// <param name="onTextChanged">An optional callback invoked whenever the text in the input changes.</param>
+    /// <param name="onDeselect">An optional callback invoked when the input is deselected or submitted.</param>
+    /// <returns>A ReloadedInputField instance representing the newly created text input.</returns>
     public static ReloadedInputField CreateTextField(string name, RectTransform parent, string? placeholder = null, Action<ReloadedInputField>? onTextChanged = null, Action<ReloadedInputField>? onDeselect = null)
     {
         var obj = Object.Instantiate(_templateTextbox, parent)!;

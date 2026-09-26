@@ -1,4 +1,4 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using BloomEngine.Config.Fields.Base;
 using BloomEngine.Core;
 using BloomEngine.Extensions;
 using BloomEngine.UI;
@@ -44,12 +44,12 @@ internal sealed class ConfigPanel
     internal ConfigPanel(PanelView panel, ModConfig config)
     {
         this.config = config;
-        pageCount = (int)Math.Ceiling((double)config.InputCount / InputsPerPage);
+        pageCount = (int)Math.Ceiling((double)config.FieldCount / InputsPerPage);
 
         this.panel = panel.gameObject;
         window = InitializePanel(panel);
 
-        // Create popup that will be used to show input descriptions
+        // Create a popup that will be used to show field descriptions
         _configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
         _configPopup.SetFirstButton(true, "Close");
 
@@ -73,7 +73,7 @@ internal sealed class ConfigPanel
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             Object.Destroy(localiser);
 
-        Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.InputCount} fields across {pageCount} page{(pageCount > 1 ? "s" : "")}.");
+        Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.FieldCount} fields across {pageCount} page{(pageCount > 1 ? "s" : "")}.");
     }
 
     private RectTransform InitializePanel(PanelView panelView)
@@ -102,7 +102,7 @@ internal sealed class ConfigPanel
         // Setup apply and cancel buttons
         UIHelper.ModifyButton(window.Find("Buttons").GetChild(0).gameObject, "P_ConfigButton_Apply", "Apply", () =>
         {
-            config.UpdateAllFromUI();
+            config.ApplyInputAll();
             config.Save(true);
             ConfigService.HideConfigPanel();
         });
@@ -126,7 +126,7 @@ internal sealed class ConfigPanel
 
     private void SetupPages()
     {
-        var inputPages = config.ConfigInputs.Chunk(InputsPerPage).ToList();
+        var inputPages = config.ConfigFields.Chunk(InputsPerPage).ToList();
 
         for (int i = 0; i < inputPages.Count; i++)
         {
@@ -157,10 +157,10 @@ internal sealed class ConfigPanel
         Object.Destroy(window.Find("SubheadingText").gameObject);
     }
 
-    private void CreateRow(BaseConfigInput input, RectTransform parent)
+    private void CreateRow(BaseConfigField field, RectTransform parent)
     {
         // Create row GameObject
-        var rowObj = new GameObject($"ConfigRow_{input.Name.Trim().Replace(" ", "")}");
+        var rowObj = new GameObject($"ConfigRow_{field.Name.Trim().Replace(" ", "")}");
         var rowRect = rowObj.AddComponent<RectTransform>();
         rowRect.SetParent(parent, false);
 
@@ -180,17 +180,17 @@ internal sealed class ConfigPanel
         layout.flexibleHeight = 0;
 
         // Create all the children in the right order
-        CreateLabel(input, rowRect);
-        CreateInput(input, rowRect);
-        CreateSquareButton("InputResetButton", rowRect, input.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
-        if (!string.IsNullOrWhiteSpace(input.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(input.Name, input.Description), InfoButtonSprite, InfoButtonSpriteSelected);
+        CreateLabel(field, rowRect);
+        CreateInput(field, rowRect);
+        CreateSquareButton("InputResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
+        if (!string.IsNullOrWhiteSpace(field.Description))
+            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
-    private void CreateLabel(BaseConfigInput input, RectTransform parent)
+    private void CreateLabel(BaseConfigField field, RectTransform parent)
     {
         var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        labelObj.name = $"Label_{input.Name.Trim().Replace(" ", "")}";
+        labelObj.name = $"Label_{field.Name.Trim().Replace(" ", "")}";
         labelObj.SetActive(true);
 
         var layout = labelObj.AddComponent<LayoutElement>();
@@ -202,15 +202,15 @@ internal sealed class ConfigPanel
         labelRect.sizeDelta = new Vector2(900, 134);
 
         var text = labelObj.GetComponent<TextMeshProUGUI>();
-        text.text = input.Name;
+        text.text = field.Name;
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.alignment = TextAlignmentOptions.Left;
         text.enabled = true;
     }
 
-    private static void CreateInput(BaseConfigInput input, RectTransform parent)
+    private static void CreateInput(BaseConfigField field, RectTransform parent)
     {
-        var inputObj = input.CreateInputObject(parent, $"ConfigInput_{input.Name.Trim().Replace(" ", "")}");
+        var inputObj = field.CreateInputObject(parent, $"ConfigFieldInput_{field.Name.Trim().Replace(" ", "")}");
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
@@ -301,12 +301,11 @@ internal sealed class ConfigPanel
 
 
     /// <summary>
-    /// Displays the panel and populates its input fields with the current values of the associated properties.
+    /// Displays the panel and populates its UI input objects with the currently stored values of the associated fields.
     /// </summary>
     public void ShowPanel()
     {
-        // Populate inputs with currently stored values
-        config.RefreshAllUI();
+        config.RefreshInputAll();
 
         SetPageIndex(0);
         panel.SetActive(true);

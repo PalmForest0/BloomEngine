@@ -1,24 +1,24 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using System.Text;
+using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppReloaded.Input;
 using MelonLoader;
-using System.Text;
 using UnityEngine;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Fields;
 
 /// <summary>
-/// A config input type which contains UI implementation for handling <see cref="int"/> input.<br/>
-/// To create an <see cref="IntConfigInput"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
+/// A config field which displays and processes an <see cref="int"/> value using a numeric textbox.
+/// To create an <see cref="IntConfigField"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
-public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
+public sealed class IntConfigField : TypedConfigField<int, IntConfigField>
 {
     /// <summary>
-    /// The UI textbox which corresponds to this config input in the config panel.
+    /// The UI textbox which corresponds to this config field in the config panel.
     /// </summary>
     public ReloadedInputField Textbox { get; private set; } = null!;
 
-    internal IntConfigInput(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
+    internal IntConfigField(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -42,12 +42,12 @@ public sealed class IntConfigInput : TypedConfigInput<int, IntConfigInput>
     }
 
     /// <summary>
-    /// Performs basic sanitisation of numeric input strings to be used for live input fields. Does not perform clamping, parsing or type conversion.
+    /// Performs basic sanitisation of numeric input strings to be used live for config fields. Does not perform clamping, parsing or type conversion.
     /// </summary>
     private static string SanitizeNumericInput(string input) => new string([.. input.Where(c => char.IsDigit(c) || c == '-' || c == '+' || c == '.')]);
 
     /// <summary>
-    /// Performs full validation of a string input for a numeric type, including sanitisation, parsing and clamping to the type's min/max values.
+    /// Performs full validation of an input string for a numeric type, including sanitisation, parsing and clamping to the type's min/max values.
     /// </summary>
     private static object ValidateNumericInput(string input, Type type)
     {

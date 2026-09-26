@@ -1,5 +1,5 @@
-﻿using BloomEngine.Config.Inputs;
-using BloomEngine.Config.Inputs.Base;
+﻿using BloomEngine.Config.Fields;
+using BloomEngine.Config.Fields.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
 using BloomEngine.Extensions;
@@ -11,8 +11,8 @@ using Object = UnityEngine.Object;
 namespace BloomEngine.Config;
 
 /// <summary>
-/// A static class which provides methods for creating config inputs.
-/// The supported types are: <see cref="string"/>, <see cref="int"/>, <see cref="float"/>, <see cref="bool"/> and <see cref="Enum"/>.
+/// A static class which provides methods for creating config fields.
+/// The currently supported types are: <see cref="string"/>, <see cref="int"/>, <see cref="float"/>, <see cref="bool"/> and <see cref="Enum"/>.
 /// </summary>
 public static class ConfigService
 {
@@ -24,91 +24,101 @@ public static class ConfigService
     /// <summary>
     /// The config panel UI that is currently open.
     /// </summary>
-    private static ConfigPanel? CurrentPanel;
+    private static ConfigPanel? _currentPanel;
 
-    private static bool PanelsCreated = false;
+    private static bool _panelsCreated;
 
     /// <summary>
-    /// A value that indicates whether a mod config config is currently open.
+    /// A value that indicates whether a mod config is currently open.
     /// </summary>
-    public static bool IsConfigPanelOpen => CurrentPanel is not null;
+    public static bool IsConfigPanelOpen => _currentPanel is not null;
 
     /// <summary>
-    /// Creates a <see cref="StringConfigInput"/> instance which represents a textbox. To add this input to your config,
-    /// pass it to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
+    /// Creates a <see cref="StringConfigField"/> instance which represents a textbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
-    /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
-    /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="string"/> value of this config input.</param>
-    /// <returns>A <see cref="StringConfigInput"/> instance which can be passed to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
-    public static StringConfigInput CreateString(string name, string description, string defaultValue)
+    /// <param name="name">The display name of this config field, which will be displayed in the config menu.</param>
+    /// <param name="description">The description of this config, which will be displayed in the config menu.</param>
+    /// <param name="defaultValue">The default <see cref="string"/> value of this config field.</param>
+    /// <returns>
+    /// A <see cref="StringConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static StringConfigField CreateString(string name, string description, string defaultValue)
         => new(name, description, defaultValue);
 
     /// <summary>
-    /// Creates an <see cref="IntConfigInput"/> instance which represents a numeric textbox. To add this input to your config,
-    /// pass it to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
+    /// Creates an <see cref="IntConfigField"/> instance which represents a numeric textbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
-    /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
-    /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="int"/> value of this config input.</param>
-    /// <returns>An <see cref="IntConfigInput"/> instance which can be passed to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
-    public static IntConfigInput CreateInt(string name, string description, int defaultValue)
+    /// <param name="name">The display name of this config field, which will be displayed in the config menu.</param>
+    /// <param name="description">The description of this field, which will be displayed in the config menu.</param>
+    /// <param name="defaultValue">The default <see cref="int"/> value of this config field.</param>
+    /// <returns>
+    /// An <see cref="IntConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static IntConfigField CreateInt(string name, string description, int defaultValue)
         => new(name, description, defaultValue);
 
     /// <summary>
-    /// Creates a <see cref="FloatConfigInput"/> instance which represents a slider. To add this input to your config,
-    /// pass it to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
+    /// Creates a <see cref="FloatConfigField"/> instance which represents a slider. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
-    /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
-    /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="float"/> value of this config input.</param>
-    /// <param name="minValue">The <strong>minimum</strong> value constraint of this <see cref="float"/> input slider.</param>
-    /// <param name="maxValue">The <strong>maximum</strong> value constraint of this <see cref="float"/> input slider.</param>
-    /// <returns>A <see cref="FloatConfigInput"/> instance which can be passed to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
-    public static FloatConfigInput CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue)
+    /// <param name="name">The display name of this config field, which will be displayed in the config menu.</param>
+    /// <param name="description">The description of this field, which will be displayed in the config menu.</param>
+    /// <param name="defaultValue">The default <see cref="float"/> value of this config field.</param>
+    /// <param name="minValue">The <strong>minimum</strong> value constraint of this field's <see cref="float"/> input slider.</param>
+    /// <param name="maxValue">The <strong>maximum</strong> value constraint of this field's <see cref="float"/> input slider.</param>
+    /// <returns>
+    /// A <see cref="FloatConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static FloatConfigField CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue)
         => new(name, description, defaultValue, minValue, maxValue);
 
     /// <summary>
-    /// Creates a <see cref="BoolConfigInput"/> instance which represents a checkbox. To add this input to your config,
-    /// pass it to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
+    /// Creates a <see cref="BoolConfigField"/> instance which represents a checkbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
-    /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
-    /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default <see cref="bool"/> value of this config input.</param>
-    /// <returns>A <see cref="BoolConfigInput"/> instance which can be passed to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
-    public static BoolConfigInput CreateBool(string name, string description, bool defaultValue)
+    /// <param name="name">The display name of this config field, which will be displayed in the config menu.</param>
+    /// <param name="description">The description of this field, which will be displayed in the config menu.</param>
+    /// <param name="defaultValue">The default <see cref="bool"/> value of this config field.</param>
+    /// <returns>
+    /// A <see cref="BoolConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields(BaseConfigField[])"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static BoolConfigField CreateBool(string name, string description, bool defaultValue)
         => new(name, description, defaultValue);
 
     /// <summary>
-    /// Creates an <see cref="EnumConfigInput{TEnum}"/> instance which represents a dropdown. To add this input to your config,
-    /// pass it to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/><br/> or make it publicly accessible
+    /// Creates an <see cref="EnumConfigField{TEnum}"/> instance which represents a dropdown. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
     /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
     /// </summary>
-    /// <param name="name">The display name of this config input, which will be displayed in the config menu.</param>
-    /// <param name="description">The description of this input field, which will be displayed in the config menu.</param>
-    /// <param name="defaultValue">The default enum value of this config input.</param>
-    /// <returns>An <see cref="EnumConfigInput{TEnum}"/> instance which can be passed to <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>
-    /// to add it to your mod's config.<br/> You can also store this config input and access its value using <see cref="TypedConfigInput{T, TSelf}.Value"/></returns>
-    public static EnumConfigInput<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue) where TEnum : Enum
+    /// <param name="name">The display name of this config field, which will be displayed in the config menu.</param>
+    /// <param name="description">The description of this field, which will be displayed in the config menu.</param>
+    /// <param name="defaultValue">The default enum value of this config field.</param>
+    /// <returns>
+    /// An <see cref="EnumConfigField{TEnum}"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static EnumConfigField<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue) where TEnum : Enum
         => new(name, description, defaultValue);
 
     /// <summary>
-    /// Displays the config config for the specified mod if it is registered and no other configuration config is currently open.
-    /// If the mod does not have a registered config config, a warning is logged.
+    /// Displays the config panel for the specified mod if it is registered and no other configuration config is currently open.
+    /// If the mod does not have a registered config, a warning is logged.
     /// </summary>
     /// <param name="mod">The mod for which to display the configuration config. Must not be null.</param>
     public static void ShowConfigPanel(ModListEntry mod)
     {
         // Return if a panel is already open
-        if (CurrentPanel is not null)
+        if (IsConfigPanelOpen)
             return;
 
         // Log a warning if there is no config registered
@@ -125,7 +135,7 @@ public static class ConfigService
         }
 
         mod.Config.Panel.ShowPanel();
-        CurrentPanel = mod.Config.Panel;
+        _currentPanel = mod.Config.Panel;
     }
 
     /// <summary>
@@ -133,11 +143,11 @@ public static class ConfigService
     /// </summary>
     public static void HideConfigPanel()
     {
-        if (CurrentPanel is null)
+        if (_currentPanel is null)
             return;
 
-        CurrentPanel.HidePanel();
-        CurrentPanel = null;
+        _currentPanel.HidePanel();
+        _currentPanel = null;
     }
 
     /// <summary>
@@ -146,11 +156,11 @@ public static class ConfigService
     /// </summary>
     internal static void TryCreateConfigPanels(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
-        if (PanelsCreated || mainMenu.IsNull() || globalPanels.IsNull())
+        if (_panelsCreated || mainMenu.IsNull() || globalPanels.IsNull())
             return;
 
         const string templatePanelId = "quit";
-        var template = mainMenu?.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
+        var template = mainMenu.GetComponentInParent<PanelViewContainer>().m_panels.FirstOrDefault(p => p.m_id == templatePanelId);
 
         if (template.IsNull())
         {
@@ -159,12 +169,12 @@ public static class ConfigService
         }
 
         // Create a config panel for each mod entry with a registered config
-        foreach (var config in ModListService.RegisteredEntries.Where(e => e.HasConfigInputs).Select(e => e.Config))
+        foreach (var config in ModListService.RegisteredEntries.Where(e => e.HasConfigFields).Select(e => e.Config))
         {
-            var panelObj = Object.Instantiate(template.gameObject, globalPanels!.transform);
+            var panelObj = Object.Instantiate(template.gameObject, globalPanels.transform);
             config!.Panel = new ConfigPanel(panelObj.GetComponent<PanelView>(), config);
         }
 
-        PanelsCreated = true;
+        _panelsCreated = true;
     }
 }

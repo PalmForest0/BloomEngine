@@ -1,18 +1,18 @@
 ﻿using MelonLoader;
 
-namespace BloomEngine.Config.Inputs.Base;
+namespace BloomEngine.Config.Fields.Base;
 
 /// <summary>
-/// Represents a generic config input with a specifically typed <see cref="Value"/>.
+/// Represents a generic config field with a specifically typed <see cref="Value"/>.
 /// </summary>
-/// <typeparam name="T">The type of value stored within this config input.</typeparam>
-/// <typeparam name="TSelf">The type of this config input.</typeparam>
-public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
+/// <typeparam name="T">The type of value stored within this config field.</typeparam>
+/// <typeparam name="TSelf">The type of this config field.</typeparam>
+public abstract class TypedConfigField<T, TSelf> : BaseConfigField
     where T : notnull
-    where TSelf : TypedConfigInput<T, TSelf>
+    where TSelf : TypedConfigField<T, TSelf>
 {
     /// <summary>
-    /// Gets or sets the value stored in this config input, invoking <see cref="transformFunc"/>.
+    /// Gets or sets the value stored in this config field, invoking <see cref="transformFunc"/> when it is updated.
     /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueApplied"/>
     /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
@@ -47,12 +47,12 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     private T value;
 
     /// <summary>
-    /// The default value of this config input. This is also used as a fallback when an unexpected value is encountered.
+    /// The default value of this config field. This is also used as a fallback when an unexpected value is encountered.
     /// </summary>
     public T DefaultValue { get; }
 
     /// <summary>
-    /// The type of value stored within this config input.
+    /// The type of value stored within this config field.
     /// </summary>
     public Type ValueType { get; }
 
@@ -62,7 +62,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     public string? OldIdentifier { get; private set; }
     
     /// <summary>
-    /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config input and contains the saved value.
+    /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config field and contains the stored value.
     /// </summary>
     public MelonPreferences_Entry<T> MelonEntry { get; private set; } = null!;
 
@@ -87,7 +87,7 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     /// </summary>
     private event Action? OnInputChanged;
 
-    protected TypedConfigInput(string name, string description, T defaultValue) : base(name, description)
+    protected TypedConfigField(string name, string description, T defaultValue) : base(name, description)
     {
         DefaultValue = defaultValue;
         value = defaultValue;
@@ -107,9 +107,9 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     internal sealed override void RefreshInput() => SetDisplayedValue(Value);
 
     /// <summary>
-    /// Sets the UI value using an implementation specific to the input type.
+    /// Sets the displayed UI input value based on the specific field type.
     /// </summary>
-    /// <param name="value">The value to insert into the UI input.</param>
+    /// <param name="value">The value to display in the UI input object.</param>
     protected abstract void SetDisplayedValue(T value);
 
     /// <summary>
@@ -133,8 +133,8 @@ public abstract class TypedConfigInput<T, TSelf> : BaseConfigInput
     }
 
     /// <summary>
-    /// Subscribes to and event which is invoked immediately every time the UI input is modified by the user.
-    /// Depending on the type of input, the UI element can be accessed to modify the value.
+    /// Subscribes to an event which is invoked every time the UI input is modified by the user.
+    /// Depending on the type of field, the UI input element may be accessed to modify the visible value.
     /// </summary>
     /// <param name="handler">The action to invoke when the UI input is changed by the user.</param>
     public TSelf WithOnInputChanged(Action handler)

@@ -1,19 +1,19 @@
 ﻿using System.Text;
-using BloomEngine.Config.Inputs.Base;
+using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppSource.UI;
 using UnityEngine;
 
-namespace BloomEngine.Config.Inputs;
+namespace BloomEngine.Config.Fields;
 
 /// <summary>
-/// A config input type which contains UI implementation for handling <see cref="Enum"/> input.<br/>
-/// To create an <see cref="EnumConfigInput{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, string, TEnum)"/>
+/// A config field which displays and processes an <see cref="Enum"/> value using a dropdown.
+/// To create an <see cref="EnumConfigField{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, string, TEnum)"/>
 /// </summary>
-public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigInput<TEnum>> where TEnum : Enum
+public sealed class EnumConfigField<TEnum> : TypedConfigField<TEnum, EnumConfigField<TEnum>> where TEnum : Enum
 {
     /// <summary>
-    /// The UI dropdown which corresponds to this config input in the config panel.
+    /// The UI dropdown element which corresponds to this config field in the config panel.
     /// </summary>
     public ReloadedDropdown Dropdown { get; private set; } = null!;
     
@@ -27,7 +27,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// </summary>
     private Func<TEnum, string?>? nameSelector = opt => StringToReadable(opt.ToString());
     
-    internal EnumConfigInput(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
+    internal EnumConfigField(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -49,7 +49,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// Specifies an explicit option order for the dropdown. Any missing options will be appended to the end in numeric order.
     /// </summary>
     /// <param name="order">An array of enum entries in the desired order.</param>
-    public EnumConfigInput<TEnum> WithOptionOrder(params TEnum[] order)
+    public EnumConfigField<TEnum> WithOptionOrder(params TEnum[] order)
     {
         var seen = new HashSet<TEnum>();
         
@@ -65,7 +65,7 @@ public sealed class EnumConfigInput<TEnum> : TypedConfigInput<TEnum, EnumConfigI
     /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
     /// </summary>
     /// <param name="selector">A selector that specifies the display string (or null to use the default via ToString) for a given enum option.</param>
-    public EnumConfigInput<TEnum> WithOptionNames(Func<TEnum, string?> selector)
+    public EnumConfigField<TEnum> WithOptionNames(Func<TEnum, string?> selector)
     {
         nameSelector = selector;
         return this;

@@ -1,4 +1,4 @@
-﻿using BloomEngine.Config.Inputs.Base;
+﻿using BloomEngine.Config.Fields.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
 using BloomEngine.ModList;
@@ -8,7 +8,7 @@ namespace BloomEngine.Config;
 
 /// <summary>
 /// Represents the mod config of a BloomEngine <see cref="ModListEntry"/>. When a config is registered,
-/// a new MelonPreferences category is created for the mod and the config is saved to it.
+/// a new MelonPreferences category is created for the mod and this config is bound to it.
 /// </summary>
 public sealed class ModConfig
 {
@@ -16,34 +16,33 @@ public sealed class ModConfig
     /// The identifier string of this config, which is used for saving it in MelonPreferences.
     /// This will usually match the identifier of the <see cref="ModListEntry"/> this config belongs to.
     /// </summary>
-    public string Id { get; private init; }
+    public string Id { get; }
 
     /// <summary>
-    /// The display name of this config, which will be saved in MelonPreferences and shown in the config menu.
+    /// The display name of this config, which will be saved in MelonPreferences and shown in the config panel.
     /// This will usually match the display name of the <see cref="ModListEntry"/> this config belongs to.
     /// </summary>
-    public string DisplayName { get; private init; }
+    public string DisplayName { get; }
 
     /// <summary>
-    /// A list of all the config inputs contained in this config instance.
+    /// A list of all config fields contained in this config instance.
     /// </summary>
-    public List<BaseConfigInput> ConfigInputs { get; private init; }
+    public List<BaseConfigField> ConfigFields { get; }
 
     /// <summary>
-    /// The <see cref="MelonPreferences"/> category created by this config instance,
-    /// to which the config inputs are saved.
+    /// The <see cref="MelonPreferences"/> category created by this config instance, to which the config fields are saved.
     /// </summary>
     public MelonPreferences_Category MelonCategory { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the registered input count of this config instance.
+    /// Gets the amount of registered fields in this config instance.
     /// </summary>
-    public int InputCount => ConfigInputs.Count;
+    public int FieldCount => ConfigFields.Count;
 
     /// <summary>
-    /// Reterns true if this config has zero inputs, meaning it is empty.
+    /// Returns true if this config has zero fields, meaning it is empty.
     /// </summary>
-    public bool IsEmpty => InputCount == 0;
+    public bool IsEmpty => FieldCount == 0;
 
     /// <summary>
     /// The UI panel created for this config.
@@ -51,44 +50,44 @@ public sealed class ModConfig
     internal ConfigPanel? Panel { get; set; }
 
     /// <summary>
-    /// Creates a mod config from an array of inputs (used by <see cref="ModListEntry.AddConfigInputs(BaseConfigInput[])"/>).
+    /// Creates a mod config from an array of fields (used by <see cref="ModListEntry.AddConfigFields"/>).
     /// </summary>
-    internal ModConfig(string identifier, string displayName, BaseConfigInput[] inputs)
+    internal ModConfig(string identifier, string displayName, BaseConfigField[] fields)
     {
         Id = identifier;
         DisplayName = displayName;
-        ConfigInputs = inputs.ToList();
+        ConfigFields = fields.ToList();
 
         SetupMelonPreferences();
     }
 
     /// <summary>
-    /// Creates the MelonPreferences category and config entries.
+    /// Creates the MelonPreferences category and MelonEntries for each config field.
     /// </summary>
     private void SetupMelonPreferences()
     {
         MelonCategory = MelonPreferences.CreateCategory(Id, DisplayName);
 
-        foreach (var input in ConfigInputs)
-            input.CreateMelonEntry(MelonCategory);
+        foreach (var field in ConfigFields)
+            field.CreateMelonEntry(MelonCategory);
     }
 
     /// <summary>
-    /// Updates all config inputs to the current values from the UI.
+    /// Updates all stored config field values to contain the current values from their corresponding UI input objects.
     /// </summary>
-    internal void UpdateAllFromUI()
+    internal void ApplyInputAll()
     {
-        foreach (var input in ConfigInputs)
-            input.ApplyInput();
+        foreach (var field in ConfigFields)
+            field.ApplyInput();
     }
 
     /// <summary>
-    /// Updated the UI with the current stored config values.
+    /// Updates all UI input objects to display the values currently stored by their corresponding config fields.
     /// </summary>
-    internal void RefreshAllUI()
+    internal void RefreshInputAll()
     {
-        foreach (var input in ConfigInputs)
-            input.RefreshInput();
+        foreach (var field in ConfigFields)
+            field.RefreshInput();
     }
 
     /// <summary>
