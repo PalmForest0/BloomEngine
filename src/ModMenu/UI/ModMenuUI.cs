@@ -1,6 +1,7 @@
 ﻿using BloomEngine.Extensions;
 using BloomEngine.UI;
 using BloomEngine.Helpers;
+using Il2CppTekly.DataModels.Binders.Collections;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
@@ -67,6 +68,8 @@ internal sealed class ModMenuUI
         modsContainerGrid.childAlignment = TextAnchor.UpperCenter;
         modsContainerGrid.cellSize = new Vector2(1100, 250);
         modsContainerGrid.spacing = new Vector2(150, 100);
+
+        GameObject.Destroy(container.GetComponent<ListBinder>());
 
         for (int i = 0; i < container.transform.childCount; i++)
             GameObject.Destroy(container.transform.GetChild(i).gameObject);

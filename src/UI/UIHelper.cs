@@ -406,9 +406,9 @@ public static class UIHelper
     public static void CleanUpChildren(GameObject obj)
     {
         foreach (var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
-            Object.Destroy(localizer);
+            Object.DestroyImmediate(localizer);
         foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
-            Object.Destroy(binder);
+            Object.DestroyImmediate(binder);
     }
 
     /// <summary>
