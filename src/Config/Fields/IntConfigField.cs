@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppReloaded.Input;
 using MelonLoader;
@@ -12,7 +11,7 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes an <see cref="int"/> value using a numeric textbox.
 /// To create an <see cref="IntConfigField"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
-public sealed class IntConfigField : TypedConfigField<int, IntConfigField>
+public sealed class IntConfigField : ConfigField<int, IntConfigField>
 {
     /// <summary>
     /// The UI textbox which corresponds to this config field in the config panel.

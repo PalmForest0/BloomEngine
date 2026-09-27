@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using BloomEngine.Config.Fields.Base;
 using BloomEngine.UI;
 using Il2CppSource.UI;
 using UnityEngine;
@@ -11,7 +10,7 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes an <see cref="Enum"/> value using a dropdown.
 /// To create an <see cref="EnumConfigField{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, string, TEnum)"/>
 /// </summary>
-public sealed class EnumConfigField<TEnum> : TypedConfigField<TEnum, EnumConfigField<TEnum>> where TEnum : Enum
+public sealed class EnumConfigField<TEnum> : ConfigField<TEnum, EnumConfigField<TEnum>> where TEnum : Enum
 {
     /// <summary>
     /// The UI dropdown element which corresponds to this config field in the config panel.

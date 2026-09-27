@@ -1,5 +1,4 @@
-﻿using BloomEngine.Config.Fields.Base;
-using BloomEngine.UI;
+﻿using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +8,7 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes a <see cref="float"/> value using a slider.
 /// To create a <see cref="FloatConfigField"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
-public sealed class FloatConfigField : TypedConfigField<float, FloatConfigField>
+public sealed class FloatConfigField : ConfigField<float, FloatConfigField>
 {
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider.

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using BloomEngine.Config;
-using BloomEngine.Config.Fields.Base;
+using BloomEngine.Config.Fields;
 using BloomEngine.Core;
 using BloomEngine.Helpers;
 using MelonLoader;
@@ -91,7 +91,7 @@ public sealed class ModListEntry(MelonMod mod)
     /// </summary>
     /// <param name="fields">An array of fields to create the config with.</param>
     /// <returns>This mod entry with the added config fields.</returns>
-    public ModListEntry AddConfigFields(params BaseConfigField[] fields)
+    public ModListEntry AddConfigFields(params ConfigFieldBase[] fields)
     {
         if (Config is null)
             Config = new ModConfig(Id, DisplayName, fields);
@@ -108,15 +108,15 @@ public sealed class ModListEntry(MelonMod mod)
     /// <returns>This mod entry with the config fields added.</returns>
     public ModListEntry AddConfigClass(Type configType)
     {
-        List<BaseConfigField> fields = new();
+        List<ConfigFieldBase> fields = new();
 
         // Use reflection to find all public fields and properties containing config fields
         foreach (var field in configType.GetFields(BindingFlags.Static | BindingFlags.Public))
-            if (field.GetValue(null) is BaseConfigField configField)
+            if (field.GetValue(null) is ConfigFieldBase configField)
                 fields.Add(configField);
 
         foreach (var property in configType.GetProperties(BindingFlags.Static | BindingFlags.Public))
-            if (property.GetValue(null) is BaseConfigField configField)
+            if (property.GetValue(null) is ConfigFieldBase configField)
                 fields.Add(configField);
 
         AddConfigFields(fields.ToArray());

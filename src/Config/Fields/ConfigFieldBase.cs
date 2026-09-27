@@ -1,13 +1,13 @@
 ﻿using MelonLoader;
 using UnityEngine;
 
-namespace BloomEngine.Config.Fields.Base;
+namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// Represents the base typeless structure of a config field, which is extended by
-/// <see cref="TypedConfigField{T,TSelf}"/> to provide type-specific functionality.
+/// <see cref="ConfigField{T,TSelf}"/> to provide type-specific functionality.
 /// </summary>
-public abstract class BaseConfigField(string name, string description)
+public abstract class ConfigFieldBase(string name, string description)
 {
     /// <summary>
     /// The display name shown for this config field in the config panel.

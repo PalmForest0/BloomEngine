@@ -1,5 +1,4 @@
 ﻿using BloomEngine.Config.Fields;
-using BloomEngine.Config.Fields.Base;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
 using BloomEngine.Extensions;
@@ -43,7 +42,7 @@ public static class ConfigService
     /// <param name="defaultValue">The default <see cref="string"/> value of this config field.</param>
     /// <returns>
     /// A <see cref="StringConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
-    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
     /// </returns>
     public static StringConfigField CreateString(string name, string description, string defaultValue)
         => new(name, description, defaultValue);
@@ -58,7 +57,7 @@ public static class ConfigService
     /// <param name="defaultValue">The default <see cref="int"/> value of this config field.</param>
     /// <returns>
     /// An <see cref="IntConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
-    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
     /// </returns>
     public static IntConfigField CreateInt(string name, string description, int defaultValue)
         => new(name, description, defaultValue);
@@ -75,7 +74,7 @@ public static class ConfigService
     /// <param name="maxValue">The <strong>maximum</strong> value constraint of this field's <see cref="float"/> input slider.</param>
     /// <returns>
     /// A <see cref="FloatConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
-    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
     /// </returns>
     public static FloatConfigField CreateFloat(string name, string description, float defaultValue, float minValue, float maxValue)
         => new(name, description, defaultValue, minValue, maxValue);
@@ -89,8 +88,8 @@ public static class ConfigService
     /// <param name="description">The description of this field, which will be displayed in the config menu.</param>
     /// <param name="defaultValue">The default <see cref="bool"/> value of this config field.</param>
     /// <returns>
-    /// A <see cref="BoolConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields(BaseConfigField[])"/>
-    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// A <see cref="BoolConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields(ConfigFieldBase[])"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
     /// </returns>
     public static BoolConfigField CreateBool(string name, string description, bool defaultValue)
         => new(name, description, defaultValue);
@@ -105,7 +104,7 @@ public static class ConfigService
     /// <param name="defaultValue">The default enum value of this config field.</param>
     /// <returns>
     /// An <see cref="EnumConfigField{TEnum}"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
-    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="TypedConfigField{T,TSelf}.Value"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
     /// </returns>
     public static EnumConfigField<TEnum> CreateEnum<TEnum>(string name, string description, TEnum defaultValue) where TEnum : Enum
         => new(name, description, defaultValue);

@@ -1,15 +1,15 @@
 ﻿using MelonLoader;
 
-namespace BloomEngine.Config.Fields.Base;
+namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// Represents a generic config field with a specifically typed <see cref="Value"/>.
 /// </summary>
 /// <typeparam name="T">The type of value stored within this config field.</typeparam>
 /// <typeparam name="TSelf">The type of this config field.</typeparam>
-public abstract class TypedConfigField<T, TSelf> : BaseConfigField
+public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     where T : notnull
-    where TSelf : TypedConfigField<T, TSelf>
+    where TSelf : ConfigField<T, TSelf>
 {
     /// <summary>
     /// Gets or sets the value stored in this config field, invoking <see cref="transformFunc"/> when it is updated.
@@ -87,7 +87,7 @@ public abstract class TypedConfigField<T, TSelf> : BaseConfigField
     /// </summary>
     private event Action? OnInputChanged;
 
-    protected TypedConfigField(string name, string description, T defaultValue) : base(name, description)
+    protected ConfigField(string name, string description, T defaultValue) : base(name, description)
     {
         DefaultValue = defaultValue;
         value = defaultValue;

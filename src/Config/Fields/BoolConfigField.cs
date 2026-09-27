@@ -1,5 +1,4 @@
-﻿using BloomEngine.Config.Fields.Base;
-using BloomEngine.UI;
+﻿using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +8,7 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes a <see cref="bool"/> value using a checkbox.
 /// To create a <see cref="BoolConfigField"/>, use <see cref="ConfigService.CreateBool(string, string, bool)"/>
 /// </summary>
-public sealed class BoolConfigField : TypedConfigField<bool, BoolConfigField>
+public sealed class BoolConfigField : ConfigField<bool, BoolConfigField>
 {
     /// <summary>
     /// The UI checkbox element which corresponds to this config field in the config panel.

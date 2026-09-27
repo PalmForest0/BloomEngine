@@ -1,4 +1,4 @@
-﻿using BloomEngine.Config.Fields.Base;
+﻿using BloomEngine.Config.Fields;
 using BloomEngine.Config.UI;
 using BloomEngine.Core;
 using BloomEngine.ModList;
@@ -27,7 +27,7 @@ public sealed class ModConfig
     /// <summary>
     /// A list of all config fields contained in this config instance.
     /// </summary>
-    public List<BaseConfigField> ConfigFields { get; }
+    public List<ConfigFieldBase> ConfigFields { get; }
 
     /// <summary>
     /// The <see cref="MelonPreferences"/> category created by this config instance, to which the config fields are saved.
@@ -52,7 +52,7 @@ public sealed class ModConfig
     /// <summary>
     /// Creates a mod config from an array of fields (used by <see cref="ModListEntry.AddConfigFields"/>).
     /// </summary>
-    internal ModConfig(string identifier, string displayName, BaseConfigField[] fields)
+    internal ModConfig(string identifier, string displayName, ConfigFieldBase[] fields)
     {
         Id = identifier;
         DisplayName = displayName;

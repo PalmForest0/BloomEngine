@@ -1,4 +1,4 @@
-﻿using BloomEngine.Config.Fields.Base;
+﻿using BloomEngine.Config.Fields;
 using BloomEngine.Core;
 using BloomEngine.Extensions;
 using BloomEngine.UI;
@@ -69,7 +69,7 @@ internal sealed class ConfigPanel
         }
         else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LogPrefix);
 
-        // Destroy all localiser components
+        // Destroy all localizer components
         foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
             Object.Destroy(localiser);
 
@@ -157,7 +157,7 @@ internal sealed class ConfigPanel
         Object.Destroy(window.Find("SubheadingText").gameObject);
     }
 
-    private void CreateRow(BaseConfigField field, RectTransform parent)
+    private void CreateRow(ConfigFieldBase field, RectTransform parent)
     {
         // Create row GameObject
         var rowObj = new GameObject($"ConfigRow_{field.Name.Trim().Replace(" ", "")}");
@@ -187,7 +187,7 @@ internal sealed class ConfigPanel
             CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
-    private void CreateLabel(BaseConfigField field, RectTransform parent)
+    private void CreateLabel(ConfigFieldBase field, RectTransform parent)
     {
         var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
         labelObj.name = $"Label_{field.Name.Trim().Replace(" ", "")}";
@@ -208,7 +208,7 @@ internal sealed class ConfigPanel
         text.enabled = true;
     }
 
-    private static void CreateInput(BaseConfigField field, RectTransform parent)
+    private static void CreateInput(ConfigFieldBase field, RectTransform parent)
     {
         var inputObj = field.CreateInputObject(parent, $"ConfigFieldInput_{field.Name.Trim().Replace(" ", "")}");
         var layout = inputObj.AddComponent<LayoutElement>();

@@ -1,5 +1,4 @@
-﻿using BloomEngine.Config.Fields.Base;
-using BloomEngine.UI;
+﻿using BloomEngine.UI;
 using Il2CppReloaded.Input;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes a <see cref="string"/> value using a textbox.
 /// To create a <see cref="StringConfigField"/>, use <see cref="ConfigService.CreateString(string, string, string)"/>
 /// </summary>
-public sealed class StringConfigField : TypedConfigField<string, StringConfigField>
+public sealed class StringConfigField : ConfigField<string, StringConfigField>
 {
     /// <summary>
     /// The UI textbox which corresponds to this config field in the config panel.
