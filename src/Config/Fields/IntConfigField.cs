@@ -11,14 +11,13 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes an <see cref="int"/> value using a numeric textbox.
 /// To create an <see cref="IntConfigField"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
-public sealed class IntConfigField : ConfigField<int, IntConfigField>
+public sealed class IntConfigField(string identifier, string displayName, int defaultValue)
+    : ConfigField<int, IntConfigField>(identifier, displayName, defaultValue)
 {
     /// <summary>
     /// The UI textbox which corresponds to this config field in the config panel.
     /// </summary>
     public ReloadedInputField Textbox { get; private set; } = null!;
-
-    internal IntConfigField(string name, string description, int defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)

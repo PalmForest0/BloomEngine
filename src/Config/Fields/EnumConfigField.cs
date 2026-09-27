@@ -10,7 +10,8 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes an <see cref="Enum"/> value using a dropdown.
 /// To create an <see cref="EnumConfigField{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, string, TEnum)"/>
 /// </summary>
-public sealed class EnumConfigField<TEnum> : ConfigField<TEnum, EnumConfigField<TEnum>> where TEnum : Enum
+public sealed class EnumConfigField<TEnum>(string identifier, string displayName, TEnum defaultValue)
+    : ConfigField<TEnum, EnumConfigField<TEnum>>(identifier, displayName, defaultValue) where TEnum : Enum
 {
     /// <summary>
     /// The UI dropdown element which corresponds to this config field in the config panel.
@@ -26,8 +27,6 @@ public sealed class EnumConfigField<TEnum> : ConfigField<TEnum, EnumConfigField<
     /// A function that determines the display names of options.
     /// </summary>
     private Func<TEnum, string?>? nameSelector = opt => StringToReadable(opt.ToString());
-    
-    internal EnumConfigField(string name, string description, TEnum defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)

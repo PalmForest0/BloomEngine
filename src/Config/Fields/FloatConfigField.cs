@@ -8,28 +8,23 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes a <see cref="float"/> value using a slider.
 /// To create a <see cref="FloatConfigField"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
-public sealed class FloatConfigField : ConfigField<float, FloatConfigField>
+public sealed class FloatConfigField(string identifier, string displayName, float defaultValue, float minValue, float maxValue)
+    : ConfigField<float, FloatConfigField>(identifier, displayName, defaultValue)
 {
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider.
     /// </summary>
-    public float MinValue { get; private init; }
+    public float MinValue { get; private init; } = minValue;
 
     /// <summary>
     /// The maximum value constraint of this <see cref="float"/> input slider.
     /// </summary>
-    public float MaxValue { get; private init; }
+    public float MaxValue { get; private init; } = maxValue;
 
     /// <summary>
     /// The UI slider which corresponds to this config field in the config panel.
     /// </summary>
     public Slider Slider { get; private set; } = null!;
-
-    internal FloatConfigField(string name, string description, float defaultValue, float minValue, float maxValue) : base(name, description, defaultValue)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)

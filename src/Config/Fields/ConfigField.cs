@@ -86,31 +86,27 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// An event that is invoked when the UI input is modified by the user.
     /// </summary>
     private event Action? OnInputChanged;
-
-    protected ConfigField(string name, string description, T defaultValue) : base(name, description)
+    
+    /// <summary>
+    /// Creates a new generically typed config field with an internal identifier, display name and a default value.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    protected ConfigField(string identifier, string displayName, T defaultValue) : base(identifier, displayName)
     {
         DefaultValue = defaultValue;
         value = defaultValue;
         ValueType = value.GetType();
     }
 
-    internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
+    public TSelf WithDescription(string description)
     {
-        MelonEntry = melonCategory.CreateEntry(Name, DefaultValue, Name, Description, oldIdentifier: OldIdentifier);
-        Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
+        if(!string.IsNullOrWhiteSpace(description))
+            Description = description;
+        
+        return (TSelf)this;
     }
-
-    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke();
-
-    internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
-
-    internal sealed override void RefreshInput() => SetDisplayedValue(Value);
-
-    /// <summary>
-    /// Sets the displayed UI input value based on the specific field type.
-    /// </summary>
-    /// <param name="value">The value to display in the UI input object.</param>
-    protected abstract void SetDisplayedValue(T value);
 
     /// <summary>
     /// Specifies an old identifier that will be automatically migrated by MelonPreferences to the current identifier.
@@ -165,4 +161,22 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         validateFunc = validator;
         return (TSelf)this;
     }
+    
+    internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
+    {
+        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, DisplayName, Description, is_hidden: true, oldIdentifier: OldIdentifier);
+        Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
+    }
+
+    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke();
+
+    internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
+
+    internal sealed override void RefreshInput() => SetDisplayedValue(Value);
+
+    /// <summary>
+    /// Sets the displayed UI input value based on the specific field type.
+    /// </summary>
+    /// <param name="value">The value to display in the UI input object.</param>
+    protected abstract void SetDisplayedValue(T value);
 }

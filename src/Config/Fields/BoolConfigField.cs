@@ -8,14 +8,13 @@ namespace BloomEngine.Config.Fields;
 /// A config field which displays and processes a <see cref="bool"/> value using a checkbox.
 /// To create a <see cref="BoolConfigField"/>, use <see cref="ConfigService.CreateBool(string, string, bool)"/>
 /// </summary>
-public sealed class BoolConfigField : ConfigField<bool, BoolConfigField>
+public sealed class BoolConfigField(string identifier, string displayName, bool defaultValue)
+    : ConfigField<bool, BoolConfigField>(identifier, displayName, defaultValue)
 {
     /// <summary>
     /// The UI checkbox element which corresponds to this config field in the config panel.
     /// </summary>
     public Toggle Checkbox { get; private set; } = null!;
-
-    internal BoolConfigField(string name, string description, bool defaultValue) : base(name, description, defaultValue) { }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)

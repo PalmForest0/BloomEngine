@@ -160,7 +160,7 @@ internal sealed class ConfigPanel
     private void CreateRow(ConfigFieldBase field, RectTransform parent)
     {
         // Create row GameObject
-        var rowObj = new GameObject($"ConfigRow_{field.Name.Trim().Replace(" ", "")}");
+        var rowObj = new GameObject($"ConfigRow_{field.Identifier}");
         var rowRect = rowObj.AddComponent<RectTransform>();
         rowRect.SetParent(parent, false);
 
@@ -184,13 +184,13 @@ internal sealed class ConfigPanel
         CreateInput(field, rowRect);
         CreateSquareButton("InputResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(field.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
+            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.DisplayName, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
     private void CreateLabel(ConfigFieldBase field, RectTransform parent)
     {
         var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        labelObj.name = $"Label_{field.Name.Trim().Replace(" ", "")}";
+        labelObj.name = $"ConfigLabel_{field.Identifier}";
         labelObj.SetActive(true);
 
         var layout = labelObj.AddComponent<LayoutElement>();
@@ -202,7 +202,7 @@ internal sealed class ConfigPanel
         labelRect.sizeDelta = new Vector2(900, 134);
 
         var text = labelObj.GetComponent<TextMeshProUGUI>();
-        text.text = field.Name;
+        text.text = field.DisplayName;
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.alignment = TextAlignmentOptions.Left;
         text.enabled = true;
@@ -210,7 +210,7 @@ internal sealed class ConfigPanel
 
     private static void CreateInput(ConfigFieldBase field, RectTransform parent)
     {
-        var inputObj = field.CreateInputObject(parent, $"ConfigFieldInput_{field.Name.Trim().Replace(" ", "")}");
+        var inputObj = field.CreateInputObject(parent, $"ConfigInput_{field.Identifier}");
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
