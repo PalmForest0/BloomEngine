@@ -162,7 +162,7 @@ public static class UIHelper
             BloomLogger.Info("Created UI slider template.", LogPrefix);
         }
 
-        CleanUpChildren(_templateContainer.gameObject);
+        _templateContainer.DestroyBindersAndLocalizers();
     }
 
     /// <summary>
@@ -397,18 +397,6 @@ public static class UIHelper
         var trigger = obj.GetComponent<EventTrigger>() ?? obj.AddComponent<EventTrigger>();
         trigger.triggers ??= new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
         trigger.triggers.Add(entry);
-    }
-
-    /// <summary>
-    /// Destroys all <see cref="TextLocalizer"/> and <see cref="Binder"/> components on an object and its children.
-    /// </summary>
-    /// <param name="obj">The <see cref="GameObject"/> to remove these components from.</param>
-    public static void CleanUpChildren(GameObject obj)
-    {
-        foreach (var localizer in obj.GetComponentsInChildren<TextLocalizer>(true))
-            Object.DestroyImmediate(localizer);
-        foreach (var binder in obj.GetComponentsInChildren<Binder>(true))
-            Object.DestroyImmediate(binder);
     }
 
     /// <summary>

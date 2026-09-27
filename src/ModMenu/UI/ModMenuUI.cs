@@ -69,7 +69,7 @@ internal sealed class ModMenuUI
         modsContainerGrid.cellSize = new Vector2(1100, 250);
         modsContainerGrid.spacing = new Vector2(150, 100);
 
-        GameObject.Destroy(container.GetComponent<ListBinder>());
+        container.DestroyBindersAndLocalizers();
 
         for (int i = 0; i < container.transform.childCount; i++)
             GameObject.Destroy(container.transform.GetChild(i).gameObject);
