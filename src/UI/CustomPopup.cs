@@ -69,7 +69,7 @@ public class CustomPopup : MonoBehaviour
         // Clean up
         Destroy(Window.Find("Buttons/P_BacicButton_No").gameObject);
         Destroy(Window.Find("Buttons/P_BacicButton_Cancel").gameObject);
-        UIHelper.CleanUpChildren(gameObject);
+        gameObject.DestroyBindersAndLocalizers();
     }
 
     /// <summary>
