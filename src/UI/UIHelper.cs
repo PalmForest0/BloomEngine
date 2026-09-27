@@ -316,15 +316,15 @@ public static class UIHelper
         var handleArea = obj.transform.Find("Handle Slide Area").gameObject.GetComponent<RectTransform>();
         handleArea.anchorMin = new Vector2(0f, handleArea.anchorMin.y);
         handleArea.anchorMax = new Vector2(1f, handleArea.anchorMax.y);
-        handleArea.offsetMin = new Vector2(0f, handleArea.offsetMin.y);
-        handleArea.offsetMax = new Vector2(0f, handleArea.offsetMax.y);
+        handleArea.offsetMin = new Vector2(15f, handleArea.offsetMin.y);
+        handleArea.offsetMax = new Vector2(-35f, handleArea.offsetMax.y);
         handleArea.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
         var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>();
         background.anchorMin = new Vector2(0f, background.anchorMin.y);
         background.anchorMax = new Vector2(1f, background.anchorMax.y);
-        background.offsetMin = new Vector2(0f, background.offsetMin.y);
-        background.offsetMax = new Vector2(0f, background.offsetMax.y);
+        background.offsetMin = new Vector2(15f, background.offsetMin.y);
+        background.offsetMax = new Vector2(-35f, background.offsetMax.y);
 
         // Force a layout rebuild so the UI updates
         LayoutRebuilder.ForceRebuildLayoutImmediate(obj.GetComponent<RectTransform>());
