@@ -1,4 +1,5 @@
 ﻿using BloomEngine.Extensions;
+using Il2CppInterop.Runtime.Attributes;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using UnityEngine;
@@ -109,6 +110,7 @@ public class CustomPopup : MonoBehaviour
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
+    [HideFromIl2Cpp]
     public void SetFirstButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         FirstButton.gameObject.SetActive(visible);
@@ -129,6 +131,7 @@ public class CustomPopup : MonoBehaviour
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
+    [HideFromIl2Cpp]
     public void SetSecondButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         SecondButton.gameObject.SetActive(visible);
