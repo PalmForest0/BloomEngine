@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BloomEngine.Helpers;
 
-public static class StringHelpers
+public static class StringHelper
 {
     /// <summary>
     /// Common numeric types that have their own TypeCode.

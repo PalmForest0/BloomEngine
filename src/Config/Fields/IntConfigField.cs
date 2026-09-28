@@ -25,7 +25,7 @@ public sealed class IntConfigField(string identifier, string displayName, int de
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput() => Value = (int)StringHelpers.ValidateNumericInput(Textbox.text, typeof(int));
+    protected internal override void ApplyInput() => Value = (int)StringHelper.ValidateNumericInput(Textbox.text, typeof(int));
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(int value) => Textbox.SetTextWithoutNotify(value.ToString(CultureInfo.InvariantCulture));
@@ -34,7 +34,7 @@ public sealed class IntConfigField(string identifier, string displayName, int de
     internal override void HandleInputChanged()
     {
         // Perform basic sanitization on live input change
-        Textbox.SetTextWithoutNotify(StringHelpers.SanitizeNumericInput(Textbox.text));
+        Textbox.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(Textbox.text));
         base.HandleInputChanged();
     }
 }

@@ -25,7 +25,7 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// <summary>
     /// A function that determines the display names of options.
     /// </summary>
-    private Func<TEnum, string?>? nameSelector = opt => StringHelpers.StringToReadable(opt.ToString());
+    private Func<TEnum, string?>? nameSelector = opt => StringHelper.StringToReadable(opt.ToString());
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
