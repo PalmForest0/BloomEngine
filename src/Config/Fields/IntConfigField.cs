@@ -21,7 +21,7 @@ public sealed class IntConfigField(string identifier, string displayName, int de
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Textbox = UIHelper.CreateTextField(name, parent, ValueType.Name, onTextChanged: _ => HandleInputChanged());
+        Textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: _ => HandleInputChanged());
         return Textbox.gameObject;
     }
 

@@ -187,30 +187,32 @@ public static class UIHelper
     /// Creates a new textbox input as a child of the specified parent, with optional placeholder text.
     /// </summary>
     /// <param name="name">The name to assign to the created input GameObject.</param>
+    /// <param name="text">The text that should initially be displayed in this textbox.</param>
     /// <param name="parent">The parent RectTransform under which the input will be instantiated.</param>
-    /// <param name="placeholder">The placeholder text to display when the input is empty. If null, the placeholder will be hidden.</param>
-    /// <param name="onTextChanged">An optional callback invoked whenever the text in the input changes.</param>
-    /// <param name="onDeselect">An optional callback invoked when the input is deselected or submitted.</param>
-    /// <returns>A ReloadedInputField instance representing the newly created text input.</returns>
-    public static ReloadedInputField CreateTextField(string name, RectTransform parent, string? placeholder = null, Action<ReloadedInputField>? onTextChanged = null, Action<ReloadedInputField>? onDeselect = null)
+    /// <param name="placeholderText">The placeholder text to display when the input is empty. If null, the placeholder will be hidden.</param>
+    /// <param name="onTextChanged">An optional callback invoked whenever the text in the input object is changed.</param>
+    /// <param name="onDeselect">An optional callback invoked when the input object is deselected or submitted.</param>
+    /// <returns>The <see cref="ReloadedInputField"/> component on the newly created text input object.</returns>
+    public static ReloadedInputField CreateTextbox(string name, string text, RectTransform parent, string? placeholderText = null, Action<string>? onTextChanged = null, Action<string>? onDeselect = null)
     {
         var obj = Object.Instantiate(_templateTextbox, parent)!;
         obj.name = name;
 
-        if (placeholder is null)
+        if (placeholderText is null)
             obj.transform.Find("Text Area").Find("Placeholder").gameObject.SetActive(false);
-        else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholder;
+        else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholderText;
 
         var field = obj.GetComponent<ReloadedInputField>();
-
+        field.text = text;
+        
         field.onValueChanged = new TMP_InputField.OnChangeEvent();
-        field.onValueChanged.AddListener(_ => onTextChanged?.Invoke(field));
+        field.onValueChanged.AddListener(_ => onTextChanged?.Invoke(field.text));
 
         field.onDeselect = new TMP_InputField.SelectionEvent();
-        field.onDeselect.AddListener(_ => onDeselect?.Invoke(field));
+        field.onDeselect.AddListener(_ => onDeselect?.Invoke(field.text));
 
         field.onSubmit = new TMP_InputField.SubmitEvent();
-        field.onSubmit.AddListener(_ => onDeselect?.Invoke(field));
+        field.onSubmit.AddListener(_ => onDeselect?.Invoke(field.text));
 
         return field;
     }

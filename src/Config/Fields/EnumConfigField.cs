@@ -33,7 +33,9 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
         var wrapper = UIHelper.CreateUIWrapper(parent, name);
 
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
-        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, Convert.ToInt32(Value, CultureInfo.InvariantCulture), (_, _) => HandleInputChanged());
+        int selected = Convert.ToInt32(Value, CultureInfo.InvariantCulture);
+        
+        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, selected, onValueChanged: (_, _) => HandleInputChanged());
         
         var dropdownRect = Dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);
