@@ -7,6 +7,12 @@ public static class BloomConfig
     private const string LogPrefix = $"[{nameof(BloomConfig)}] ";
     
 #if DEBUG
+    public static readonly StringConfigField TestStringField = 
+        new StringConfigField("test_string_field", "Test String Field", "jarona")
+            .WithOnInputChanged(field => field.Textbox.SetTextWithoutNotify(field.Textbox.text.ToUpperInvariant()))
+            .WithTransform(val => val.ToUpperInvariant())
+            .WithOnValueApplied(val => BloomLogger.Debug($"Value of Test String Field set to: {val}", LogPrefix));
+    
     public static readonly EnumConfigField<DayOfWeek> TestEnumField = 
         new EnumConfigField<DayOfWeek>("test_enum_field", "Test Enum Field", DayOfWeek.Friday)
             .WithOptionOrder(DayOfWeek.Sunday)

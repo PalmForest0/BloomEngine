@@ -78,14 +78,14 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     private Func<T, bool>? validateFunc;
 
     /// <summary>
-    /// An event that is invoked when <see cref="Value"/> is updated.
+    /// An event that is invoked when <see cref="Value"/> is updated, providing the newly set value.
     /// </summary>
     private event Action<T>? OnValueApplied;
 
     /// <summary>
-    /// An event that is invoked when the UI input is modified by the user.
+    /// An event that is invoked when the UI input is modified by the user, providing this config field.
     /// </summary>
-    private event Action? OnInputChanged;
+    private event Action<TSelf>? OnInputChanged;
     
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
@@ -132,8 +132,8 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// Subscribes to an event which is invoked every time the UI input is modified by the user.
     /// Depending on the type of field, the UI input element may be accessed to modify the visible value.
     /// </summary>
-    /// <param name="handler">The action to invoke when the UI input is changed by the user.</param>
-    public TSelf WithOnInputChanged(Action handler)
+    /// <param name="handler">The action to invoke when the UI input is changed by the user, with the new input given.</param>
+    public TSelf WithOnInputChanged(Action<TSelf> handler)
     {
         OnInputChanged += handler;
         return (TSelf)this;
@@ -168,7 +168,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
     }
 
-    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke();
+    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke((TSelf)this);
 
     internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
 
