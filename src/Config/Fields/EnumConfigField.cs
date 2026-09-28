@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using System.Text;
+using BloomEngine.Helpers;
 using BloomEngine.UI;
 using Il2CppSource.UI;
 using UnityEngine;
@@ -25,7 +25,7 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// <summary>
     /// A function that determines the display names of options.
     /// </summary>
-    private Func<TEnum, string?>? nameSelector = opt => StringToReadable(opt.ToString());
+    private Func<TEnum, string?>? nameSelector = opt => StringHelpers.StringToReadable(opt.ToString());
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -49,6 +49,7 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// Specifies an explicit option order for the dropdown. Any missing options will be appended to the end in numeric order.
     /// </summary>
     /// <param name="order">An array of enum entries in the desired order.</param>
+    /// <returns>This config field, with the provided options ordered at the start.</returns>
     public EnumConfigField<TEnum> WithOptionOrder(params TEnum[] order)
     {
         var seen = new HashSet<TEnum>();
@@ -65,6 +66,7 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
     /// </summary>
     /// <param name="selector">A selector that specifies the display string (or null to use the default via ToString) for a given enum option.</param>
+    /// <returns>This config field, with the given selector used to construct the options.</returns>
     public EnumConfigField<TEnum> WithOptionNames(Func<TEnum, string?> selector)
     {
         nameSelector = selector;
@@ -87,52 +89,4 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// <typeparam name="T">An enum type.</typeparam>
     /// <returns>Collection containing all enum options.</returns>
     private static IEnumerable<T> GetEnumOptions<T>() where T : Enum => Enum.GetValues(typeof(T)).Cast<T>();
-
-    /// <summary>
-    /// Converts a string that would show up in code to a readable display string.
-    /// </summary>
-    /// <param name="input">Input string that should be processed.</param>
-    /// <returns>A readable display string.</returns>
-    private static string StringToReadable(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
-
-        var sb = new StringBuilder();
-        sb.Append(char.ToUpper(input[0], CultureInfo.InvariantCulture));
-
-        for (int i = 1; i < input.Length; i++)
-        {
-            char current = input[i];
-            char prev = input[i - 1];
-            bool lastCharIsSpace = sb.Length > 0 && sb[^1] == ' ';
-
-            if (current is '_' or '-')
-            {
-                if (!lastCharIsSpace)
-                    sb.Append(' ');
-                continue;
-            }
-
-            if (!lastCharIsSpace)
-            {
-                // Splits words from lowercase to uppercase
-                if (char.IsUpper(current) && !char.IsUpper(prev))
-                    sb.Append(' ');
-                // Splits words between two uppercase
-                else if (char.IsUpper(current) && char.IsUpper(prev) && i + 1 < input.Length && char.IsLower(input[i + 1]))
-                    sb.Append(' ');
-                // Splits digits before
-                else if (char.IsDigit(current) && !char.IsDigit(prev))
-                    sb.Append(' ');
-                // Splits digits after
-                else if (!char.IsDigit(current) && char.IsDigit(prev))
-                    sb.Append(' ');
-            }
-
-            sb.Append(current);
-        }
-
-        return sb.ToString().TrimEnd();
-    }
 }
