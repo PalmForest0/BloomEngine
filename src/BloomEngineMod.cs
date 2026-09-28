@@ -9,7 +9,7 @@ namespace BloomEngine;
 internal sealed class BloomEngineMod : MelonMod
 {
     public const string Name = "BloomEngine";
-    public const string Version = "0.3.0-beta";
+    public const string Version = "1.0.0-dev";
     public const string Author = "PalmForest";
     private const string Description = "Robust mod list and config manager for PvZ Replanted.";
 
