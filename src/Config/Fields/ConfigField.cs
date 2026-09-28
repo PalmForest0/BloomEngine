@@ -52,11 +52,6 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public T DefaultValue { get; }
 
     /// <summary>
-    /// The type of value stored within this config field.
-    /// </summary>
-    public Type ValueType { get; }
-
-    /// <summary>
     /// Contains an old identifier that MelonPreferences will automatically migrate. Set this using <see cref="WithOldIdentifier"/>.
     /// </summary>
     public string? OldIdentifier { get; private set; }
@@ -97,7 +92,6 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     {
         DefaultValue = defaultValue;
         value = defaultValue;
-        ValueType = value.GetType();
     }
 
     public TSelf WithDescription(string description)
