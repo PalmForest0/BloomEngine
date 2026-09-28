@@ -1,4 +1,5 @@
-﻿using BloomEngine.UI;
+﻿using BloomEngine.Extensions;
+using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
     /// <summary>
     /// The UI checkbox element which corresponds to this config field in the config panel.
     /// </summary>
-    public Toggle Checkbox { get; private set; } = null!;
+    public Toggle? Checkbox { get; private set; }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -30,8 +31,12 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput() => Value = Checkbox.isOn;
+    protected internal override void ApplyInput()
+    {
+        if(Checkbox.NotNull())
+            Value = Checkbox.isOn;
+    }
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(bool value) => Checkbox.SetIsOnWithoutNotify(value);
+    protected override void SetDisplayedValue(bool value) => Checkbox.OrNull()?.SetIsOnWithoutNotify(value);
 }

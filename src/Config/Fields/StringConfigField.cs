@@ -1,4 +1,5 @@
-﻿using BloomEngine.UI;
+﻿using BloomEngine.Extensions;
+using BloomEngine.UI;
 using Il2CppReloaded.Input;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public sealed class StringConfigField(string identifier, string displayName, str
     /// <summary>
     /// The UI textbox which corresponds to this config field in the config panel.
     /// </summary>
-    public ReloadedInputField Textbox { get; private set; } = null!;
+    public ReloadedInputField? Textbox { get; private set; }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -23,8 +24,12 @@ public sealed class StringConfigField(string identifier, string displayName, str
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput() => Value = Textbox.text;
+    protected internal override void ApplyInput()
+    {
+        if(Textbox.NotNull())
+            Value = Textbox.text;
+    }
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(string value) => Textbox.SetTextWithoutNotify(value);
+    protected override void SetDisplayedValue(string value) => Textbox.OrNull()?.SetTextWithoutNotify(value);
 }

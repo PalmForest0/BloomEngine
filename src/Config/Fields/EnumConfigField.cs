@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using BloomEngine.Extensions;
 using BloomEngine.Helpers;
 using BloomEngine.UI;
 using Il2CppSource.UI;
@@ -15,8 +16,8 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     /// <summary>
     /// The UI dropdown element which corresponds to this config field in the config panel.
     /// </summary>
-    public ReloadedDropdown Dropdown { get; private set; } = null!;
-    
+    public ReloadedDropdown? Dropdown { get; private set; }
+
     /// <summary>
     /// The list of options that gets shown in the dropdown.
     /// </summary>
@@ -74,11 +75,18 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput() => Value = options[Dropdown.value];
+    protected internal override void ApplyInput()
+    {
+        if(Dropdown.NotNull())
+            Value = options[Dropdown.value];
+    }
 
     /// <inheritdoc/>
     protected override void SetDisplayedValue(TEnum value)
     {
+        if(Dropdown.IsNull())
+            return;
+        
         Dropdown.SetValueWithoutNotify(options.IndexOf(value));
         Dropdown.RefreshShownValue();
     }

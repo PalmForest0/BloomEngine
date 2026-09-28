@@ -1,4 +1,5 @@
-﻿using BloomEngine.UI;
+﻿using BloomEngine.Extensions;
+using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +26,7 @@ public sealed class FloatConfigField(string identifier, string displayName, floa
     /// <summary>
     /// The UI slider which corresponds to this config field in the config panel.
     /// </summary>
-    public Slider Slider { get; private set; } = null!;
+    public Slider? Slider { get; private set; }
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
@@ -35,10 +36,14 @@ public sealed class FloatConfigField(string identifier, string displayName, floa
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput() => Value = Slider.value;
+    protected internal override void ApplyInput()
+    {
+        if(Slider.NotNull())
+            Value = Slider.value;
+    }
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(float value) => Slider.SetValueWithoutNotify(value);
+    protected override void SetDisplayedValue(float value) => Slider.OrNull()?.SetValueWithoutNotify(value);
 
     /// <summary>
     /// Defines a custom <see langword="float"/> range for this config field. The default is 0f - 1f.
