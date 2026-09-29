@@ -105,6 +105,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         storedValue = defaultValue;
     }
 
+    /// <summary>
+    /// Sets a description for this config field that can be seen when pressing the description button in the config panel.
+    /// </summary>
+    /// <param name="description">A string to show in the description popup body.</param>
+    /// <returns>This config field, with the new description added</returns>
     public TSelf WithDescription(string description)
     {
         if(!string.IsNullOrWhiteSpace(description))
@@ -115,8 +120,10 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
 
     /// <summary>
     /// Specifies an old identifier that will be automatically migrated by MelonPreferences to the current identifier.
+    /// This method should be chained immediately after the constructor, as it has no effect after the MelonEntry has been created.
     /// </summary>
     /// <param name="oldIdentifier">The old identifier to be passed to MelonPreferences.</param>
+    /// <returns>This config field, with an old identifier that will be passed to MelonPreferences set.</returns>
     public TSelf WithOldIdentifier(string oldIdentifier)
     {
         OldIdentifier = oldIdentifier;
@@ -124,9 +131,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     }
     
     /// <summary>
-    /// Subscribes to an event which is invoked when <see cref="Value"/> is updated.
+    /// Subscribes to an event which is invoked when <see cref="Value"/> is updated. This can be caused by a developer's code,
+    /// setting a new value using the in-game panel, or updating the MelonPreferences files manually.
     /// </summary>
     /// <param name="handler">The action to invoke when the value changes, receiving the new value as a parameter.</param>
+    /// <returns>This config field, with an added handler for when this field's stored value is changed.</returns>
     public TSelf WithOnValueApplied(Action<T> handler)
     {
         OnValueApplied += handler;
@@ -138,6 +147,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// Depending on the type of field, the UI input element may be accessed to modify the visible value.
     /// </summary>
     /// <param name="handler">The action to invoke when the UI input is changed by the user, with the new input given.</param>
+    /// <returns>This config field, with an added handler for when the user interacts with the UI input object.</returns>
     public TSelf WithOnInputChanged(Action<TSelf> handler)
     {
         OnInputChanged += handler;
@@ -145,10 +155,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     }
 
     /// <summary>
-    /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.<br/>
-    /// Be sure that the validator added through <see cref="WithValidation(Func{T, bool})"/> will approve the transformed value.
+    /// Sets a function that transforms an incoming value before it is assigned to <see cref="Value"/>.
+    /// Be sure that the validator set using <see cref="WithValidation(Func{T, bool})"/> is able to approve the transformed value.
     /// </summary>
     /// <param name="transform">A function that takes the incoming value and returns the transformed value.</param>
+    /// <returns>This config field, with a transform function that is used when setting a new value.</returns>
     public TSelf WithTransform(Func<T, T> transform)
     {
         transformFunc = transform;
@@ -156,11 +167,12 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     }
 
     /// <summary>
-    /// Sets a function that validates an incoming value before it is assigned to <see cref="Value"/>.<br/>
-    /// This validation check occurs after any transformations added with <see cref="WithTransform(Func{T, T})"/>.
-    /// It is therefore important to ensure that the performed transformation is valid.
+    /// Sets a function that validates an incoming value before it is assigned to <see cref="Value"/>.
+    /// Since this validation check occurs after the transform function (added using <see cref="WithTransform(Func{T, T})"/>) runs,
+    /// it is important to ensure that the performed transformation can be approved.
     /// </summary>
     /// <param name="validator">A function that returns true if the value should be assigned, or false to reject it.</param>
+    /// <returns>This config field, with a validation function that is used to determine whether a new value should be set.</returns>
     public TSelf WithValidation(Func<T, bool> validator)
     {
         validateFunc = validator;
@@ -182,6 +194,10 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         MelonEntry.Value = storedValue;
     }
 
+    /// <summary>
+    /// Called when the user interacts with the UI input object.
+    /// It is the responsibility of custom config fields to call this method.
+    /// </summary>
     internal virtual void HandleInputChanged() => OnInputChanged?.Invoke((TSelf)this);
 
     /// <inheritdoc/>
