@@ -12,39 +12,50 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     where TSelf : ConfigField<T, TSelf>
 {
     /// <summary>
-    /// Gets or sets the value stored in this config field, invoking <see cref="transformFunc"/> when it is updated.
+    /// Gets or sets the value stored in this config field, invoking <see cref="transformFunc"/> when it is changed.
     /// If the new value is different to the old value, any handlers added with <see cref="WithOnValueApplied"/>
     /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if set before the field has been registered with MelonPreferences.
+    /// </exception>
     public T Value
     {
-        get => value;
+        get => storedValue;
         set
         {
-            var newValue = transformFunc is not null ? transformFunc.Invoke(value) : value;
-
-            // Do not assign new value if validation fails
-            if (validateFunc is not null && !validateFunc.Invoke(newValue))
+            // If the MelonEntry has not been loaded yet, the field's value should not be set
+            if (MelonEntry is null)
+                throw new InvalidOperationException(
+                    $"Cannot set Value on config field '{Identifier}' before it has been registered. " + 
+                    "Set the value in the constructor via defaultValue, or wait until after registration.");
+            
+            // Transform the incoming value
+            var incoming = transformFunc is not null ? transformFunc.Invoke(value) : value;
+            
+            // If the incoming value is invalid, reset input to the stored value
+            if (validateFunc is not null && !validateFunc.Invoke(incoming))
             {
-                SetDisplayedValue(this.value);
+                RefreshInput();
                 return;
             }
 
-            // Don't call event or update MelonEntry value if there is no difference
-            if (EqualityComparer<T>.Default.Equals(this.value, newValue))
+            SetDisplayedValue(incoming);
+            
+            // If the incoming value is identical, skip saving it
+            if (EqualityComparer<T>.Default.Equals(storedValue, incoming))
                 return;
             
-            this.value = newValue;
-            MelonEntry.Value = newValue;
-
-            OnValueApplied?.Invoke(newValue);
+            storedValue = incoming; 
+            MelonEntry.Value = incoming;
+            OnValueApplied?.Invoke(incoming);
         }
     }
 
     /// <summary>
-    /// The underlying field containing the value. Setting this directly is used to sidestep the MelonEntry update on init.
+    /// The underlying field containing the value currently stored by this config field.
     /// </summary>
-    private T value;
+    private T storedValue;
 
     /// <summary>
     /// The default value of this config field. This is also used as a fallback when an unexpected value is encountered.
@@ -59,8 +70,8 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <summary>
     /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config field and contains the stored value.
     /// </summary>
-    public MelonPreferences_Entry<T> MelonEntry { get; private set; } = null!;
-
+    public MelonPreferences_Entry<T>? MelonEntry { get; private set; }
+    
     /// <summary>
     /// A function that processes an incoming new value and returns a transformed value.
     /// </summary>
@@ -91,7 +102,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     protected ConfigField(string identifier, string displayName, T defaultValue) : base(identifier, displayName)
     {
         DefaultValue = defaultValue;
-        value = defaultValue;
+        storedValue = defaultValue;
     }
 
     public TSelf WithDescription(string description)
@@ -156,16 +167,27 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         return (TSelf)this;
     }
     
+    /// <inheritdoc/>
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
         MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, DisplayName, Description, is_hidden: true, oldIdentifier: OldIdentifier);
-        Value = MelonEntry.Value; // Should automatically contain any loaded value, otherwise the default
+        MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
+        {
+            if (!EqualityComparer<T>.Default.Equals(val, storedValue))
+                Value = val;
+        });
+        
+        // Load the value from the MelonEntry, then save it back to sync transformation and validation results
+        Value = MelonEntry.Value;
+        MelonEntry.Value = storedValue;
     }
 
     internal virtual void HandleInputChanged() => OnInputChanged?.Invoke((TSelf)this);
 
+    /// <inheritdoc/>
     internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
 
+    /// <inheritdoc/>
     internal sealed override void RefreshInput() => SetDisplayedValue(Value);
 
     /// <summary>
