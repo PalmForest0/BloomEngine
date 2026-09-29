@@ -219,6 +219,8 @@ internal sealed class ConfigPanel
         layout.minHeight = 134;
         layout.preferredHeight = 134;
         layout.flexibleHeight = 0;
+
+        field.InputObjectCreated = true;
     }
 
     private static void CreateSquareButton(string name, RectTransform parent, Action onClick, Sprite normalSprite, Sprite? hoverSprite = null)

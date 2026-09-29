@@ -78,7 +78,8 @@ public sealed class ModConfig
     internal void ApplyInputAll()
     {
         foreach (var field in ConfigFields)
-            field.ApplyInput();
+            if(field.InputObjectCreated)
+                field.ApplyInput();
     }
 
     /// <summary>
@@ -87,7 +88,8 @@ public sealed class ModConfig
     internal void RefreshInputAll()
     {
         foreach (var field in ConfigFields)
-            field.RefreshInput();
+            if(field.InputObjectCreated)
+                field.RefreshInput();
     }
 
     /// <summary>

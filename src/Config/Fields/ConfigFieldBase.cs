@@ -23,7 +23,12 @@ public abstract class ConfigFieldBase(string identifier, string displayName)
     /// The description shown for this config field in the config panel.
     /// </summary>
     public string? Description { get; protected set; } 
-
+    
+    /// <summary>
+    /// Returns whether the UI input object for this config field exists.
+    /// </summary>
+    public bool InputObjectCreated { get; internal set; }
+    
     /// <summary>
     /// Creates the correct UI input object for this config field.
     /// </summary>
