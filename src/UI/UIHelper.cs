@@ -273,14 +273,28 @@ public static class UIHelper
         var dropdown = obj.GetComponent<ReloadedDropdown>();
         dropdown.ClearOptions();
 
-        // Try to find the template item label and increase the text area
-        if (dropdown.template.TryFindComponent<TextMeshProUGUI>("Viewport/Content/Item/Item Label", out var label))
+        // Try to find the main dropdown label and configure overflow settings
+        if (obj.transform.TryFindComponent<TextMeshProUGUI>("Label", out var label))
         {
-            var rect = label.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(1000, rect.sizeDelta.y);
-
+            var labelRect = label.GetComponent<RectTransform>();
+            labelRect.anchoredPosition = Vector2.zero;
+            labelRect.sizeDelta = new Vector2(-210, labelRect.sizeDelta.y);
+            labelRect.offsetMin = new Vector2(40, labelRect.offsetMin.y);
+            
+            
             label.alignment = TextAlignmentOptions.Center;
+            label.verticalAlignment = VerticalAlignmentOptions.Baseline;
             label.overflowMode = TextOverflowModes.Ellipsis;
+        }
+        
+        // Try to find the template item label and increase the text area
+        if (dropdown.template.TryFindComponent<TextMeshProUGUI>("Viewport/Content/Item/Item Label", out var optionLabel))
+        {
+            var optionRect = optionLabel.GetComponent<RectTransform>();
+            optionRect.sizeDelta = new Vector2(1000, optionRect.sizeDelta.y);
+
+            optionLabel.alignment = TextAlignmentOptions.Center;
+            optionLabel.overflowMode = TextOverflowModes.Ellipsis;
         }
         
         if (selectedIndex > options.Length - 1 || selectedIndex < 0)
