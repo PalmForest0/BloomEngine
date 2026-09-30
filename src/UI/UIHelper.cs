@@ -4,8 +4,6 @@ using Il2CppReloaded;
 using Il2CppReloaded.Input;
 using Il2CppReloaded.UI;
 using Il2CppSource.UI;
-using Il2CppTekly.DataModels.Binders;
-using Il2CppTekly.Localizations;
 using Il2CppTekly.PanelViews;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
@@ -472,13 +470,9 @@ public static class UIHelper
 
         // Remove garbage components
         if (buttonObj.TryGetComponent<ExitGame>(out var exit))
-            Object.Destroy(exit);
-        if (buttonObj.TryGetComponent<TextLocalizer>(out var localiser))
-            Object.Destroy(localiser);
-        foreach (var local in buttonObj.GetComponentsInChildren<TextLocalizer>())
-            Object.Destroy(local);
-        if (buttonObj.TryGetComponent<UnityButtonBinder>(out var binder))
-            Object.Destroy(binder);
+            Object.DestroyImmediate(exit);
+        
+        buttonObj.DestroyBindersAndLocalizers();
 
         // Add onClick event
         if (onClick is not null)
