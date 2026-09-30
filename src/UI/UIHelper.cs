@@ -279,11 +279,10 @@ public static class UIHelper
             var labelRect = label.GetComponent<RectTransform>();
             labelRect.anchoredPosition = Vector2.zero;
             labelRect.sizeDelta = new Vector2(-210, labelRect.sizeDelta.y);
-            labelRect.offsetMin = new Vector2(40, labelRect.offsetMin.y);
+            labelRect.offsetMin = new Vector2(60, labelRect.offsetMin.y);
             
             
-            label.alignment = TextAlignmentOptions.Center;
-            label.verticalAlignment = VerticalAlignmentOptions.Baseline;
+            label.alignment = TextAlignmentOptions.BaselineLeft;
             label.overflowMode = TextOverflowModes.Ellipsis;
         }
         
