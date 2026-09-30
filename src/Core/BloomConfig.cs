@@ -8,9 +8,17 @@ public static class BloomConfig
     private const string LogPrefix = $"[{nameof(BloomConfig)}] ";
     
 #if DEBUG
-    public static readonly EnumConfigInput<DayOfWeek> TestEnumField = 
-        ConfigService.CreateEnum<DayOfWeek>("test_enum_field", "Test Enum Field", DayOfWeek.Friday)
-            .WithOptionOrder(DayOfWeek.Sunday)
+    public enum TestEnum
+    {
+        ThisEnumOptionHasTheLongestNameEver,
+        EnumOptionWithAVeryLongName,
+        ShorterEnumOption,
+        ShortOption
+    }
+
+    public static readonly EnumConfigInput<TestEnum> TestEnumField = 
+        ConfigService.CreateEnum<TestEnum>("test_enum_field", "Test Enum Field", TestEnum.ShortOption)
+            .WithOptionOrder(TestEnum.ShortOption, TestEnum.ShorterEnumOption, TestEnum.EnumOptionWithAVeryLongName)
             .WithOptionNames(day => day.ToString().ToUpperInvariant())
             .WithOnValueApplied(day => BloomLogger.Debug($"Value of Test Enum Field set to: {day}", LogPrefix));
     
