@@ -8,7 +8,7 @@
 		<Nullable>enable</Nullable>
 		<AssemblyTitle>BloomEngine</AssemblyTitle>
 		<Description>Robust mod menu and config manager for PvZ Replanted.</Description>
-		<Version>0.3.0-beta</Version>
+		<Version>0.4.1-beta</Version>
 		<Authors>PalmForest</Authors>
 		<Company>PalmForest</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
