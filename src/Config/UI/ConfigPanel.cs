@@ -182,7 +182,7 @@ internal sealed class ConfigPanel
         // Create all the children in the right order
         CreateLabel(field, rowRect);
         CreateInput(field, rowRect);
-        CreateSquareButton("InputResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
+        CreateSquareButton("ResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(field.Description))
             CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.DisplayName, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
@@ -190,7 +190,7 @@ internal sealed class ConfigPanel
     private void CreateLabel(ConfigFieldBase field, RectTransform parent)
     {
         var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        labelObj.name = $"ConfigLabel_{field.Identifier}";
+        labelObj.name = $"ConfigLabel";
         labelObj.SetActive(true);
 
         var layout = labelObj.AddComponent<LayoutElement>();
@@ -210,7 +210,7 @@ internal sealed class ConfigPanel
 
     private static void CreateInput(ConfigFieldBase field, RectTransform parent)
     {
-        var inputObj = field.CreateInputObject(parent, $"ConfigInput_{field.Identifier}");
+        var inputObj = field.CreateInputObject(parent, "ConfigInput");
         var layout = inputObj.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
