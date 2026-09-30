@@ -363,7 +363,7 @@ public static class UIHelper
     /// </summary>
     /// <param name="panelId">The internal id of the new panel.</param>
     /// <param name="panelName">The object name of the new panel and the default title.</param>
-    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customise the popup.</returns>
+    /// <returns>A <see cref="CustomPopup"/> instance that can be used to customize the popup.</returns>
     public static CustomPopup CreatePopup(string panelId, string panelName)
     {
         // Create the panel and rename it

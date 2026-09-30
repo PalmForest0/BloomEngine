@@ -22,7 +22,7 @@ public static class ModListService
     internal static IEnumerable<ModListEntry> RegisteredEntries => ModEntries.Values;
 
     /// <summary>
-    /// Creates a new mod entry which can be customised and added to the mod list with <see cref="ModListEntry.Register"/>.
+    /// Creates a new mod entry which can be customized and added to the mod list with <see cref="ModListEntry.Register"/>.
     /// </summary>
     /// <param name="mod">The mod this entry belongs to.</param>
     /// <returns>A new <see cref="ModListEntry"/> for the given mod, or the current one if it already exists.</returns>

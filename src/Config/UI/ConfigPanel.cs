@@ -70,8 +70,8 @@ internal sealed class ConfigPanel
         else BloomLogger.Error($"Cannot create config panel \"{config.Id}\" due to the MainMenuPanel being null.", ConfigService.LogPrefix);
 
         // Destroy all localizer components
-        foreach (var localiser in panel.GetComponentsInChildren<TextLocalizer>(true))
-            Object.Destroy(localiser);
+        foreach (var localizer in panel.GetComponentsInChildren<TextLocalizer>(true))
+            Object.Destroy(localizer);
 
         Melon<BloomEngineMod>.Logger.Msg($"Successfully created {config.DisplayName} config panel with {config.FieldCount} fields across {pageCount} page{(pageCount > 1 ? "s" : "")}.");
     }

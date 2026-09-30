@@ -63,7 +63,7 @@ public class CustomPopup : MonoBehaviour
         
         // Set defaults
         SetHeader(name);
-        SetSubheader($"See methods provided by the {nameof(CustomPopup)} class to customise this panel!");
+        SetSubheader($"See methods provided by the {nameof(CustomPopup)} class to customize this panel!");
         SetFirstButton(true, "Ok");
 
         // Clean up
