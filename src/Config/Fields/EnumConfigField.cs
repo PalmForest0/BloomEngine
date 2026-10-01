@@ -28,7 +28,7 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
         dropdown = UIHelper.CreateDropdown("Dropdown", wrapperRect, strings, selected, onValueChanged: (_, _) => onInputChanged(this));
         
         var dropdownRect = dropdown.GetComponent<RectTransform>();
-        UIHelper.SetParentAndStretch(dropdownRect, wrapperRect);
+        UIHelper.StretchToParent(dropdownRect);
         dropdownRect.sizeDelta = new Vector2(0, 60);
         dropdownRect.anchoredPosition += new Vector2(0, -15);
         

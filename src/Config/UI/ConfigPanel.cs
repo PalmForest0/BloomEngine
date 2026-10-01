@@ -231,7 +231,7 @@ internal sealed class ConfigPanel
         Object.Destroy(buttonObj.transform.Find("Label").gameObject);
         Object.Destroy(buttonObj.transform.Find("Background/ImageSelected").gameObject);
 
-        UIHelper.SetParentAndStretch(buttonObj.GetComponent<RectTransform>(), wrapperRect);
+        UIHelper.StretchToParent(buttonObj.GetComponent<RectTransform>());
 
         // Modify and clean up the image component
         var buttonImg = buttonObj.FindComponent<Image>("Background/Image");

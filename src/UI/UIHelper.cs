@@ -391,13 +391,15 @@ public static class UIHelper
     }
 
     /// <summary>
-    /// Sets the parent RectTransform of another UI RectTransform, resetting anchors, offsets and pivot.
+    ///  Resets the anchors, offsets and pivot of a given RectTransform and optionally gives it a new parent beforehand.
     /// </summary>
-    /// <param name="parent">The parent UI rect.</param>
     /// <param name="child">The UI rect to place under the parent and modify.</param>
-    public static void SetParentAndStretch(RectTransform child, RectTransform parent)
+    /// <param name="parent">The parent UI rect to attach the child to.</param>
+    public static void StretchToParent(RectTransform child, RectTransform? parent = null)
     {
-        child.SetParent(parent);
+        if(parent.NotNull())
+            child.SetParent(parent);
+        
         child.anchorMin = Vector2.zero;
         child.anchorMax = Vector2.one;
         child.offsetMin = Vector2.zero;

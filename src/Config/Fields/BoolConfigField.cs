@@ -20,7 +20,7 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
         checkbox = UIHelper.CreateCheckbox("Checkbox", wrapperRect, Value, onValueChanged: _ => onInputChanged(this));
         
         var toggleRect = checkbox.GetComponent<RectTransform>();
-        UIHelper.SetParentAndStretch(toggleRect, wrapperRect);
+        UIHelper.StretchToParent(toggleRect);
         toggleRect.anchoredPosition += new Vector2(0, -35);
 
         return wrapperRect.gameObject;
