@@ -31,5 +31,9 @@ public static class BloomConfig
         new FloatConfigField("test_float_field", "Test Float Field", 0.5f)
             .WithRange(0f, 2f)
             .WithOnValueApplied(val => BloomLogger.Debug($"Value of Test Float Field set to: {val}", LogPrefix));
+    
+    public static readonly BoolConfigField TestBoolField = 
+        new BoolConfigField("test_bool_field", "Test Bool Field", false)
+            .WithOnValueApplied(val => BloomLogger.Debug($"Value of Test Bool Field set to: {val}", LogPrefix));
 #endif
 }

@@ -13,17 +13,17 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
     private Toggle checkbox = null!;
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<BoolConfigField> onInputChanged)
     {
-        var wrapper = UIHelper.CreateUIWrapper(parent, name);
+        var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
 
-        checkbox = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => HandleInputChanged());
-        var toggleRect = checkbox.gameObject.GetComponent<RectTransform>();
-        UIHelper.SetParentAndStretch(toggleRect, wrapper);
-
+        checkbox = UIHelper.CreateCheckbox("Checkbox", wrapperRect, Value, onValueChanged: _ => onInputChanged(this));
+        
+        var toggleRect = checkbox.GetComponent<RectTransform>();
+        UIHelper.SetParentAndStretch(toggleRect, wrapperRect);
         toggleRect.anchoredPosition += new Vector2(0, -35);
 
-        return wrapper.gameObject;
+        return wrapperRect.gameObject;
     }
 
     /// <inheritdoc/>
@@ -31,4 +31,6 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
 
     /// <inheritdoc/>
     protected override void SetInputValue(bool inputValue) => checkbox.SetIsOnWithoutNotify(inputValue);
+
+    
 }

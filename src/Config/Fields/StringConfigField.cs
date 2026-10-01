@@ -13,9 +13,9 @@ public sealed class StringConfigField(string identifier, string displayName, str
     private ReloadedInputField textbox = null!;
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<StringConfigField> onInputChanged)
     {
-        textbox = UIHelper.CreateTextbox(name, Value, parent, onTextChanged: _ => HandleInputChanged());
+        textbox = UIHelper.CreateTextbox(name, Value, parent, onTextChanged: _ => onInputChanged(this));
         return textbox.gameObject;
     }
 

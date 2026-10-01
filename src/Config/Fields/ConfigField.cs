@@ -1,4 +1,6 @@
 ﻿using MelonLoader;
+using UnityEngine;
+using BloomEngine.UI;
 
 namespace BloomEngine.Config.Fields;
 
@@ -40,7 +42,8 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
                 return;
             }
 
-            SetInputValue(incoming);
+            if(InputObjectCreated)
+                InputValue = incoming;
             
             // If the incoming value is identical, skip saving it
             if (EqualityComparer<T>.Default.Equals(storedValue, incoming))
@@ -209,22 +212,31 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// </summary>
     /// <param name="inputValue">The value to display in the input UI.</param>
     protected abstract void SetInputValue(T inputValue);
-    
+
     /// <summary>
-    /// Called when the user interacts with the UI input object.
-    /// It is the responsibility of custom config fields to call this method.
+    /// Creates the UI input object for this config field. <see cref="UIHelper"/> provides useful static methods for creating basic PvZ inputs.
+    /// Backing UI elements may be declared non-nullable with <c>= null!;</c>, since this method is guaranteed to run before
+    /// <see cref="GetInputValue"/> or <see cref="SetInputValue"/> can be called.
     /// </summary>
-    internal virtual void HandleInputChanged() => OnInputChanged?.Invoke((TSelf)this);
+    /// <param name="parent">The <see cref="RectTransform"/> under which the UI input object is instantiated.</param>
+    /// <param name="name">The name of the created UI input GameObject.</param>
+    /// <param name="onInputChanged">A callback that is invoked upon the input object receiving an input changed event, passing in the field itself.</param>
+    /// <returns>The created UI input GameObject.</returns>
+    protected abstract GameObject CreateInputObject(RectTransform parent, string name, Action<TSelf> onInputChanged);
 
     /// <inheritdoc/>
-    internal sealed override void ApplyInput() => Value = GetInputValue();
+    internal sealed override void ApplyInput() => Value = InputValue;
 
     /// <inheritdoc/>
-    internal sealed override void ResetInput() => SetInputValue(DefaultValue);
+    internal sealed override void ResetInput() => InputValue = DefaultValue;
 
     /// <inheritdoc/>
-    internal sealed override void UpdateInput() => SetInputValue(Value);
-    
+    internal sealed override void UpdateInput() => InputValue = Value;
+
+    /// <inheritdoc/>
+    internal sealed override GameObject CreateInput(RectTransform parent, string name)
+        => CreateInputObject(parent, name, onInputChanged: self => OnInputChanged?.Invoke(self));
+
     /// <inheritdoc/>
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {

@@ -18,21 +18,21 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     private Func<TEnum, string?>? nameSelector = opt => StringHelper.StringToReadable(opt.ToString());
 
     /// <inheritdoc/>
-    protected internal override GameObject CreateInputObject(RectTransform parent, string name)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<EnumConfigField<TEnum>> onInputChanged)
     {
-        var wrapper = UIHelper.CreateUIWrapper(parent, name);
+        var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
 
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
         int selected = Convert.ToInt32(Value, CultureInfo.InvariantCulture);
         
-        dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, selected, onValueChanged: (_, _) => HandleInputChanged());
+        dropdown = UIHelper.CreateDropdown("Dropdown", wrapperRect, strings, selected, onValueChanged: (_, _) => onInputChanged(this));
         
         var dropdownRect = dropdown.GetComponent<RectTransform>();
-        UIHelper.SetParentAndStretch(dropdownRect, wrapper);
-
+        UIHelper.SetParentAndStretch(dropdownRect, wrapperRect);
         dropdownRect.sizeDelta = new Vector2(0, 60);
         dropdownRect.anchoredPosition += new Vector2(0, -15);
-        return wrapper.gameObject;
+        
+        return wrapperRect.gameObject;
     }
 
     /// <summary>

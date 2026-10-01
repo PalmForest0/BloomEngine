@@ -210,8 +210,8 @@ internal sealed class ConfigPanel
 
     private static void CreateInput(ConfigFieldBase field, RectTransform parent)
     {
-        var inputObj = field.CreateInputObject(parent, "ConfigInput");
-        var layout = inputObj.AddComponent<LayoutElement>();
+        var inputRect = field.CreateInput(parent, "ConfigInput");
+        var layout = inputRect.gameObject.AddComponent<LayoutElement>();
         layout.minWidth = 1200;
         layout.preferredWidth = 1200;
         layout.flexibleWidth = 0;
