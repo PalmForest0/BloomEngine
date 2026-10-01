@@ -36,7 +36,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             // If the incoming value is invalid, reset input to the stored value
             if (validateFunc is not null && !validateFunc.Invoke(incoming))
             {
-                RefreshInput();
+                UpdateInput();
                 return;
             }
 
@@ -102,12 +102,12 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     private Func<T, bool>? validateFunc;
 
     /// <summary>
-    /// An event that is invoked when <see cref="Value"/> is updated, providing the newly set value.
+    /// An event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
     /// </summary>
     private event Action<T>? OnValueApplied;
 
     /// <summary>
-    /// An event that is invoked when the UI input is modified by the user, providing this config field.
+    /// An event that is invoked when the UI input is modified by the user, passing this config field as an argument.
     /// </summary>
     private event Action<TSelf>? OnInputChanged;
     
@@ -196,21 +196,6 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         validateFunc = validator;
         return (TSelf)this;
     }
-    
-    /// <inheritdoc/>
-    internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
-    {
-        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, DisplayName, Description, is_hidden: true, oldIdentifier: OldIdentifier);
-        MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
-        {
-            if (!EqualityComparer<T>.Default.Equals(val, storedValue))
-                Value = val;
-        });
-        
-        // Load the value from the MelonEntry, then save it back to sync transformation and validation results
-        Value = MelonEntry.Value;
-        MelonEntry.Value = storedValue;
-    }
 
     /// <summary>
     /// Gets the value currently held in the UI input object associated with this field.
@@ -238,5 +223,20 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     internal sealed override void ResetInput() => SetInputValue(DefaultValue);
 
     /// <inheritdoc/>
-    internal sealed override void RefreshInput() => SetInputValue(Value);
+    internal sealed override void UpdateInput() => SetInputValue(Value);
+    
+    /// <inheritdoc/>
+    internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
+    {
+        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, DisplayName, Description, is_hidden: true, oldIdentifier: OldIdentifier);
+        MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
+        {
+            if (!EqualityComparer<T>.Default.Equals(val, storedValue))
+                Value = val;
+        });
+        
+        // Load the value from the MelonEntry, then save it back to sync transformation and validation results
+        Value = MelonEntry.Value;
+        MelonEntry.Value = storedValue;
+    }
 }

@@ -89,7 +89,7 @@ public sealed class ModConfig
     {
         foreach (var field in ConfigFields)
             if(field.InputObjectCreated)
-                field.RefreshInput();
+                field.UpdateInput();
     }
 
     /// <summary>

@@ -57,5 +57,5 @@ public abstract class ConfigFieldBase(string identifier, string displayName)
     /// <summary>
     /// Updates the UI input object with the current value stored by this config field.
     /// </summary>
-    internal abstract void RefreshInput();
+    internal abstract void UpdateInput();
 }
