@@ -30,7 +30,8 @@ public abstract class ConfigFieldBase(string identifier, string displayName)
     public bool InputObjectCreated { get; internal set; }
     
     /// <summary>
-    /// Creates the correct UI input object for this config field.
+    /// Creates the correct UI input object for this config field. Backing UI elements may be declared non-nullable with <c>= null!;</c>,
+    /// since this method is guaranteed to run before the input value can be read.
     /// </summary>
     /// <param name="parent">The parent under which this UI object should be instantiated.</param>
     /// <param name="name">The string to use as the name of the UI object.</param>
@@ -51,7 +52,7 @@ public abstract class ConfigFieldBase(string identifier, string displayName)
     /// <summary>
     /// Updates the stored value of this config field to contain the current value in the UI input object.
     /// </summary>
-    protected internal abstract void ApplyInput();
+    internal abstract void ApplyInput();
 
     /// <summary>
     /// Updates the UI input object with the current value stored by this config field.

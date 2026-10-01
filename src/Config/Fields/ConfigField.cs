@@ -40,7 +40,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
                 return;
             }
 
-            SetDisplayedValue(incoming);
+            SetInputValue(incoming);
             
             // If the incoming value is identical, skip saving it
             if (EqualityComparer<T>.Default.Equals(storedValue, incoming))
@@ -57,6 +57,24 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// </summary>
     private T storedValue;
 
+    public T InputValue
+    {
+        get
+        {
+            if (!InputObjectCreated)
+                throw new InvalidOperationException($"Cannot read InputValue for '{Identifier}' before its input UI object has been created.");
+
+            return GetInputValue();
+        }
+        set
+        {
+            if (!InputObjectCreated)
+                throw new InvalidOperationException($"Cannot set InputValue for '{Identifier}' before its input UI object has been created.");
+
+            SetInputValue(value);
+        }
+    }
+    
     /// <summary>
     /// The default value of this config field. This is also used as a fallback when an unexpected value is encountered.
     /// </summary>
@@ -195,20 +213,30 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     }
 
     /// <summary>
+    /// Gets the value currently held in the UI input object associated with this field.
+    /// </summary>
+    /// <returns>The displayed value in the input UI.</returns>
+    protected abstract T GetInputValue();
+    
+    /// <summary>
+    /// Sets the value currently held in the UI input object associated with this field.
+    /// This should be implemented by updating the backing input element without notification.
+    /// </summary>
+    /// <param name="inputValue">The value to display in the input UI.</param>
+    protected abstract void SetInputValue(T inputValue);
+    
+    /// <summary>
     /// Called when the user interacts with the UI input object.
     /// It is the responsibility of custom config fields to call this method.
     /// </summary>
     internal virtual void HandleInputChanged() => OnInputChanged?.Invoke((TSelf)this);
 
     /// <inheritdoc/>
-    internal sealed override void ResetInput() => SetDisplayedValue(DefaultValue);
+    internal sealed override void ApplyInput() => Value = GetInputValue();
 
     /// <inheritdoc/>
-    internal sealed override void RefreshInput() => SetDisplayedValue(Value);
+    internal sealed override void ResetInput() => SetInputValue(DefaultValue);
 
-    /// <summary>
-    /// Sets the displayed UI input value based on the specific field type.
-    /// </summary>
-    /// <param name="value">The value to display in the UI input object.</param>
-    protected abstract void SetDisplayedValue(T value);
+    /// <inheritdoc/>
+    internal sealed override void RefreshInput() => SetInputValue(Value);
 }

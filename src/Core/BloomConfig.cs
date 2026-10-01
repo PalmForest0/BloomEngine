@@ -17,7 +17,7 @@ public static class BloomConfig
     
     public static readonly StringConfigField TestStringField = 
         new StringConfigField("test_string_field", "Test String Field", "jarona")
-            .WithOnInputChanged(field => field.Textbox.SetTextWithoutNotify(field.Textbox.text.ToUpperInvariant()))
+            .WithOnInputChanged(field => field.InputValue = field.InputValue.ToUpperInvariant())
             .WithTransform(val => val.ToUpperInvariant())
             .WithOnValueApplied(val => BloomLogger.Debug($"Value of Test String Field set to: {val}", LogPrefix));
     

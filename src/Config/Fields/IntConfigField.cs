@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using BloomEngine.Extensions;
 using BloomEngine.Helpers;
 using BloomEngine.UI;
 using Il2CppReloaded.Input;
@@ -13,33 +12,26 @@ namespace BloomEngine.Config.Fields;
 public sealed class IntConfigField(string identifier, string displayName, int defaultValue)
     : ConfigField<int, IntConfigField>(identifier, displayName, defaultValue)
 {
-    /// <summary>
-    /// The UI textbox which corresponds to this config field in the config panel.
-    /// </summary>
-    public ReloadedInputField? Textbox { get; private set; }
+    private ReloadedInputField textbox = null!;
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: _ => HandleInputChanged());
-        return Textbox.gameObject;
+        textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: _ => HandleInputChanged());
+        return textbox.gameObject;
     }
+    
+    /// <inheritdoc/>
+    protected override int GetInputValue() => (int)StringHelper.ValidateNumericInput(textbox.text, typeof(int));
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput()
-    {
-        if(Textbox.NotNull())
-            Value = (int)StringHelper.ValidateNumericInput(Textbox.text, typeof(int));
-    }
-
-    /// <inheritdoc/>
-    protected override void SetDisplayedValue(int value) => Textbox.OrNull()?.SetTextWithoutNotify(value.ToString(CultureInfo.InvariantCulture));
+    protected override void SetInputValue(int inputValue) => textbox.SetTextWithoutNotify(inputValue.ToString(CultureInfo.InvariantCulture));
 
     /// <inheritdoc/>
     internal override void HandleInputChanged()
     {
         // Perform basic sanitization on live input change
-        Textbox!.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(Textbox.text));
+        textbox!.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(textbox.text));
         base.HandleInputChanged();
     }
 }

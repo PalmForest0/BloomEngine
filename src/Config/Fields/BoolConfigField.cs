@@ -1,5 +1,4 @@
-﻿using BloomEngine.Extensions;
-using BloomEngine.UI;
+﻿using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,18 +10,15 @@ namespace BloomEngine.Config.Fields;
 public sealed class BoolConfigField(string identifier, string displayName, bool defaultValue)
     : ConfigField<bool, BoolConfigField>(identifier, displayName, defaultValue)
 {
-    /// <summary>
-    /// The UI checkbox element which corresponds to this config field in the config panel.
-    /// </summary>
-    public Toggle? Checkbox { get; private set; }
+    private Toggle checkbox = null!;
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
         var wrapper = UIHelper.CreateUIWrapper(parent, name);
 
-        Checkbox = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => HandleInputChanged());
-        var toggleRect = Checkbox.gameObject.GetComponent<RectTransform>();
+        checkbox = UIHelper.CreateCheckbox("Toggle_Internal", wrapper, Value, onValueChanged: _ => HandleInputChanged());
+        var toggleRect = checkbox.gameObject.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(toggleRect, wrapper);
 
         toggleRect.anchoredPosition += new Vector2(0, -35);
@@ -31,12 +27,8 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput()
-    {
-        if(Checkbox.NotNull())
-            Value = Checkbox.isOn;
-    }
+    protected override bool GetInputValue() => checkbox.isOn;
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(bool value) => Checkbox.OrNull()?.SetIsOnWithoutNotify(value);
+    protected override void SetInputValue(bool inputValue) => checkbox.SetIsOnWithoutNotify(inputValue);
 }

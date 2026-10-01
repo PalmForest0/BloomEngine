@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using BloomEngine.Extensions;
 using BloomEngine.Helpers;
 using BloomEngine.UI;
 using Il2CppSource.UI;
@@ -13,19 +12,9 @@ namespace BloomEngine.Config.Fields;
 public sealed class EnumConfigField<TEnum>(string identifier, string displayName, TEnum defaultValue)
     : ConfigField<TEnum, EnumConfigField<TEnum>>(identifier, displayName, defaultValue) where TEnum : Enum
 {
-    /// <summary>
-    /// The UI dropdown element which corresponds to this config field in the config panel.
-    /// </summary>
-    public ReloadedDropdown? Dropdown { get; private set; }
-
-    /// <summary>
-    /// The list of options that gets shown in the dropdown.
-    /// </summary>
+    private ReloadedDropdown dropdown = null!;
+    
     private List<TEnum> options = GetEnumOptions<TEnum>().ToList();
-
-    /// <summary>
-    /// A function that determines the display names of options.
-    /// </summary>
     private Func<TEnum, string?>? nameSelector = opt => StringHelper.StringToReadable(opt.ToString());
 
     /// <inheritdoc/>
@@ -36,9 +25,9 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
         string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
         int selected = Convert.ToInt32(Value, CultureInfo.InvariantCulture);
         
-        Dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, selected, onValueChanged: (_, _) => HandleInputChanged());
+        dropdown = UIHelper.CreateDropdown("Dropdown_Internal", wrapper, strings, selected, onValueChanged: (_, _) => HandleInputChanged());
         
-        var dropdownRect = Dropdown.GetComponent<RectTransform>();
+        var dropdownRect = dropdown.GetComponent<RectTransform>();
         UIHelper.SetParentAndStretch(dropdownRect, wrapper);
 
         dropdownRect.sizeDelta = new Vector2(0, 60);
@@ -75,20 +64,13 @@ public sealed class EnumConfigField<TEnum>(string identifier, string displayName
     }
 
     /// <inheritdoc/>
-    protected internal override void ApplyInput()
-    {
-        if(Dropdown.NotNull())
-            Value = options[Dropdown.value];
-    }
+    protected override TEnum GetInputValue() => options[dropdown.value];
 
     /// <inheritdoc/>
-    protected override void SetDisplayedValue(TEnum value)
+    protected override void SetInputValue(TEnum inputValue)
     {
-        if(Dropdown.IsNull())
-            return;
-        
-        Dropdown.SetValueWithoutNotify(options.IndexOf(value));
-        Dropdown.RefreshShownValue();
+        dropdown.SetValueWithoutNotify(options.IndexOf(inputValue));
+        dropdown.RefreshShownValue();
     }
 
     /// <summary>

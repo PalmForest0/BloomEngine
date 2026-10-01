@@ -1,5 +1,4 @@
-﻿using BloomEngine.Extensions;
-using BloomEngine.UI;
+﻿using BloomEngine.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,28 +21,15 @@ public sealed class FloatConfigField(string identifier, string displayName, floa
     /// This is <c>1f</c> by default, but can be changed using <see cref="WithRange"/>.
     /// </summary>
     public float MaxValue { get; private set; } = 1f;
-
-    /// <summary>
-    /// The UI slider which corresponds to this config field in the config panel.
-    /// </summary>
-    public Slider? Slider { get; private set; }
+    
+    private Slider slider = null!;
 
     /// <inheritdoc/>
     protected internal override GameObject CreateInputObject(RectTransform parent, string name)
     {
-        Slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onValueChanged: _ => HandleInputChanged());
-        return Slider.gameObject;
+        slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onValueChanged: _ => HandleInputChanged());
+        return slider.gameObject;
     }
-
-    /// <inheritdoc/>
-    protected internal override void ApplyInput()
-    {
-        if(Slider.NotNull())
-            Value = Slider.value;
-    }
-
-    /// <inheritdoc/>
-    protected override void SetDisplayedValue(float value) => Slider.OrNull()?.SetValueWithoutNotify(value);
 
     /// <summary>
     /// Defines a custom <see langword="float"/> range for this config field. The default is 0f - 1f.
@@ -57,4 +43,10 @@ public sealed class FloatConfigField(string identifier, string displayName, floa
         MaxValue = maxValue;
         return this;
     }
+    
+    /// <inheritdoc/>
+    protected override float GetInputValue() => slider.value;
+
+    /// <inheritdoc/>
+    protected override void SetInputValue(float inputValue) => slider.SetValueWithoutNotify(inputValue);
 }
