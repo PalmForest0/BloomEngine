@@ -228,7 +228,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     internal sealed override void ApplyInput() => Value = InputValue;
 
     /// <inheritdoc/>
-    internal sealed override void ResetInput() => InputValue = DefaultValue;
+    internal sealed override void ResetInput() => InputValue = transformFunc is null ? DefaultValue : transformFunc.Invoke(DefaultValue);
 
     /// <inheritdoc/>
     internal sealed override void UpdateInput() => InputValue = Value;
