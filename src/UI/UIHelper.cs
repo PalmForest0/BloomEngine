@@ -64,7 +64,7 @@ public static class UIHelper
     public static TMP_FontAsset? FontHouseOfTerror { get; private set; }
 
     /// <summary>
-    /// Gets a bool that is true when all UI element templates have een loaded.
+    /// Gets a bool that is true when all UI element templates have been loaded.
     /// </summary>
     internal static bool AllTemplatesLoaded => _templateButton && _templateCheckbox && _templateDropdown && _templateSlider && _templateTextbox;
 
@@ -96,7 +96,7 @@ public static class UIHelper
         if (MainMenuPanel.transform.parent.TryFindComponent<TextMeshProUGUI>(helpPageLabelPath, out var label2, LogPrefix))
             FontHouseOfTerror = label2.font;
 
-        TryCreateTemplates();
+        CreateTemplates();
 
         BloomLogger.Info("Successfully loaded all UI elements.", LogPrefix);
     }
@@ -104,13 +104,14 @@ public static class UIHelper
     /// <summary>
     /// Attempts to create template UI elements if they have not been created already.
     /// </summary>
-    private static void TryCreateTemplates()
+    private static void CreateTemplates()
     {
         var optionsTransform = GlobalPanels.transform.Find("P_OptionsPanel/P_OptionsPanel_Canvas/Layout/Center/Panel/Top/NormalOptions/");
 
         if(_templateContainer.IsNull())
         {
             _templateContainer = new GameObject("BloomEngine_Templates");
+            _templateContainer.SetActive(false);
             Object.DontDestroyOnLoad(_templateContainer);
         }
 
@@ -198,19 +199,17 @@ public static class UIHelper
 
         if (placeholderText is null)
             obj.transform.Find("Text Area").Find("Placeholder").gameObject.SetActive(false);
-        else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().m_text = placeholderText;
+        else obj.transform.Find("Text Area").Find("Placeholder").GetComponent<TextMeshProUGUI>().text = placeholderText;
 
         var field = obj.GetComponent<ReloadedInputField>();
-        field.text = text;
+        field.navigation = new Navigation { mode = Navigation.Mode.Automatic };
+        field.SetTextWithoutNotify(text);
         
         field.onValueChanged = new TMP_InputField.OnChangeEvent();
         field.onValueChanged.AddListener(_ => onTextChanged?.Invoke(field.text));
 
         field.onDeselect = new TMP_InputField.SelectionEvent();
         field.onDeselect.AddListener(_ => onDeselect?.Invoke(field.text));
-
-        field.onSubmit = new TMP_InputField.SubmitEvent();
-        field.onSubmit.AddListener(_ => onDeselect?.Invoke(field.text));
 
         return field;
     }
@@ -220,7 +219,7 @@ public static class UIHelper
     /// </summary>
     /// <param name="name">The name to assign to the created checkbox GameObject.</param>
     /// <param name="parent">The RectTransform that will serve as the parent for the checkbox.</param>
-    /// <param name="value">The initial checked state of the checkbox, which is <see langword="true"/> by default.</param>
+    /// <param name="value">The initial checked state of the checkbox, which is <see langword="false"/> by default.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the checkbox value changes.</param>
     /// <returns>A Toggle label representing the created checkbox with the provided default value.</returns>
     public static Toggle CreateCheckbox(string name, RectTransform parent, bool value = false, Action<bool> ?onValueChanged = null)
@@ -229,7 +228,8 @@ public static class UIHelper
         obj.name = name;
 
         var toggle = obj.GetComponent<Toggle>();
-        toggle.isOn = value;
+        toggle.navigation = new Navigation { mode = Navigation.Mode.Automatic };
+        toggle.SetIsOnWithoutNotify(value);
 
         toggle.onValueChanged = new Toggle.ToggleEvent();
         toggle.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
@@ -255,7 +255,7 @@ public static class UIHelper
     }
 
     /// <summary>
-    /// Creates a PvZ-style Dropdown UI element as a child of the specified parent, and sets its options to the values of an enum.
+    /// Creates a PvZ-style Dropdown UI element as a child of the specified parent, and sets its options to the values of a string array.
     /// </summary>
     /// <param name="name">The name to assign to the newly created Dropdown GameObject.</param>
     /// <param name="parent">The RectTransform that will serve as the parent for the Dropdown.</param>
@@ -269,30 +269,22 @@ public static class UIHelper
         obj.name = name;
 
         var dropdown = obj.GetComponent<ReloadedDropdown>();
+        dropdown.navigation = new Navigation { mode = Navigation.Mode.Automatic };
         dropdown.ClearOptions();
 
-        // Try to find the main dropdown label and configure overflow settings
-        if (obj.transform.TryFindComponent<TextMeshProUGUI>("Label", out var label))
-        {
-            var labelRect = label.GetComponent<RectTransform>();
-            labelRect.anchoredPosition = Vector2.zero;
-            labelRect.sizeDelta = new Vector2(-210, labelRect.sizeDelta.y);
-            labelRect.offsetMin = new Vector2(60, labelRect.offsetMin.y);
-            
-            
-            label.alignment = TextAlignmentOptions.BaselineLeft;
-            label.overflowMode = TextOverflowModes.Ellipsis;
-        }
+        // Update the width and overflow settings on the main label
+        var labelRect = dropdown.captionText.GetComponent<RectTransform>();
+        labelRect.anchoredPosition = Vector2.zero;
+        labelRect.sizeDelta = new Vector2(-210, labelRect.sizeDelta.y);
+        labelRect.offsetMin = new Vector2(60, labelRect.offsetMin.y);
+        dropdown.captionText.alignment = TextAlignmentOptions.BaselineLeft;
+        dropdown.captionText.overflowMode = TextOverflowModes.Ellipsis;
         
-        // Try to find the template item label and increase the text area
-        if (dropdown.template.TryFindComponent<TextMeshProUGUI>("Viewport/Content/Item/Item Label", out var optionLabel))
-        {
-            var optionRect = optionLabel.GetComponent<RectTransform>();
-            optionRect.sizeDelta = new Vector2(1000, optionRect.sizeDelta.y);
-
-            optionLabel.alignment = TextAlignmentOptions.Center;
-            optionLabel.overflowMode = TextOverflowModes.Ellipsis;
-        }
+        // Update width and overflow settings on the options labels
+        var optionRect = dropdown.itemText.GetComponent<RectTransform>();
+        optionRect.sizeDelta = new Vector2(1000, optionRect.sizeDelta.y);
+        dropdown.itemText.alignment = TextAlignmentOptions.Center;
+        dropdown.itemText.overflowMode = TextOverflowModes.Ellipsis;
         
         if (selectedIndex > options.Length - 1 || selectedIndex < 0)
             selectedIndex = 0;
@@ -317,7 +309,7 @@ public static class UIHelper
     /// </summary>
     /// <param name="name">The name to assign to the newly created Slider GameObject.</param>
     /// <param name="parent">The RectTransform that will serve as the parent for the Slider.</param>
-    /// <param name="defaultValue">The initial value to set for the Slider. Must be within the defined range.</param>
+    /// <param name="defaultValue">The initial value to set for the Slider, which is clamped to fit in the provided range.</param>
     /// <param name="minValue">The minimum value allowed for the Slider.</param>
     /// <param name="maxValue">The maximum value allowed for the Slider.</param>
     /// <param name="onValueChanged">An optional callback that is invoked whenever the Slider's value changes.</param>
@@ -330,18 +322,18 @@ public static class UIHelper
         var slider = obj.GetComponent<Slider>();
         slider.minValue = minValue;
         slider.maxValue = maxValue;
-        slider.SetValueWithoutNotify(Math.Clamp(defaultValue, minValue, maxValue));
+        slider.SetValueWithoutNotify(Math.Clamp(defaultValue, Mathf.Min(minValue, maxValue), Mathf.Max(minValue, maxValue)));
 
+        slider.navigation = new Navigation { mode = Navigation.Mode.Automatic };
         slider.onValueChanged = new Slider.SliderEvent();
         slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         // Modify anchor and pivot of slider rects to stretch horizontally
-        var handleArea = obj.transform.Find("Handle Slide Area").gameObject.GetComponent<RectTransform>();
-        handleArea.anchorMin = new Vector2(0f, handleArea.anchorMin.y);
-        handleArea.anchorMax = new Vector2(1f, handleArea.anchorMax.y);
-        handleArea.offsetMin = new Vector2(15f, handleArea.offsetMin.y);
-        handleArea.offsetMax = new Vector2(-35f, handleArea.offsetMax.y);
-        handleArea.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+        slider.handleRect.anchorMin = new Vector2(0f, slider.handleRect.anchorMin.y);
+        slider.handleRect.anchorMax = new Vector2(1f, slider.handleRect.anchorMax.y);
+        slider.handleRect.offsetMin = new Vector2(15f, slider.handleRect.offsetMin.y);
+        slider.handleRect.offsetMax = new Vector2(-35f, slider.handleRect.offsetMax.y);
+        slider.handleRect.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
 
         var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>();
         background.anchorMin = new Vector2(0f, background.anchorMin.y);
@@ -385,8 +377,10 @@ public static class UIHelper
     /// <returns>The UI <see cref="RectTransform"/> label on the created wrapper object.</returns>
     public static RectTransform CreateUIWrapper(RectTransform parent, string name)
     {
-        var rect = new GameObject(name).AddComponent<RectTransform>();
-        rect.SetParent(parent);
+        var obj = new GameObject(name) { layer = parent.gameObject.layer };
+        var rect = obj.AddComponent<RectTransform>();
+        rect.SetParent(parent, false);
+        
         return rect;
     }
 
@@ -398,7 +392,7 @@ public static class UIHelper
     public static void StretchToParent(RectTransform child, RectTransform? parent = null)
     {
         if(parent.NotNull())
-            child.SetParent(parent);
+            child.SetParent(parent, false);
         
         child.anchorMin = Vector2.zero;
         child.anchorMax = Vector2.one;
@@ -408,7 +402,7 @@ public static class UIHelper
     }
 
     /// <summary>
-    /// Automatically adds an <see cref="EventTrigger"/> label to an object and adds an action of the provided type.
+    /// Automatically adds an <see cref="EventTrigger"/> to an object and adds an action of the provided type.
     /// </summary>
     /// <param name="obj">The <see cref="GameObject"/> to add an event trigger to.</param>
     /// <param name="type">Type of event to add the action to.</param>
@@ -449,7 +443,13 @@ public static class UIHelper
 
         while (time < duration)
         {
-            time += Time.deltaTime;
+            if (!group)
+            {
+                FadeCoroutines.Remove(uiRect, out _);
+                yield break;
+            }
+            
+            time += Time.unscaledDeltaTime;
             group.alpha = Mathf.Lerp(start, target, time / duration);
             yield return null;
         }
@@ -464,7 +464,7 @@ public static class UIHelper
     /// <summary>
     /// Cleans up a PvZ Button and updates it with custom values.
     /// </summary>
-    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action? onClick)
+    internal static GameObject ModifyButton(GameObject buttonObj, string newName, string newText, Action onClick)
     {
         // Update name and text
         buttonObj.name = newName;
@@ -476,13 +476,10 @@ public static class UIHelper
         
         buttonObj.DestroyBindersAndLocalizers();
 
-        // Add onClick event
-        if (onClick is not null)
-        {
-            var button = buttonObj.GetComponent<Button>();
-            button.onClick = new Button.ButtonClickedEvent();
-            button.onClick.AddListener(onClick);
-        }
+        var button = buttonObj.GetComponent<Button>();
+        button.navigation = new Navigation { mode = Navigation.Mode.Automatic };
+        button.onClick = new Button.ButtonClickedEvent();
+        button.onClick.AddListener(onClick);
 
         return buttonObj;
     }
