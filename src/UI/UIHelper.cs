@@ -205,6 +205,19 @@ public static class UIHelper
         field.navigation = new Navigation { mode = Navigation.Mode.Automatic };
         field.SetTextWithoutNotify(text);
         
+        if (_templateDropdown.NotNull() && obj.TryFindComponent<Image>("Background", out var bgImg))
+        {
+            bgImg.sprite = _templateDropdown.GetComponent<Image>().sprite;
+            field.transition = Selectable.Transition.None;
+            
+            var bgRect = obj.FindComponent<RectTransform>("Background")!;
+            bgRect.offsetMin = new Vector2(0, -35);
+            bgRect.offsetMax = new Vector2(0, 10);
+
+            var textArea = obj.FindComponent<RectTransform>("Text Area")!;
+            textArea.offsetMin = new Vector2(textArea.offsetMin.x + 20, textArea.offsetMin.y);
+        }
+        
         field.onValueChanged = new TMP_InputField.OnChangeEvent();
         field.onValueChanged.AddListener(_ => onTextChanged?.Invoke(field.text));
 
@@ -267,7 +280,7 @@ public static class UIHelper
     {
         var obj = Object.Instantiate(_templateDropdown, parent)!;
         obj.name = name;
-
+        
         var dropdown = obj.GetComponent<ReloadedDropdown>();
         dropdown.navigation = new Navigation { mode = Navigation.Mode.Automatic };
         dropdown.ClearOptions();
@@ -329,11 +342,12 @@ public static class UIHelper
         slider.onValueChanged.AddListener(val => onValueChanged?.Invoke(val));
 
         // Modify anchor and pivot of slider rects to stretch horizontally
-        slider.handleRect.anchorMin = new Vector2(0f, slider.handleRect.anchorMin.y);
-        slider.handleRect.anchorMax = new Vector2(1f, slider.handleRect.anchorMax.y);
-        slider.handleRect.offsetMin = new Vector2(15f, slider.handleRect.offsetMin.y);
-        slider.handleRect.offsetMax = new Vector2(-35f, slider.handleRect.offsetMax.y);
-        slider.handleRect.Find("Handle").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+        var slideArea = slider.handleRect.parent.GetComponent<RectTransform>();
+        slideArea.anchorMin = new Vector2(0f, slideArea.anchorMin.y);
+        slideArea.anchorMax = new Vector2(1f, slideArea.anchorMax.y);
+        slideArea.offsetMin = new Vector2(18f, slideArea.offsetMin.y);
+        slideArea.offsetMax = new Vector2(-40f, slideArea.offsetMax.y);
+        slider.handleRect.pivot = new Vector2(0.5f, 0.5f);
 
         var background = obj.transform.Find("Background").gameObject.GetComponent<RectTransform>();
         background.anchorMin = new Vector2(0f, background.anchorMin.y);
