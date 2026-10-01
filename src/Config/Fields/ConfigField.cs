@@ -60,6 +60,10 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// </summary>
     private T storedValue;
 
+    /// <summary>
+    /// Gets or sets the value currently displayed by the UI input object, given that it has been created.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when attempting to read or set before the input object has been created. </exception>
     public T InputValue
     {
         get
