@@ -15,12 +15,12 @@ public sealed class IntConfigField(string identifier, string displayName, int de
     private ReloadedInputField textbox = null!;
 
     /// <inheritdoc/>
-    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<IntConfigField> onInputChanged)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<int> onInputChanged)
     {
-        textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: _ =>
+        textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: val =>
         {
-            textbox!.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(textbox.text));
-            onInputChanged(this);
+            textbox!.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(val));
+            onInputChanged.Invoke(GetInputValue());
         });
         
         return textbox.gameObject;

@@ -43,7 +43,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             }
 
             if(InputObjectCreated)
-                InputValue = incoming;
+                SetInputValue(incoming);
             
             // If the incoming value is identical, skip saving it
             if (EqualityComparer<T>.Default.Equals(storedValue, incoming))
@@ -59,28 +59,6 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// The underlying field containing the value currently stored by this config field.
     /// </summary>
     private T storedValue;
-
-    /// <summary>
-    /// Gets or sets the value currently displayed by the UI input object, given that it has been created.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when attempting to read or set before the input object has been created. </exception>
-    public T InputValue
-    {
-        get
-        {
-            if (!InputObjectCreated)
-                throw new InvalidOperationException($"Cannot read InputValue for '{Identifier}' before its input UI object has been created.");
-
-            return GetInputValue();
-        }
-        set
-        {
-            if (!InputObjectCreated)
-                throw new InvalidOperationException($"Cannot set InputValue for '{Identifier}' before its input UI object has been created.");
-
-            SetInputValue(value);
-        }
-    }
     
     /// <summary>
     /// The default value of this config field. This is also used as a fallback when an unexpected value is encountered.
@@ -116,7 +94,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <summary>
     /// An event that is invoked when the UI input is modified by the user, passing this config field as an argument.
     /// </summary>
-    private event Action<TSelf>? OnInputChanged;
+    private event Action<InputContext<TSelf, T>>? OnInputChanged;
     
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
@@ -173,7 +151,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// </summary>
     /// <param name="handler">The action to invoke when the UI input is changed by the user, with the new input given.</param>
     /// <returns>This config field, with an added handler for when the user interacts with the UI input object.</returns>
-    public TSelf WithOnInputChanged(Action<TSelf> handler)
+    public TSelf WithOnInputChanged(Action<InputContext<TSelf, T>> handler)
     {
         OnInputChanged += handler;
         return (TSelf)this;
@@ -226,20 +204,29 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <param name="name">The name of the created UI input GameObject.</param>
     /// <param name="onInputChanged">A callback that is invoked upon the input object receiving an input changed event, passing in the field itself.</param>
     /// <returns>The created UI input GameObject.</returns>
-    protected abstract GameObject CreateInputObject(RectTransform parent, string name, Action<TSelf> onInputChanged);
+    protected abstract GameObject CreateInputObject(RectTransform parent, string name, Action<T> onInputChanged);
 
     /// <inheritdoc/>
-    internal sealed override void ApplyInput() => Value = InputValue;
+    internal sealed override void ApplyInput() => Value = GetInputValue();
 
     /// <inheritdoc/>
-    internal sealed override void ResetInput() => InputValue = transformFunc is null ? DefaultValue : transformFunc.Invoke(DefaultValue);
+    internal sealed override void ResetInput() => SetInputValue(transformFunc is null ? DefaultValue : transformFunc.Invoke(DefaultValue));
 
     /// <inheritdoc/>
-    internal sealed override void UpdateInput() => InputValue = Value;
+    internal sealed override void UpdateInput() => SetInputValue(Value);
 
     /// <inheritdoc/>
-    internal sealed override GameObject CreateInput(RectTransform parent, string name)
-        => CreateInputObject(parent, name, onInputChanged: self => OnInputChanged?.Invoke(self));
+    internal sealed override GameObject CreateInput(RectTransform parent, string name) => CreateInputObject(parent, name, onInputChanged: val =>
+    {
+        if (OnInputChanged is null)
+            return;
+
+        var ctx = new InputContext<TSelf, T>((TSelf)this, val);
+        OnInputChanged.Invoke(ctx);
+
+        if (ctx.Dirty)
+            SetInputValue(ctx.InputValue);
+    });
 
     /// <inheritdoc/>
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)

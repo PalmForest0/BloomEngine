@@ -25,9 +25,9 @@ public sealed class FloatConfigField(string identifier, string displayName, floa
     private Slider slider = null!;
 
     /// <inheritdoc/>
-    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<FloatConfigField> onInputChanged)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<float> onInputChanged)
     {
-        slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onValueChanged: _ => onInputChanged(this));
+        slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onInputChanged);
         return slider.gameObject;
     }
 

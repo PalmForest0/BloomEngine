@@ -36,6 +36,7 @@ public static class StringHelper
     /// <param name="input">The input string to perform the full validation process on.</param>
     /// <param name="type">The numeric type that the input should be parsed to.</param>
     /// <returns>The parsed number as an object of the provided numeric type, or 0 in the case of failure.</returns>
+    /// <exception cref="ArgumentException">Thrown when an unsupported or non-numeric type is provided.</exception>
     public static object ValidateNumericInput(string input, Type type)
     {
         if (!NumericTypes.Contains(Type.GetTypeCode(type)))

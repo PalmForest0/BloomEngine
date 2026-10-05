@@ -13,11 +13,11 @@ public sealed class BoolConfigField(string identifier, string displayName, bool 
     private Toggle checkbox = null!;
 
     /// <inheritdoc/>
-    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<BoolConfigField> onInputChanged)
+    protected override GameObject CreateInputObject(RectTransform parent, string name, Action<bool> onInputChanged)
     {
         var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
 
-        checkbox = UIHelper.CreateCheckbox("Checkbox", wrapperRect, Value, onValueChanged: _ => onInputChanged(this));
+        checkbox = UIHelper.CreateCheckbox("Checkbox", wrapperRect, Value, onInputChanged);
         
         var toggleRect = checkbox.GetComponent<RectTransform>();
         UIHelper.StretchToParent(toggleRect);
