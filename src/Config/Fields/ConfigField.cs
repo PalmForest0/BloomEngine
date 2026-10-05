@@ -67,7 +67,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public T DefaultValue { get; }
 
     /// <summary>
-    /// Contains an old identifier that MelonPreferences will automatically migrate. Set this using <see cref="WithOldIdentifier"/>.
+    /// Contains an old identifier that MelonPreferences will automatically migrate. Set this using <see cref="WithOldName"/>.
     /// </summary>
     public string? OldIdentifier { get; private set; }
     
@@ -110,14 +110,13 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     }
 
     /// <summary>
-    /// Specifies an old identifier that will be automatically migrated by MelonPreferences to the current identifier.
-    /// This method should be chained immediately after the constructor, as it has no effect after the MelonEntry has been created.
+    /// Specifies an old display name that will be converted to an old identifier and automatically migrated by MelonPreferences to the current identifier.
     /// </summary>
-    /// <param name="oldIdentifier">The old identifier to be passed to MelonPreferences.</param>
+    /// <param name="oldName">The old display name to be converted to an identifier and passed to MelonPreferences.</param>
     /// <returns>This config field, with an old identifier that will be passed to MelonPreferences set.</returns>
-    public TSelf WithOldIdentifier(string oldIdentifier)
+    public TSelf WithOldName(string oldName)
     {
-        OldIdentifier = oldIdentifier;
+        OldIdentifier = GetIdentifierFromName(oldName);
         return (TSelf)this;
     }
     

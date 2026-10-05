@@ -12,7 +12,7 @@ public abstract class ConfigFieldBase(string name, string? description = null)
     /// <summary>
     /// The internal identifier of this config field that is used for saving to MelonPreferences.
     /// </summary>
-    public string Identifier { get; } = string.Join("_", name.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    public string Identifier { get; } = GetIdentifierFromName(name);
     
     /// <summary>
     /// The display name shown for this config field in the config panel.
@@ -57,4 +57,11 @@ public abstract class ConfigFieldBase(string name, string? description = null)
     /// Updates the UI input object with the current value stored by this config field.
     /// </summary>
     internal abstract void UpdateInput();
+    
+    /// <summary>
+    /// Converts a config field's display name into an identifier string that is suitable for saving to MelonPreferences.
+    /// </summary>
+    /// <param name="name">The display name to convert to an identifier</param>
+    /// <returns>The identifier string created from the provided display name.</returns>
+    protected static string GetIdentifierFromName(string name) => string.Join("_", name.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));
 }
