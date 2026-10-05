@@ -184,7 +184,7 @@ internal sealed class ConfigPanel
         CreateInput(field, rowRect);
         CreateSquareButton("ResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(field.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.DisplayName, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
+            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
     private void CreateLabel(ConfigFieldBase field, RectTransform parent)
@@ -202,7 +202,7 @@ internal sealed class ConfigPanel
         labelRect.sizeDelta = new Vector2(900, 134);
 
         var text = labelObj.GetComponent<TextMeshProUGUI>();
-        text.text = field.DisplayName;
+        text.text = field.Name;
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.alignment = TextAlignmentOptions.Left;
         text.enabled = true;

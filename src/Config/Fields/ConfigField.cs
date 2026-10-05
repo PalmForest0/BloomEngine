@@ -38,7 +38,8 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             // If the incoming value is invalid, reset input to the stored value
             if (validateFunc is not null && !validateFunc.Invoke(incoming))
             {
-                UpdateInput();
+                if(InputObjectCreated)
+                    UpdateInput();
                 return;
             }
 
@@ -99,10 +100,10 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
     /// </summary>
-    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="name">String literal that is shown on a label next to this field in the config panel.</param>
     /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
     /// <param name="description">The description popup shown for this config field in the config panel.</param>
-    protected ConfigField(string displayName, T defaultValue, string? description = null) : base(displayName, description)
+    protected ConfigField(string name, T defaultValue, string? description = null) : base(name, description)
     {
         DefaultValue = defaultValue;
         storedValue = defaultValue;
@@ -218,7 +219,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <inheritdoc/>
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
-        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, DisplayName, Description, is_hidden: true, oldIdentifier: OldIdentifier);
+        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, Name, Description, is_hidden: true, oldIdentifier: OldIdentifier);
         MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
         {
             if (!EqualityComparer<T>.Default.Equals(val, storedValue))
