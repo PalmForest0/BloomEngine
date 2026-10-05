@@ -7,22 +7,22 @@ namespace BloomEngine.Config.Fields;
 /// Represents the base typeless structure of a config field, which is extended by
 /// <see cref="ConfigField{T,TSelf}"/> to provide type-specific functionality.
 /// </summary>
-public abstract class ConfigFieldBase(string identifier, string displayName)
+public abstract class ConfigFieldBase(string displayName, string? description = null)
 {
     /// <summary>
     /// The internal identifier of this config field that is used for saving to MelonPreferences.
     /// </summary>
-    public string Identifier { get; } = identifier.Trim().Replace(" ", "");
+    public string Identifier { get; } = string.Join("_", displayName.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     
     /// <summary>
     /// The display name shown for this config field in the config panel.
     /// </summary>
-    public string DisplayName { get; set; } = displayName;
+    public string DisplayName { get; } = displayName;
 
     /// <summary>
-    /// The description shown for this config field in the config panel.
+    /// The description popup shown for this config field in the config panel.
     /// </summary>
-    public string? Description { get; protected set; } 
+    public string? Description { get; } = description;
     
     /// <summary>
     /// Returns whether the UI input object for this config field exists.

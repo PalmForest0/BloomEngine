@@ -99,26 +99,13 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
     /// </summary>
-    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
     /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
     /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
-    protected ConfigField(string identifier, string displayName, T defaultValue) : base(identifier, displayName)
+    /// <param name="description">The description popup shown for this config field in the config panel.</param>
+    protected ConfigField(string displayName, T defaultValue, string? description = null) : base(displayName, description)
     {
         DefaultValue = defaultValue;
         storedValue = defaultValue;
-    }
-
-    /// <summary>
-    /// Sets a description for this config field that can be seen when pressing the description button in the config panel.
-    /// </summary>
-    /// <param name="description">A string to show in the description popup body.</param>
-    /// <returns>This config field, with the new description added</returns>
-    public TSelf WithDescription(string description)
-    {
-        if(!string.IsNullOrWhiteSpace(description))
-            Description = description;
-        
-        return (TSelf)this;
     }
 
     /// <summary>
