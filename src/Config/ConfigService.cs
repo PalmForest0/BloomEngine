@@ -1,4 +1,5 @@
-﻿using BloomEngine.Config.UI;
+﻿using BloomEngine.Config.Fields;
+using BloomEngine.Config.UI;
 using BloomEngine.Core;
 using BloomEngine.Extensions;
 using BloomEngine.ModList;
@@ -32,6 +33,83 @@ public static class ConfigService
     public static bool IsConfigPanelOpen => _currentPanel is not null;
 
     /// <summary>
+    /// Creates a <see cref="StringConfigField"/> instance which represents a textbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
+    /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    /// <returns>
+    /// A <see cref="StringConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static StringConfigField CreateString(string identifier, string displayName, string defaultValue)
+        => new(identifier, displayName, defaultValue);
+
+    /// <summary>
+    /// Creates an <see cref="IntConfigField"/> instance which represents a numeric textbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
+    /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    /// <returns>
+    /// An <see cref="IntConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static IntConfigField CreateInt(string identifier, string displayName, int defaultValue)
+        => new(identifier, displayName, defaultValue);
+
+    /// <summary>
+    /// Creates a <see cref="FloatConfigField"/> instance which represents a slider. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
+    /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    /// <param name="minValue">The <strong>minimum</strong> value constraint of this field's <see cref="float"/> input slider.</param>
+    /// <param name="maxValue">The <strong>maximum</strong> value constraint of this field's <see cref="float"/> input slider.</param>
+    /// <returns>
+    /// A <see cref="FloatConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static FloatConfigField CreateFloat(string identifier, string displayName, float defaultValue, float minValue, float maxValue)
+        => new(identifier, displayName, defaultValue, minValue, maxValue);
+
+    /// <summary>
+    /// Creates a <see cref="BoolConfigField"/> instance which represents a checkbox. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
+    /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    /// <returns>
+    /// A <see cref="BoolConfigField"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields(ConfigFieldBase[])"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static BoolConfigField CreateBool(string identifier, string displayName, bool defaultValue)
+        => new(identifier, displayName, defaultValue);
+
+    /// <summary>
+    /// Creates an <see cref="EnumConfigField{TEnum}"/> instance which represents a dropdown. To add this field to your config,
+    /// pass it to <see cref="ModListEntry.AddConfigFields"/><br/> or make it publicly accessible
+    /// in a static class and use <see cref="ModListEntry.AddConfigClass(Type)"/> instead.
+    /// </summary>
+    /// <param name="identifier">Internal identifier that is used when saving this field to MelonPreferences and creating UI input objects.</param>
+    /// <param name="displayName">String literal that is shown on a label next to this field in the config panel.</param>
+    /// <param name="defaultValue">A default value that this field initially stores and can be reset to.</param>
+    /// <returns>
+    /// An <see cref="EnumConfigField{TEnum}"/> instance which can be passed to <see cref="ModListEntry.AddConfigFields"/>
+    /// to add it to your mod's config.<br/>You can store this field instance and access its value using <see cref="ConfigField{T,TSelf}.Value"/>
+    /// </returns>
+    public static EnumConfigField<TEnum> CreateEnum<TEnum>(string identifier, string displayName, TEnum defaultValue) where TEnum : Enum
+        => new(identifier, displayName, defaultValue);
+
+    /// <summary>
     /// Displays the config panel for the specified mod if it is registered and no other configuration config is currently open.
     /// If the mod does not have a registered config, a warning is logged.
     /// </summary>
@@ -60,7 +138,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Hides the currently displayed config panel, if there is one.
+    /// Hides the currently displayed configuration config, if there is one.
     /// </summary>
     public static void HideConfigPanel()
     {

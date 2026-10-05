@@ -8,6 +8,7 @@ namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// A config field which displays and processes an <see cref="int"/> value using a numeric textbox.
+/// To create an <see cref="IntConfigField"/>, use <see cref="ConfigService.CreateInt(string, string, int)"/>
 /// </summary>
 public sealed class IntConfigField(string identifier, string displayName, int defaultValue)
     : ConfigField<int, IntConfigField>(identifier, displayName, defaultValue)

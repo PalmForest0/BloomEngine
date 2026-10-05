@@ -6,6 +6,7 @@ namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// A config field which displays and processes a <see cref="float"/> value using a slider.
+/// To create a <see cref="FloatConfigField"/>, use <see cref="ConfigService.CreateFloat(string, string, float, float, float)"/>
 /// </summary>
 public sealed class FloatConfigField(string identifier, string displayName, float defaultValue)
     : ConfigField<float, FloatConfigField>(identifier, displayName, defaultValue)

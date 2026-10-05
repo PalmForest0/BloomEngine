@@ -6,6 +6,7 @@ namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// A config field which displays and processes a <see cref="string"/> value using a textbox.
+/// To create a <see cref="StringConfigField"/>, use <see cref="ConfigService.CreateString(string, string, string)"/>
 /// </summary>
 public sealed class StringConfigField(string identifier, string displayName, string defaultValue)
     : ConfigField<string, StringConfigField>(identifier, displayName, defaultValue)
