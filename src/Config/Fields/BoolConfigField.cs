@@ -6,10 +6,9 @@ namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// A config field which displays and processes a <see cref="bool"/> value using a checkbox.
-/// To create a <see cref="BoolConfigField"/>, use <see cref="ConfigService.CreateBool(string, bool, string)"/>
 /// </summary>
-public sealed class BoolConfigField(string name, bool defaultValue, string? description = null)
-    : ConfigField<bool, BoolConfigField>(name, defaultValue, description)
+public sealed class BoolConfigField(string name, bool defaultValue)
+    : ConfigField<bool, BoolConfigField>(name, defaultValue)
 {
     private Toggle checkbox = null!;
 

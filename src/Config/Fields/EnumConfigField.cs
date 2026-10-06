@@ -8,10 +8,9 @@ namespace BloomEngine.Config.Fields;
 
 /// <summary>
 /// A config field which displays and processes an <see cref="Enum"/> value using a dropdown.
-/// To create an <see cref="EnumConfigField{TEnum}"/>, use <see cref="ConfigService.CreateEnum{TEnum}(string, TEnum, string)"/>
 /// </summary>
-public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue, string? description = null)
-    : ConfigField<TEnum, EnumConfigField<TEnum>>(name, defaultValue, description) where TEnum : Enum
+public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue)
+    : ConfigField<TEnum, EnumConfigField<TEnum>>(name, defaultValue) where TEnum : Enum
 {
     private ReloadedDropdown dropdown = null!;
     
