@@ -17,7 +17,6 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <summary>
     /// Gets or sets the value stored in this config field, invoking <see cref="Transform"/> when it is changed.
     /// If the new value is different to the old value, the <see cref="ValueChanged"/> event is raised.
-    /// are invoked and the <see cref="MelonEntry"/> value is updated.
     /// </summary>
     /// <exception cref="InvalidOperationException">
     /// Thrown if set before the field has been registered with MelonPreferences.
@@ -31,7 +30,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             if (MelonEntry is null)
                 throw new InvalidOperationException(
                     $"Cannot set Value on config field '{Identifier}' before it has been registered. " + 
-                    "Set the value in the constructor via defaultValue, or wait until after registration.");
+                    "Set defaultValue when constructing the field, or wait until it has been registered.");
             
             // Transform the incoming value
             var incoming = Transform is not null ? Transform.Invoke(value) : value;
@@ -69,9 +68,13 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public T DefaultValue { get; }
 
     /// <summary>
-    /// Contains an old identifier that MelonPreferences will automatically migrate.
+    /// Contains an old name for this field that will be converted to an identifier which MelonPreferences will automatically migrate.
     /// </summary>
     public string? OldName { get; init; }
+    
+    /// <summary>
+    /// An old identifier that will be passed to MelonPreferences to be automatically migrated.
+    /// </summary>
     private string? OldIdentifier => OldName is null ? null : GetIdentifierFromName(OldName);
     
     /// <summary>

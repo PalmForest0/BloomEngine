@@ -1,13 +1,11 @@
 ﻿namespace BloomEngine.Config.Events;
 
+/// <summary>
+/// Provides a handle that can be modified to change the value currently displayed by the UI input. This is done by setting <see cref="InputValue"/>.
+/// </summary>
+/// <typeparam name="T">The specific value type stored by the field providing these args.</typeparam>
 public sealed class InputChangedEventArgs<T> : EventArgs where T : notnull
 {
-    internal InputChangedEventArgs(T inputValue)
-    {
-        InputValue = inputValue;
-        Dirty = false; // Reset after setting InputValue
-    }
-    
     /// <summary>
     /// Whether <see cref="InputValue"/> has been assigned by a handler. When true, the new value is written back to the UI input.
     /// </summary>
@@ -24,5 +22,11 @@ public sealed class InputChangedEventArgs<T> : EventArgs where T : notnull
             Dirty = true;
             field = value;
         }
+    }
+    
+    internal InputChangedEventArgs(T inputValue)
+    {
+        InputValue = inputValue;
+        Dirty = false; // Reset after setting InputValue
     }
 }
