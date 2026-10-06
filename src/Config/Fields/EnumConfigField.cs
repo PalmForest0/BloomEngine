@@ -12,6 +12,9 @@ namespace BloomEngine.Config.Fields;
 public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue)
     : ConfigField<TEnum, EnumConfigField<TEnum>>(name, defaultValue) where TEnum : Enum
 {
+    /// <inheritdoc/>
+    protected override string Comment => $"Enum Options: {string.Join(", ", GetEnumOptions<TEnum>())}";
+    
     /// <summary>
     /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
     /// </summary>

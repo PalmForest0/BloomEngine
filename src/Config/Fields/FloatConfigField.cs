@@ -10,6 +10,9 @@ namespace BloomEngine.Config.Fields;
 public sealed class FloatConfigField(string name, float defaultValue)
     : ConfigField<float, FloatConfigField>(name, defaultValue)
 {
+    /// <inheritdoc/>
+    protected override string Comment => $"Float Range: {MinValue}f - {MaxValue}f";
+    
     /// <summary>
     /// The minimum value constraint of this <see cref="float"/> input slider, which is <c>0f</c> by default.
     /// </summary>
@@ -19,7 +22,7 @@ public sealed class FloatConfigField(string name, float defaultValue)
     /// The maximum value constraint of this <see cref="float"/> input slider, which is <c>1f</c> by default.
     /// </summary>
     public float MaxValue { get; init; } = 1f;
-    
+
     private Slider slider = null!;
 
     /// <inheritdoc/>

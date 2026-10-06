@@ -19,7 +19,7 @@ public sealed class IntConfigField(string name, int defaultValue)
     {
         textbox = UIHelper.CreateTextbox(name, Value.ToString(CultureInfo.InvariantCulture), parent, onTextChanged: val =>
         {
-            textbox!.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(val));
+            textbox.SetTextWithoutNotify(StringHelper.SanitizeNumericInput(val));
             onInputChanged.Invoke(GetInputValue());
         });
         

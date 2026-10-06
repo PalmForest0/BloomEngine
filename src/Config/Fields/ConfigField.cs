@@ -68,6 +68,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public T DefaultValue { get; }
 
     /// <summary>
+    /// Specifies an informational comment string that should be appended to the description in the MelonPreferences file.
+    /// </summary>
+    protected virtual string? Comment => null;
+
+    /// <summary>
     /// Contains an old name for this field that will be converted to an identifier which MelonPreferences will automatically migrate.
     /// </summary>
     public string? OldName { get; init; }
@@ -76,6 +81,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// An old identifier that will be passed to MelonPreferences to be automatically migrated.
     /// </summary>
     private string? OldIdentifier => OldName is null ? null : GetIdentifierFromName(OldName);
+
+    /// <summary>
+    /// Determines whether this field should be saved to MelonPreferences if it is saved with the default value.
+    /// </summary>
+    public bool SaveDefault { get; init; } = true;
     
     /// <summary>
     /// The <see cref="MelonPreferences_Entry"/> that corresponds to this config field and contains the stored value.
@@ -100,6 +110,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     
     /// <summary>
     /// Adds a handler to an event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
+    /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="ValueChanged"/>.
     /// </summary>
     public ConfigFieldEventHandler<TSelf, ValueChangedEventArgs<T>> OnValueChanged { init => ValueChanged += value; }
     
@@ -110,6 +121,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     
     /// <summary>
     /// Adds a handler to an event that is invoked when the UI input is modified by the user, passing this config field as an argument.
+    /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="InputChanged"/>.
     /// </summary>
     public ConfigFieldEventHandler<TSelf, InputChangedEventArgs<T>> OnInputChanged { init => InputChanged += value; }
     
@@ -187,8 +199,9 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     {
         if(MelonEntry is not null)
             return;
-        
-        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, Name, Description, is_hidden: true, oldIdentifier: OldIdentifier);
+
+        string? description = Description is null || Comment is null ? Description ?? Comment ?? null : $"{Description}\n{Comment}";
+        MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, Name, description, is_hidden: true, !SaveDefault, oldIdentifier: OldIdentifier);
         MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
         {
             if (!EqualityComparer<T>.Default.Equals(val, storedValue))
