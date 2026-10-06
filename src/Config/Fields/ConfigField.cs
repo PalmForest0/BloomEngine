@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using BloomEngine.Config.Events;
+using MelonLoader;
 using UnityEngine;
 using BloomEngine.UI;
 
@@ -34,6 +35,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             
             // Transform the incoming value
             var incoming = Transform is not null ? Transform.Invoke(value) : value;
+            var old = storedValue;
             
             // If the incoming value is invalid, reset input to the stored value
             if (Validate is not null && !Validate.Invoke(incoming))
@@ -47,12 +49,12 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
                 SetInputValue(incoming);
             
             // If the incoming value is identical, skip saving it
-            if (EqualityComparer<T>.Default.Equals(storedValue, incoming))
+            if (EqualityComparer<T>.Default.Equals(old, incoming))
                 return;
             
             storedValue = incoming; 
             MelonEntry.Value = incoming;
-            ValueChanged?.Invoke(incoming);
+            ValueChanged?.Invoke((TSelf)this, new ValueChangedEventArgs<T>(old, incoming));
         }
     }
 
@@ -89,24 +91,31 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public Func<T, bool>? Validate { get; init; }
 
     /// <summary>
+    /// Provides a typed event handler which passes a specifically typed config field as the sender.
+    /// </summary>
+    /// <typeparam name="TField">The type of config field sending this event.</typeparam>
+    /// <typeparam name="TEventArgs">The type of event args provided by this event.</typeparam>
+    public delegate void ConfigFieldEventHandler<in TField, in TEventArgs>(TField field, TEventArgs e) where TField : TSelf where TEventArgs : notnull;
+    
+    /// <summary>
     /// An event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
     /// </summary>
-    public event Action<T>? ValueChanged;
+    public event ConfigFieldEventHandler<TSelf, ValueChangedEventArgs<T>>? ValueChanged;
     
     /// <summary>
     /// Adds a handler to an event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
     /// </summary>
-    public Action<T> OnValueChanged { init => ValueChanged += value; }
+    public ConfigFieldEventHandler<TSelf, ValueChangedEventArgs<T>> OnValueChanged { init => ValueChanged += value; }
     
     /// <summary>
     /// An event that is invoked when the UI input is modified by the user, passing this config field as an argument.
     /// </summary>
-    public event Action<InputContext<TSelf, T>>? InputChanged;
+    public event ConfigFieldEventHandler<TSelf, InputChangedEventArgs<T>>? InputChanged;
     
     /// <summary>
     /// Adds a handler to an event that is invoked when the UI input is modified by the user, passing this config field as an argument.
     /// </summary>
-    public Action<InputContext<TSelf, T>> OnInputChanged { init => InputChanged += value; }
+    public ConfigFieldEventHandler<TSelf, InputChangedEventArgs<T>> OnInputChanged { init => InputChanged += value; }
     
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
@@ -158,11 +167,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         if (InputChanged is null)
             return;
 
-        var ctx = new InputContext<TSelf, T>((TSelf)this, val);
-        InputChanged.Invoke(ctx);
+        var args = new InputChangedEventArgs<T>(val);
+        InputChanged.Invoke((TSelf)this, args);
 
-        if (ctx.Dirty)
-            SetInputValue(ctx.InputValue);
+        if (args.Dirty)
+            SetInputValue(args.InputValue);
     });
 
     /// <inheritdoc/>
