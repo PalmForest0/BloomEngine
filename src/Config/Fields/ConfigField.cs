@@ -85,17 +85,10 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public Func<T, T>? Transform { get; init; }
 
     /// <summary>
-    /// A function that validated an incoming new value and returns true if it should be assigned to <see cref="Value"/>.
-    /// The validation check occurs after the new value has been transformed by <see cref="Transform"/>
+    /// A function that validates an incoming value and returns true if it should be assigned to <see cref="Value"/>.
+    /// The validation check occurs after the new value has been transformed by <see cref="Transform"/>.
     /// </summary>
     public Func<T, bool>? Validate { get; init; }
-
-    /// <summary>
-    /// Provides a typed event handler which passes a specifically typed config field as the sender.
-    /// </summary>
-    /// <typeparam name="TField">The type of config field sending this event.</typeparam>
-    /// <typeparam name="TEventArgs">The type of event args provided by this event.</typeparam>
-    public delegate void ConfigFieldEventHandler<in TField, in TEventArgs>(TField field, TEventArgs e) where TField : TSelf where TEventArgs : notnull;
     
     /// <summary>
     /// An event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
