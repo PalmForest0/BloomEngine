@@ -34,26 +34,26 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             
             // Transform the incoming value
             var incoming = Transform is not null ? Transform.Invoke(value) : value;
-            var old = storedValue;
             
-            // If the incoming value is invalid, reset input to the stored value
+            // If the incoming value is invalid, reset the input and melon entry
             if (Validate is not null && !Validate.Invoke(incoming))
             {
-                if(InputObjectCreated)
-                    UpdateInput();
+                SetMelonEntryValue(storedValue);
+                UpdateInput();
                 return;
             }
 
             if(InputObjectCreated)
                 SetInputValue(incoming);
             
-            // If the incoming value is identical, skip saving it
-            if (EqualityComparer<T>.Default.Equals(old, incoming))
-                return;
+            // Store the new value and sync the melon entry
+            var old = storedValue;
+            storedValue = incoming;
+            SetMelonEntryValue(incoming);
             
-            storedValue = incoming; 
-            MelonEntry.Value = incoming;
-            ValueChanged?.Invoke((TSelf)this, new ValueChangedEventArgs<T>(old, incoming));
+            // Raise value changed event if the new value is different
+            if (!EqualityComparer<T>.Default.Equals(old, incoming))
+                ValueChanged?.Invoke((TSelf)this, new ValueChangedEventArgs<T>(old, incoming));
         }
     }
 
@@ -123,7 +123,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         DefaultValue = defaultValue;
         storedValue = defaultValue;
     }
-
+    
     /// <summary>
     /// Gets the value currently held in the UI input object associated with this field.
     /// </summary>
@@ -149,13 +149,25 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     protected abstract GameObject CreateInputObject(RectTransform parent, string name, Action<T> onInputChanged);
 
     /// <inheritdoc/>
-    internal sealed override void ApplyInput() => Value = GetInputValue();
+    internal sealed override void ApplyInput()
+    {
+        if(InputObjectCreated)
+            Value = GetInputValue();
+    }
 
     /// <inheritdoc/>
-    internal sealed override void ResetInput() => SetInputValue(Transform is null ? DefaultValue : Transform.Invoke(DefaultValue));
+    internal sealed override void ResetInput()
+    {
+        if(InputObjectCreated)
+            SetInputValue(Transform is null ? DefaultValue : Transform.Invoke(DefaultValue));
+    }
 
     /// <inheritdoc/>
-    internal sealed override void UpdateInput() => SetInputValue(Value);
+    internal sealed override void UpdateInput()
+    {
+        if(InputObjectCreated)
+            SetInputValue(Value);
+    }
 
     /// <inheritdoc/>
     internal sealed override GameObject CreateInput(RectTransform parent, string name) => CreateInputObject(parent, name, onInputChanged: val =>
@@ -173,6 +185,9 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// <inheritdoc/>
     internal sealed override void CreateMelonEntry(MelonPreferences_Category melonCategory)
     {
+        if(MelonEntry is not null)
+            return;
+        
         MelonEntry = melonCategory.CreateEntry(Identifier, DefaultValue, Name, Description, is_hidden: true, oldIdentifier: OldIdentifier);
         MelonEntry.OnEntryValueChanged.Subscribe((_, val) =>
         {
@@ -183,5 +198,18 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         // Load the value from the MelonEntry, then save it back to sync transformation and validation results
         Value = MelonEntry.Value;
         MelonEntry.Value = storedValue;
+    }
+    
+    /// <summary>
+    /// Sets the value currently stored in this field's MelonPreferences entry, skipping if that value is the same.
+    /// </summary>
+    /// <param name="value">The value to commit to the MelonEntry.</param>
+    private void SetMelonEntryValue(T value)
+    {
+        if(MelonEntry is null)
+            return;
+
+        if (!EqualityComparer<T>.Default.Equals(MelonEntry.Value, storedValue))
+            MelonEntry.Value = value;
     }
 }
