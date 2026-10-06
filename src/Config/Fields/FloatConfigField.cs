@@ -11,16 +11,14 @@ public sealed class FloatConfigField(string name, float defaultValue)
     : ConfigField<float, FloatConfigField>(name, defaultValue)
 {
     /// <summary>
-    /// The minimum value constraint of this <see cref="float"/> input slider.
-    /// This is <c>0f</c> by default, but can be changed using <see cref="WithRange"/>.
+    /// The minimum value constraint of this <see cref="float"/> input slider, which is <c>0f</c> by default.
     /// </summary>
-    public float MinValue { get; private set; }
+    public float MinValue { get; init; } = 0f;
 
     /// <summary>
-    /// The maximum value constraint of this <see cref="float"/> input slider.
-    /// This is <c>1f</c> by default, but can be changed using <see cref="WithRange"/>.
+    /// The maximum value constraint of this <see cref="float"/> input slider, which is <c>1f</c> by default.
     /// </summary>
-    public float MaxValue { get; private set; } = 1f;
+    public float MaxValue { get; init; } = 1f;
     
     private Slider slider = null!;
 
@@ -29,19 +27,6 @@ public sealed class FloatConfigField(string name, float defaultValue)
     {
         slider = UIHelper.CreateSlider(name, parent, Value, MinValue, MaxValue, onInputChanged);
         return slider.gameObject;
-    }
-
-    /// <summary>
-    /// Defines a custom <see langword="float"/> range for this config field. The default is 0f - 1f.
-    /// </summary>
-    /// <param name="minValue">The lowest possible value that this config field should allow.</param>
-    /// <param name="maxValue">The highest possible value that this config field should allow.</param>
-    /// <returns>This config field, with its new range set.</returns>
-    public FloatConfigField WithRange(float minValue, float maxValue)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-        return this;
     }
     
     /// <inheritdoc/>

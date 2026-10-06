@@ -12,17 +12,37 @@ namespace BloomEngine.Config.Fields;
 public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue)
     : ConfigField<TEnum, EnumConfigField<TEnum>>(name, defaultValue) where TEnum : Enum
 {
-    private ReloadedDropdown dropdown = null!;
+    /// <summary>
+    /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
+    /// </summary>
+    public Func<TEnum, string?> OptionNames { get; init; } = opt => StringHelper.StringToReadable(opt.ToString());
     
-    private List<TEnum> options = GetEnumOptions<TEnum>().ToList();
-    private Func<TEnum, string?>? nameSelector = opt => StringHelper.StringToReadable(opt.ToString());
+    /// <summary>
+    /// Specifies an explicit option order for the dropdown. Any missing options will be appended to the end in numeric order.
+    /// </summary>
+    public List<TEnum> OptionOrder
+    {
+        get => options;
+        init
+        {
+            var seen = new HashSet<TEnum>();
+
+            // Adds all ordered options, then all remaining options, while excluding duplicates
+            options = new List<TEnum>(value.Count);
+            options.AddRange(value.Where(seen.Add));
+            options.AddRange(GetEnumOptions<TEnum>().Where(seen.Add));
+        }
+    }
+
+    private readonly List<TEnum> options = GetEnumOptions<TEnum>().ToList();
+    private ReloadedDropdown dropdown = null!;
 
     /// <inheritdoc/>
     protected override GameObject CreateInputObject(RectTransform parent, string name, Action<TEnum> onInputChanged)
     {
         var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
 
-        string[] strings = options.Select(opt => nameSelector?.Invoke(opt) ?? opt.ToString()).ToArray();
+        string[] strings = options.Select(opt => OptionNames?.Invoke(opt) ?? opt.ToString()).ToArray();
         int selected = Convert.ToInt32(Value, CultureInfo.InvariantCulture);
         
         dropdown = UIHelper.CreateDropdown("Dropdown", wrapperRect, strings, selected, onValueChanged: (i, _) => onInputChanged(options[i]));
@@ -33,34 +53,6 @@ public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue)
         dropdownRect.anchoredPosition += new Vector2(0, -15);
         
         return wrapperRect.gameObject;
-    }
-
-    /// <summary>
-    /// Specifies an explicit option order for the dropdown. Any missing options will be appended to the end in numeric order.
-    /// </summary>
-    /// <param name="order">An array of enum entries in the desired order.</param>
-    /// <returns>This config field, with the provided options ordered at the start.</returns>
-    public EnumConfigField<TEnum> WithOptionOrder(params TEnum[] order)
-    {
-        var seen = new HashSet<TEnum>();
-        
-        // Adds all ordered options, then all remaining options, while excluding duplicates
-        options = new List<TEnum>(order.Length);
-        options.AddRange(order.Where(seen.Add));
-        options.AddRange(GetEnumOptions<TEnum>().Where(seen.Add));
-        
-        return this;
-    }
-
-    /// <summary>
-    /// Specifies the text string that should be used for a given option when constructing the dropdown UI. A null string will call ToString() on the option.
-    /// </summary>
-    /// <param name="selector">A selector that specifies the display string (or null to use the default via ToString) for a given enum option.</param>
-    /// <returns>This config field, with the given selector used to construct the options.</returns>
-    public EnumConfigField<TEnum> WithOptionNames(Func<TEnum, string?> selector)
-    {
-        nameSelector = selector;
-        return this;
     }
 
     /// <inheritdoc/>
