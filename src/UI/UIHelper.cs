@@ -79,7 +79,7 @@ public static class UIHelper
     /// <summary>
     /// Attempts to load all necessary game UI screens and panels and performs other functions to initialize the UIHelper.
     /// </summary>
-    internal static void TryLoadAll(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
+    internal static void InitializeIfReady(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
         if (mainMenu.IsNull() || globalPanels.IsNull())
             return;

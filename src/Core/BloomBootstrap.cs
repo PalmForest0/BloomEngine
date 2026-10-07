@@ -24,7 +24,7 @@ internal static class BloomBootstrap
         BloomLogger.Info($"{nameof(OnMainMenuReady)} called, attempting initialization.", LogPrefix);
         
         _mainMenuPanel = mainMenuPanels;
-        TryInitializeAll();
+        InitializeIfReady();
     }
 
     public static void OnGlobalPanelsReady(PanelViewContainer globalPanels)
@@ -32,7 +32,7 @@ internal static class BloomBootstrap
         BloomLogger.Info($"{nameof(OnGlobalPanelsReady)} called, attempting initialization.", LogPrefix);
         
         _globalPanels = globalPanels;
-        TryInitializeAll();
+        InitializeIfReady();
     }
 
     public static void OnAchievementsUIReady(AchievementsUI achievementsUI)
@@ -43,12 +43,12 @@ internal static class BloomBootstrap
         MelonCoroutines.Start(ModListService.Co_CreateModList(achievementsUI));
     }
 
-    private static void TryInitializeAll()
+    private static void InitializeIfReady()
     {
         if(_mainMenuPanel.IsNull() || _globalPanels.IsNull())
             return;
         
-        UIHelper.TryLoadAll(_mainMenuPanel, _globalPanels);
-        ConfigService.TryCreateConfigPanels(_mainMenuPanel, _globalPanels);
+        UIHelper.InitializeIfReady(_mainMenuPanel, _globalPanels);
+        ConfigService.CreatePanelsIfReady(_mainMenuPanel, _globalPanels);
     }
 }

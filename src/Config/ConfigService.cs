@@ -76,7 +76,7 @@ public static class ConfigService
     /// Clones an existing panel for every registered mod with a config and creates a new ConfigPanel for it.
     /// Does not run if panels have already been created, or one of the provided parameters is null.
     /// </summary>
-    internal static void TryCreateConfigPanels(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
+    internal static void CreatePanelsIfReady(MainMenuPanelView? mainMenu, PanelViewContainer? globalPanels)
     {
         if (_panelsCreated || mainMenu.IsNull() || globalPanels.IsNull())
             return;
