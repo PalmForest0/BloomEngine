@@ -1,5 +1,5 @@
 ﻿using BloomEngine.Config.Fields;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using BloomEngine.Extensions;
 using BloomEngine.UI;
 using BloomEngine.Helpers;

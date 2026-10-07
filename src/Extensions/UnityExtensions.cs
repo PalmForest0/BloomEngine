@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 

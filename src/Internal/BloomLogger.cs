@@ -1,7 +1,7 @@
 ﻿using MelonLoader;
 using MelonLoader.Logging;
 
-namespace BloomEngine.Core;
+namespace BloomEngine.Internal;
 
 /// <summary>
 /// Internal static class for logging messages to the MelonLoader console with optional prefixes and severity levels.

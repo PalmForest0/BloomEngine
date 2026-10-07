@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using BloomEngine.Config;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using Il2CppUI.Scripts;
 
 namespace BloomEngine.Patches;

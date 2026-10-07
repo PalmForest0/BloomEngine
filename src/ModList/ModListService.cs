@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using BloomEngine.ModList.UI;
 using BloomEngine.UI;
 using Il2CppUI.Scripts;

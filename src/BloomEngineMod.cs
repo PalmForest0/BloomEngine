@@ -1,4 +1,4 @@
-﻿using BloomEngine.Core;
+﻿using BloomEngine.Internal;
 using BloomEngine.Helpers;
 using BloomEngine.ModList;
 using Il2CppInterop.Runtime.Injection;
@@ -23,7 +23,6 @@ internal sealed class BloomEngineMod : MelonMod
             .AddDisplayName(Name)
             .AddDescription(Description)
             .AddIcon(ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.BloomEngineIcon.png"))
-            .AddConfigClass(typeof(BloomConfig))
             .Register();
     }
 }

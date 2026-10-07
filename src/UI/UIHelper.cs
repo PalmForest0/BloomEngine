@@ -1,4 +1,4 @@
-﻿using BloomEngine.Core;
+﻿using BloomEngine.Internal;
 using BloomEngine.Extensions;
 using Il2CppReloaded;
 using Il2CppReloaded.Input;

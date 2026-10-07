@@ -1,6 +1,6 @@
 ﻿using BloomEngine.Config.Fields;
 using BloomEngine.Config.UI;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using BloomEngine.ModList;
 using MelonLoader;
 

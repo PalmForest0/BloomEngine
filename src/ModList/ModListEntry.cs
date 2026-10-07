@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using BloomEngine.Config;
 using BloomEngine.Config.Fields;
-using BloomEngine.Core;
+using BloomEngine.Internal;
 using BloomEngine.Helpers;
 using MelonLoader;
 using UnityEngine;

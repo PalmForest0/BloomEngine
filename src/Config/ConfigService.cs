@@ -1,6 +1,5 @@
-﻿using BloomEngine.Config.Fields;
-using BloomEngine.Config.UI;
-using BloomEngine.Core;
+﻿using BloomEngine.Config.UI;
+using BloomEngine.Internal;
 using BloomEngine.Extensions;
 using BloomEngine.ModList;
 using Il2CppReloaded.UI;

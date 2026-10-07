@@ -7,7 +7,7 @@ using Il2CppTekly.PanelViews;
 using Il2CppUI.Scripts;
 using MelonLoader;
 
-namespace BloomEngine.Core;
+namespace BloomEngine.Internal;
 
 internal static class BloomBootstrap
 {
