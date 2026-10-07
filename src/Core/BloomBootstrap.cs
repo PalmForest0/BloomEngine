@@ -9,35 +9,35 @@ using MelonLoader;
 
 namespace BloomEngine.Core;
 
-internal static class BloomLoader
+internal static class BloomBootstrap
 {
     /// <summary>
     /// Specifies the prefix to use for all log messages from this service.
     /// </summary>
-    private const string LogPrefix = $"[{nameof(BloomLoader)}] ";
+    private const string LogPrefix = $"[{nameof(BloomBootstrap)}] ";
 
     private static MainMenuPanelView? _mainMenuPanel;
     private static PanelViewContainer? _globalPanels;
 
-    public static void LoadMainMenu(MainMenuPanelView mainMenuPanels)
+    public static void OnMainMenuReady(MainMenuPanelView mainMenuPanels)
     {
-        BloomLogger.Info("Loading main menu...", LogPrefix);
+        BloomLogger.Info($"{nameof(OnMainMenuReady)} called, attempting initialization.", LogPrefix);
         
         _mainMenuPanel = mainMenuPanels;
         TryInitializeAll();
     }
 
-    public static void LoadGlobalPanels(PanelViewContainer globalPanels)
+    public static void OnGlobalPanelsReady(PanelViewContainer globalPanels)
     {
-        BloomLogger.Info("Loading global panel container...", LogPrefix);
+        BloomLogger.Info($"{nameof(OnGlobalPanelsReady)} called, attempting initialization.", LogPrefix);
         
         _globalPanels = globalPanels;
         TryInitializeAll();
     }
 
-    public static void LoadAchievementsUI(AchievementsUI achievementsUI)
+    public static void OnAchievementsUIReady(AchievementsUI achievementsUI)
     {
-        BloomLogger.Info("Loading achievements UI...", LogPrefix);
+        BloomLogger.Info($"{nameof(OnAchievementsUIReady)} called, creating the mod list.", LogPrefix);
         
         UIHelper.AchievementsUI = achievementsUI;
         MelonCoroutines.Start(ModListService.Co_CreateModList(achievementsUI));

@@ -15,7 +15,7 @@ internal static class AchievementsUIPatches
     [HarmonyPostfix]
     private static void AchievementsUI_Start_Postfix(AchievementsUI __instance)
     {
-        BloomLoader.LoadAchievementsUI(__instance);
+        BloomBootstrap.OnAchievementsUIReady(__instance);
     }
 
     /// <summary>

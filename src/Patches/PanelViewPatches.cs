@@ -17,7 +17,7 @@ internal static class PanelViewPatches
     private static void PanelViewContainer_Awake_Postfix(PanelViewContainer __instance)
     {
         if(__instance.name == "GlobalPanels(Clone)")
-            BloomLoader.LoadGlobalPanels(__instance);
+            BloomBootstrap.OnGlobalPanelsReady(__instance);
         else if(__instance.transform.FindChild("P_ZenGarden_MainHUD"))
             UIHelper.ZenGardenPanels = __instance;
         else if(__instance.transform.FindChild("P_Gameplay_MainHUD"))
@@ -31,6 +31,6 @@ internal static class PanelViewPatches
     [HarmonyPostfix]
     private static void MainMenuPanelView_Start_Postfix(MainMenuPanelView __instance)
     {
-        BloomLoader.LoadMainMenu(__instance);
+        BloomBootstrap.OnMainMenuReady(__instance);
     }
 }
