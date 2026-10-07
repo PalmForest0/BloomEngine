@@ -24,9 +24,9 @@ internal sealed class ModListItemUI
     private readonly ModListEntry? entry;
     private readonly MelonMod mod;
 
-    private static readonly Sprite ConfigIconSprite     = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ConfigIcon.png");
-    private static readonly Sprite DefaultIconSprite    = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.DefaultModIcon.png");
-    private static readonly Sprite ModIconBorderSprite  = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModIconBorder.png");
+    private static readonly Sprite ConfigIconSprite     = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModList.ConfigButtonIcon.png");
+    private static readonly Sprite DefaultIconSprite    = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModList.DefaultModIcon.png");
+    private static readonly Sprite ModIconBorderSprite  = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ModList.ModIconBorder.png");
 
     private ModListItemUI(MelonMod mod, Transform parent, GameObject template)
     {

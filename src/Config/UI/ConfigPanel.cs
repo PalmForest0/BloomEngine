@@ -36,10 +36,10 @@ internal sealed class ConfigPanel
 
     private static CustomPopup _configPopup = null!;
 
-    private static readonly Sprite ResetButtonSprite            = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButton.png");
-    private static readonly Sprite ResetButtonSpriteSelected    = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.ResetButtonSelected.png");
-    private static readonly Sprite InfoButtonSprite             = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButton.png");
-    private static readonly Sprite InfoButtonSpriteSelected     = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.InfoButtonSelected.png");
+    private static readonly Sprite ResetButtonSprite            = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.ResetButton.png");
+    private static readonly Sprite ResetButtonSpriteSelected    = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.ResetButtonSelected.png");
+    private static readonly Sprite InfoButtonSprite             = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.InfoButton.png");
+    private static readonly Sprite InfoButtonSpriteSelected     = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.InfoButtonSelected.png");
 
     internal ConfigPanel(PanelView panel, ModConfig config)
     {

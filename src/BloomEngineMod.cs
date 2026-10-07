@@ -22,7 +22,7 @@ internal sealed class BloomEngineMod : MelonMod
         ModListService.CreateEntry(this)
             .AddDisplayName(Name)
             .AddDescription(Description)
-            .AddIcon(ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.BloomEngineIcon.png"))
+            .AddIcon(ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Icon.png"))
             .Register();
     }
 }
