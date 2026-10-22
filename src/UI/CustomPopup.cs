@@ -95,13 +95,23 @@ public class CustomPopup : MonoBehaviour
     /// Sets the header text at the top of the popup.
     /// </summary>
     /// <param name="text">Text to set the header label to.</param>
-    public void SetHeader(string text) => Header.text = text;
+    /// <returns>This <see cref="CustomPopup"/> instance, with a new header string set.</returns>
+    public CustomPopup SetHeader(string text)
+    {
+        Header.text = text;
+        return this;
+    }
 
     /// <summary>
     /// Sets the subheader text within the popup.
     /// </summary>
     /// <param name="text">Text to set the subheader label to.</param>
-    public void SetSubheader(string text) => Subheader.text = text;
+    /// <returns>This <see cref="CustomPopup"/> instance, with a new subheader string set.</returns>
+    public CustomPopup SetSubheader(string text)
+    {
+        Subheader.text = text;
+        return this;
+    }
 
     /// <summary>
     /// Configures the first button that appears at the bottom of this popup.
@@ -110,8 +120,9 @@ public class CustomPopup : MonoBehaviour
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
+    /// <returns>This <see cref="CustomPopup"/> instance, with its first button configured.</returns>
     [HideFromIl2Cpp]
-    public void SetFirstButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
+    public CustomPopup SetFirstButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         FirstButton.gameObject.SetActive(visible);
         FirstButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
@@ -122,6 +133,8 @@ public class CustomPopup : MonoBehaviour
             onClick?.Invoke();
             if(hidePopupOnClick) Hide();
         });
+
+        return this;
     }
 
     /// <summary>
@@ -131,8 +144,9 @@ public class CustomPopup : MonoBehaviour
     /// <param name="text">The text to set the button's label to display.</param>
     /// <param name="onClick">A custom action that is invoked when this button is clicked.</param>
     /// <param name="hidePopupOnClick">Whether clicking the button should automatically hide the popup. True by default.</param>
+    /// <returns>This <see cref="CustomPopup"/> instance, with its second button configured.</returns>
     [HideFromIl2Cpp]
-    public void SetSecondButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
+    public CustomPopup SetSecondButton(bool visible, string text, Action? onClick = null, bool hidePopupOnClick = true)
     {
         SecondButton.gameObject.SetActive(visible);
         SecondButton.GetComponentInChildren<TextMeshProUGUI>().text = text;
@@ -143,6 +157,8 @@ public class CustomPopup : MonoBehaviour
             onClick?.Invoke();
             if (hidePopupOnClick) Hide();
         });
+
+        return this;
     }
 
     /// <summary>
