@@ -40,6 +40,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             {
                 SetMelonEntryValue(storedValue);
                 UpdateInput();
+                ValidationFailed?.Invoke((TSelf)this, new ValidationFailedEventArgs<T>(incoming));
                 return;
             }
 
@@ -135,6 +136,17 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="Initialized"/>.
     /// </summary>
     public ConfigFieldEventHandler<TSelf, EventArgs> OnInitialized { init => Initialized += value; }
+    
+    /// <summary>
+    /// An event that is invoked when this field's validator prevents an incoming value from being applied. A validation function can be set with <see cref="Validate"/>
+    /// </summary>
+    public event ConfigFieldEventHandler<TSelf, ValidationFailedEventArgs<T>>? ValidationFailed;
+    
+    /// <summary>
+    /// Adds a handler to an event that is invoked when this field's validator prevents an incoming value from being applied. A validation function can be set with <see cref="Validate"/>
+    /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="ValidationFailed"/>.
+    /// </summary>
+    public ConfigFieldEventHandler<TSelf, ValidationFailedEventArgs<T>> OnValidationFailed { init => ValidationFailed += value; }
     
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
