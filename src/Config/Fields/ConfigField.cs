@@ -126,6 +126,17 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public ConfigFieldEventHandler<TSelf, InputChangedEventArgs<T>> OnInputChanged { init => InputChanged += value; }
     
     /// <summary>
+    /// An event that is invoked when this field has been initialized through creation of its corresponding MelonEntry.
+    /// </summary>
+    public event ConfigFieldEventHandler<TSelf, EventArgs>? Initialized;
+    
+    /// <summary>
+    /// Adds a handler to an event that is invoked when this field has been initialized through creation of its corresponding MelonEntry.
+    /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="Initialized"/>.
+    /// </summary>
+    public ConfigFieldEventHandler<TSelf, EventArgs> OnInitialized { init => Initialized += value; }
+    
+    /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
     /// </summary>
     /// <param name="name">String literal that is shown on a label next to this field in the config panel.</param>
@@ -211,6 +222,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         // Load the value from the MelonEntry, then save it back to sync transformation and validation results
         Value = MelonEntry.Value;
         MelonEntry.Value = storedValue;
+        Initialized?.Invoke((TSelf)this, EventArgs.Empty);
     }
     
     /// <summary>
