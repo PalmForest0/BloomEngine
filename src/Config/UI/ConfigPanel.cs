@@ -33,9 +33,7 @@ internal sealed class ConfigPanel
     private GameObject? pageCountLabel;
     private GameObject? pageBackButton;
     private GameObject? pageNextButton;
-
-    private static CustomPopup _configPopup = null!;
-
+    
     private static readonly Sprite ResetButtonSprite            = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.ResetButton.png");
     private static readonly Sprite ResetButtonSpriteSelected    = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.ResetButtonSelected.png");
     private static readonly Sprite InfoButtonSprite             = ResourceHelper.LoadSprite<BloomEngineMod>("BloomEngine.Resources.Config.InfoButton.png");
@@ -48,10 +46,6 @@ internal sealed class ConfigPanel
 
         this.panel = panel.gameObject;
         window = InitializePanel(panel);
-
-        // Create a popup that will be used to show field descriptions
-        _configPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup");
-        _configPopup.SetFirstButton(true, "Close");
 
         SetupHeader();
         SetupButtons();
@@ -184,7 +178,7 @@ internal sealed class ConfigPanel
         CreateInput(field, rowRect);
         CreateSquareButton("ResetButton", rowRect, field.ResetInput, ResetButtonSprite, ResetButtonSpriteSelected);
         if (!string.IsNullOrWhiteSpace(field.Description))
-            CreateSquareButton("InputInfoButton", rowRect, () => _configPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
+            CreateSquareButton("InputInfoButton", rowRect, () => ConfigService.ConfigPopup.ShowWithText(field.Name, field.Description), InfoButtonSprite, InfoButtonSpriteSelected);
     }
 
     private void CreateLabel(ConfigFieldBase field, RectTransform parent)
@@ -324,7 +318,7 @@ internal sealed class ConfigPanel
     /// </summary>
     public void HidePanel()
     {
-        _configPopup.Hide();
+        ConfigService.ConfigPopup.Hide();
         panel.SetActive(false);
     }
 

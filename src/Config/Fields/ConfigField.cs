@@ -40,7 +40,11 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
             {
                 SetMelonEntryValue(storedValue);
                 UpdateInput();
-                ValidationFailed?.Invoke((TSelf)this, new ValidationFailedEventArgs<T>(incoming));
+                
+                string? errorText = ValidationError?.Invoke(incoming);
+                if(errorText is not null)
+                    ConfigService.ConfigPopup.ShowWithText("Invalid value", errorText);
+                
                 return;
             }
 
@@ -105,6 +109,12 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     public Func<T, bool>? Validate { get; init; }
     
     /// <summary>
+    /// A function that receives the incoming value rejected by the validation function and returns a message
+    /// string to show in a popup. For this popup to show, a validation function must be added with <see cref="Validate"/>.
+    /// </summary>
+    public Func<T, string>? ValidationError { get; init; }
+    
+    /// <summary>
     /// An event that is invoked when <see cref="Value"/> is updated, passing the newly set value as an argument.
     /// </summary>
     public event ConfigFieldEventHandler<TSelf, ValueChangedEventArgs<T>>? ValueChanged;
@@ -136,18 +146,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
     /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="Initialized"/>.
     /// </summary>
     public ConfigFieldEventHandler<TSelf, EventArgs> OnInitialized { init => Initialized += value; }
-    
-    /// <summary>
-    /// An event that is invoked when this field's validator prevents an incoming value from being applied. A validation function can be set with <see cref="Validate"/>
-    /// </summary>
-    public event ConfigFieldEventHandler<TSelf, ValidationFailedEventArgs<T>>? ValidationFailed;
-    
-    /// <summary>
-    /// Adds a handler to an event that is invoked when this field's validator prevents an incoming value from being applied. A validation function can be set with <see cref="Validate"/>
-    /// This property exists for adding an initial handler during construction. For late subscription, see <see cref="ValidationFailed"/>.
-    /// </summary>
-    public ConfigFieldEventHandler<TSelf, ValidationFailedEventArgs<T>> OnValidationFailed { init => ValidationFailed += value; }
-    
+
     /// <summary>
     /// Creates a new generically typed config field with an internal identifier, display name and a default value.
     /// </summary>
@@ -246,7 +245,7 @@ public abstract class ConfigField<T, TSelf> : ConfigFieldBase
         if(MelonEntry is null)
             return;
 
-        if (!EqualityComparer<T>.Default.Equals(MelonEntry.Value, storedValue))
+        if (!EqualityComparer<T>.Default.Equals(MelonEntry.Value, value))
             MelonEntry.Value = value;
     }
 }

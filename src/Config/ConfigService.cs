@@ -2,6 +2,7 @@
 using BloomEngine.Internal;
 using BloomEngine.Extensions;
 using BloomEngine.ModList;
+using BloomEngine.UI;
 using Il2CppReloaded.UI;
 using Il2CppTekly.PanelViews;
 using Object = UnityEngine.Object;
@@ -24,6 +25,11 @@ public static class ConfigService
     /// </summary>
     private static ConfigPanel? _currentPanel;
 
+    /// <summary>
+    /// A UI popup used to show config related information.
+    /// </summary>
+    internal static readonly CustomPopup ConfigPopup = UIHelper.CreatePopup("configPopup", "P_ConfigPopup").SetFirstButton(true, "Close");
+    
     private static bool _panelsCreated;
 
     /// <summary>
