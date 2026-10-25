@@ -1,3 +1,13 @@
+root = true
+
+[*.cs]
+dotnet_diagnostic.CA1708.severity = none
+dotnet_diagnostic.CA1711.severity = none
+resharper_foreach_can_be_partly_converted_to_query_using_another_get_enumerator_highlighting = none
+resharper_foreach_can_be_converted_to_query_using_another_get_enumerator_highlighting = none
+resharper_loop_can_be_converted_to_query_highlighting = none
+resharper_loop_can_be_partly_converted_to_query_highlighting = none
+
 [Patches/**/*.cs]
 dotnet_naming_rule.harmony_patch_parameters.symbols  = harmony_patch_parameters_symbols
 dotnet_naming_rule.harmony_patch_parameters.style    = harmony_patch_parameters_style
@@ -6,3 +16,13 @@ dotnet_naming_rule.harmony_patch_parameters.severity = silent
 dotnet_naming_symbols.harmony_patch_parameters_symbols.applicable_kinds = parameter
 
 dotnet_naming_style.harmony_patch_parameters_style.capitalization = camel_case
+
+[Config/Fields/*.cs]
+resharper_unused_type_global_highlighting = none
+resharper_member_can_be_private_global_highlighting = none
+
+[Polyfills/**.cs]
+dotnet_diagnostic.IDE0130.severity = none
+resharper_check_namespace_highlighting = none
+resharper_unused_type_global_highlighting = none
+resharper_not_accessed_field_global_highlighting = none

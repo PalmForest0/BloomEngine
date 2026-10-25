@@ -1,6 +1,5 @@
 ﻿using BloomEngine.Extensions;
 using BloomEngine.UI;
-using Il2CppTekly.DataModels.Binders.Collections;
 using Il2CppTMPro;
 using Il2CppUI.Scripts;
 using MelonLoader;
@@ -27,7 +26,7 @@ internal sealed class ModListUI
     /// </summary>
     /// <param name="achievementsUI">The achievements UI to use as a base.</param>
     /// <returns>The created <see cref="ModListUI"/>.</returns>
-    internal static ModListUI Create(AchievementsUI achievementsUI) => new ModListUI(achievementsUI);
+    internal static ModListUI Create(AchievementsUI achievementsUI) => new(achievementsUI);
 
     private ModListUI(AchievementsUI achievementsUi)
     {

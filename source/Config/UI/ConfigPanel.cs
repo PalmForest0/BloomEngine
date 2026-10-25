@@ -184,7 +184,7 @@ internal sealed class ConfigPanel
     private void CreateLabel(ConfigFieldBase field, RectTransform parent)
     {
         var labelObj = Object.Instantiate(window.Find("SubheadingText").gameObject, parent);
-        labelObj.name = $"ConfigLabel";
+        labelObj.name = "ConfigLabel";
         labelObj.SetActive(true);
 
         var layout = labelObj.AddComponent<LayoutElement>();

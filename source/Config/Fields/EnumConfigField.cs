@@ -45,7 +45,7 @@ public sealed class EnumConfigField<TEnum>(string name, TEnum defaultValue)
     {
         var wrapperRect = UIHelper.CreateUIWrapper(parent, name);
 
-        string[] strings = options.Select(opt => OptionNames?.Invoke(opt) ?? opt.ToString()).ToArray();
+        string[] strings = options.Select(opt => OptionNames.Invoke(opt) ?? opt.ToString()).ToArray();
         int selected = Convert.ToInt32(Value, CultureInfo.InvariantCulture);
         
         dropdown = UIHelper.CreateDropdown("Dropdown", wrapperRect, strings, selected, onValueChanged: (i, _) => onInputChanged(options[i]));
