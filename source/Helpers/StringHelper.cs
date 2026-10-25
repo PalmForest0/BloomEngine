@@ -3,6 +3,9 @@ using System.Text;
 
 namespace BloomEngine.Helpers;
 
+/// <summary>
+/// Helper class that provides some string tools which are used in the config library.
+/// </summary>
 public static class StringHelper
 {
     /// <summary>

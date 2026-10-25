@@ -5,6 +5,9 @@ using Object = UnityEngine.Object;
 
 namespace BloomEngine.Extensions;
 
+/// <summary>
+/// Extensions for working with PvZ Replanted and some engine code.
+/// </summary>
 public static class ReplantedExtensions
 {
     extension(GameObject gameObject)

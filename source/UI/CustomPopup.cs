@@ -48,6 +48,9 @@ public class CustomPopup : MonoBehaviour
     /// </summary>
     public bool IsVisible { get; private set; }
 
+    /// <summary>
+    /// Locates all required components and resets all customization to default values.
+    /// </summary>
     public void SetupDefaults()
     {
         PanelView = GetComponent<PanelView>();

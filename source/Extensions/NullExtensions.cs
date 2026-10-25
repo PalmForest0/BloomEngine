@@ -2,6 +2,9 @@
 
 namespace BloomEngine.Extensions;
 
+/// <summary>
+/// Extensions for performing safe null checks on Unity Objects with IDE code analysis support.
+/// </summary>
 public static class NullExtensions
 {
     /// <summary>
@@ -22,6 +25,5 @@ public static class NullExtensions
     /// Returns null if the Unity object is null or destroyed, allowing the <c>?.</c> and <c>??</c> operators to work correctly.
     /// </summary>
     /// <returns>The Unity object, or null if it is either null or destroyed.</returns>
-    public static T? OrNull<T>(this T? obj) where T : UnityEngine.Object
-        => obj ? obj : null;
+    public static T? OrNull<T>(this T? obj) where T : UnityEngine.Object => obj ? obj : null;
 }
