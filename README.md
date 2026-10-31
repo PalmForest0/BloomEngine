@@ -1,14 +1,18 @@
-[![](https://gamebanana.com/mods/embeddables/640948?type=large)](https://gamebanana.com/mods/640948)
+<img alt="BloomEngine" src="./assets/banner-slim.png" />
+
+<div align="center">
+
+[![GameBanana](https://img.shields.io/badge/GameBanana-Visit-orange?style=for-the-badge&logo=gamebanana&logoColor=white)](https://gamebanana.com/mods/640948)&nbsp;&nbsp;&nbsp;&nbsp;[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/UfBMKTHN5b)&nbsp;&nbsp;&nbsp;&nbsp;[![GitHub tag](https://img.shields.io/github/v/tag/PalmForest0/BloomEngine?style=for-the-badge&color=blue&logo=github)](https://github.com/PalmForest0/BloomEngine/releases)
+
+</div>
 
 # BloomEngine
-[![GameBanana](https://img.shields.io/badge/GameBanana-Visit-orange?logo=gamebanana&logoColor=white)](https://gamebanana.com/mods/640948)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/UfBMKTHN5b)
-[![GitHub tag](https://img.shields.io/github/v/tag/PalmForest0/BloomEngine?color=blue&logo=github)](https://github.com/PalmForest0/BloomEngine/releases)
 
-## What is BloomEngine?
-BloomEngine is a [MelonLoader](https://github.com/LavaGang/MelonLoader) mod for PvZ Replanted, which adds an in-game mod menu and config manager.
-It is also a modding library that makes creating mods for PvZ Replanted easier by providing a variety of utilities and extensions.
-To use the BloomEngine mod, first install MelonLoader in your game's directory. Then download `BloomEngine.dll` from the [releases section](https://github.com/PalmForest0/BloomEngine/releases) and place it in the `Mods` folder.
+BloomEngine is a MelonLoader mod for **PvZ Replanted**, which adds an in-game mod list and config manager through MelonPreferences.
+It functions as a library that makes it easier for developers to add config options and provides various useful modding extensions.
+
+To add the mod to your game, install [MelonLoader](https://github.com/LavaGang/MelonLoader), download `BloomEngine.dll` from
+the [releases section](https://github.com/PalmForest0/BloomEngine/releases) and place it in your `Mods` folder.
 
 ## Developer Usage
 
